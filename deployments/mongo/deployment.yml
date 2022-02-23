@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uni-verse-database
+spec:
+  selector:
+    matchLabels:
+      app: uni-verse-database
+  template:
+    metadata:
+      labels:
+        app: uni-verse-database
+    spec:
+      containers:
+      - name: uni-verse-database
+        image: mongo:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 27017
