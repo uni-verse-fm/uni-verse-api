@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uni-verse-api
+spec:
+  selector:
+    matchLabels:
+      app: uni-verse-api
+  template:
+    metadata:
+      labels:
+        app: uni-verse-api
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+      - name: uni-verse-api
+        image: registry.qtmsheep.com/vagahbond/uni-verse/api
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3000
