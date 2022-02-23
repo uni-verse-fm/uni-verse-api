@@ -4,6 +4,6 @@ import { ReleasesController } from './releases.controller';
 
 @Module({
   controllers: [ReleasesController],
-  providers: [ReleasesService]
+  providers: [ReleasesService],
 })
 export class ReleasesModule {}

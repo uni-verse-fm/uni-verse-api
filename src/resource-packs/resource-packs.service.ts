@@ -4,6 +4,7 @@ import { UpdateResourcePackDto } from './dto/update-resource-pack.dto';
 
 @Injectable()
 export class ResourcePacksService {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   create(createResourcePackDto: CreateResourcePackDto) {
     return 'This action adds a new resourcePack';
   }
@@ -16,6 +17,7 @@ export class ResourcePacksService {
     return `This action returns a #${id} resourcePack`;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(id: number, updateResourcePackDto: UpdateResourcePackDto) {
     return `This action updates a #${id} resourcePack`;
   }

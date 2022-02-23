@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { Database } from './database';
@@ -9,12 +8,12 @@ import { ResourcePacksModule } from './resource-packs/resource-packs.module';
 import { PlaylistsModule } from './playlists/playlists.module';
 @Module({
   imports: [
-    AuthModule, 
+    AuthModule,
     UsersModule,
     ReleasesModule,
     ResourcePacksModule,
     PlaylistsModule,
-    DatabaseModule
+    DatabaseModule,
   ],
   controllers: [],
   providers: [Database],

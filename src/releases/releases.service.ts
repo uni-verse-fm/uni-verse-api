@@ -4,6 +4,7 @@ import { UpdateReleaseDto } from './dto/update-release.dto';
 
 @Injectable()
 export class ReleasesService {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   create(createReleaseDto: CreateReleaseDto) {
     return 'This action adds a new release';
   }
@@ -16,6 +17,7 @@ export class ReleasesService {
     return `This action returns a #${id} release`;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(id: number, updateReleaseDto: UpdateReleaseDto) {
     return `This action updates a #${id} release`;
   }
