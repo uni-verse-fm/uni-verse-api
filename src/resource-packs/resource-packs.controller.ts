@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ResourcePacksService } from './resource-packs.service';
 import { CreateResourcePackDto } from './dto/create-resource-pack.dto';
 import { UpdateResourcePackDto } from './dto/update-resource-pack.dto';
@@ -23,7 +31,10 @@ export class ResourcePacksController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateResourcePackDto: UpdateResourcePackDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateResourcePackDto: UpdateResourcePackDto,
+  ) {
     return this.resourcePacksService.update(+id, updateResourcePackDto);
   }
 

@@ -4,6 +4,7 @@ import { UpdatePlaylistDto } from './dto/update-playlist.dto';
 
 @Injectable()
 export class PlaylistsService {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   create(createPlaylistDto: CreatePlaylistDto) {
     return 'This action adds a new playlist';
   }
@@ -16,6 +17,7 @@ export class PlaylistsService {
     return `This action returns a #${id} playlist`;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(id: number, updatePlaylistDto: UpdatePlaylistDto) {
     return `This action updates a #${id} playlist`;
   }

@@ -3,7 +3,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
-const API_VERSION = 2
+const API_VERSION = 2;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
