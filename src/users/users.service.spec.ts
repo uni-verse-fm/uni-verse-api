@@ -42,7 +42,11 @@ describe('UsersService', () => {
 		it('should return an array of users', async () => {
             userRepoMockModel.find;
 			const result = await userService.findAll()
-			expect(result).toBe(mockUsers);
+			expect(result).toStrictEqual(mockUsers.map(mockUser => ({
+                id: mockUser._id,
+                username: mockUser.username,
+                email: mockUser.email
+            })));
 		});
 	})
 

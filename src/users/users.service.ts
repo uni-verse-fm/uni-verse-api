@@ -44,7 +44,7 @@ export class UsersService {
 	async findAll(): Promise<IUserResponse[]> {
 		const users = await this.userModel.find()
         return users.map(user => ({
-            id: user.id,
+            id: user._id,
             username: user.username,
             email: user.email
         }));

@@ -94,6 +94,7 @@ describe('UsersController', () => {
                 .expect(200)
                 .expect(mockUsers.map(mockUser => (
                     {
+                        id: mockUser._id,
                         username: mockUser.username,
                         email: mockUser.email
                     }
