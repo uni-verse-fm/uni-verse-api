@@ -3,12 +3,9 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
-  Query,
-  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -43,11 +40,6 @@ export class UsersController {
   @Get(':username')
   findOneByUsername(@Param('username') username: string) {
     return this.usersService.findUserByUsername(username);
-  }
-
-  @Get('user')
-  findOneByEmail(@Query('email') email: string) {
-    return this.usersService.findUserByEmail(email);
   }
 
   @Delete()

@@ -1,21 +1,41 @@
+import * as Joi from '@hapi/joi';
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-
-const mongoHostName = process.env.MONGO_HOSNAME || 'localhost';
-const mongoUsername = process.env.MONGO_USER;
-const mongoPassword = process.env.MONGO_PASSWORD;
-const mongoPort = process.env.MONGO_PORT || 27017;
 @Module({
-  imports: [
-    AuthModule,
-    UsersModule,
-    MongooseModule.forRoot(
-      `mongodb://${mongoUsername}:${mongoPassword}@${mongoHostName}:${mongoPort}`,
-    ),
-  ],
-  controllers: [],
-  providers: [],
+    imports: [
+        AuthModule,
+        UsersModule,
+        ConfigModule.forRoot({
+            validationSchema: Joi.object({
+                MONGO_HOSTNAME: Joi.string().required(),
+                MONGO_USERNAME: Joi.string().required(),
+                MONGO_PASSWORD: Joi.string().required(),
+                MONGO_DATABASE: Joi.string().required(),
+                MONGO_PORT: Joi.number().required(),
+                PORT: Joi.number(),
+            })
+        }),
+        MongooseModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: async (configService: ConfigService) => {
+                const username = configService.get('MONGO_USERNAME');
+                const password = configService.get('MONGO_PASSWORD');
+                const database = configService.get('MONGO_DATABASE');
+                const hostName = configService.get('MONGO_HOSTNAME');
+                const port = configService.get('MONGO_PORT');
+
+                return {
+                    uri: `mongodb://${username}:${password}@${hostName}:${port}`,
+                    dbName: database,
+                };
+            },
+            inject: [ConfigService],
+        }),
+    ],
+    controllers: [],
+    providers: [],
 })
-export class AppModule {}
+export class AppModule { }
