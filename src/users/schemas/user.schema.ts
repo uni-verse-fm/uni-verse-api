@@ -1,35 +1,22 @@
-import * as mongoose from 'mongoose';
-import validator from 'validator';
 import * as bcrypt from 'bcrypt';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Types } from 'mongoose';
 
-export const UserSchema = new mongoose.Schema(
-  {
-    username: {
-      type: String,
-      minlength: 6,
-      maxlength: 255,
-      required: [true, 'USERNAME_IS_BLANK'],
-    },
-    email: {
-      type: String,
-      lowercase: true,
-      validate: validator.isEmail,
-      maxlength: 255,
-      minlength: 6,
-      required: [true, 'EMAIL_IS_BLANK'],
-    },
-    password: {
-      type: String,
-      minlength: 5,
-      maxlength: 1024,
-      required: [true, 'PASSWORD_IS_BLANK'],
-    },
-  },
-  {
-    versionKey: false,
-    timestamps: true,
-  },
-);
+export type UserDocument = User & Document;
+
+@Schema()
+export class User {
+  @Prop({ unique: true })
+  username: string;
+
+  @Prop({ unique: true })
+  email: string;
+
+  @Prop()
+  password: string;
+}
+
+export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.pre('save', async function (next) {
   try {

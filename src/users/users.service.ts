@@ -1,61 +1,71 @@
 import {
   BadRequestException,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { User } from './interfaces/user.interface';
+import { IUser } from './interfaces/user.interface';
 import * as bcrypt from 'bcrypt';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { User } from './schemas/user.schema';
+import { IUserResponse } from './interfaces/user-response.interface';
+import { IRemoveResponse } from './interfaces/remove-response.interface';
+import { ILoginResponse } from './interfaces/login-response.interface';
 
 @Injectable()
 export class UsersService {
   constructor(
     private authService: AuthService,
-    @Inject('USER_MODEL')
-    private userModel: Model<User>,
+    @InjectModel(User.name)
+    private userModel: Model<IUser>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = new this.userModel(createUserDto);
-    await this.isEmailUnique(user.email);
-    await this.isUsernameUnique(user.username);
-    await user.save();
+  async create(createUserDto: CreateUserDto): Promise<IUser> {
+    await this.isEmailUnique(createUserDto.email);
+    await this.isUsernameUnique(createUserDto.username);
+    let user = await this.userModel.create(createUserDto);
     return this.buildRegistrationInfo(user);
   }
 
-  async login(loginUserDto: LoginUserDto) {
-    const user = await await this.userModel.findOne({
-      email: loginUserDto.email,
-    });
+  async login(loginUserDto: LoginUserDto): Promise<ILoginResponse> {
+    const user = await this.userModel.findOne({ email: loginUserDto.email });
+    if (!user) {
+      throw new NotFoundException("User doesn't exist");
+    }
     await this.checkPassword(loginUserDto.password, user);
+    const jwt = await this.authService.login(user._id);
     return {
       username: user.username,
       email: user.email,
-      jwt: await this.authService.login(user._id),
+      jwt,
     };
   }
 
-  async findAll() {
+  async findAll(): Promise<IUserResponse[]> {
     const users = await this.userModel.find();
-    return {
-      ...users,
-    };
+    return users.map((user) => ({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+    }));
   }
 
-  async remove(username: string) {
-    const user = await this.findUserByUsername(username);
-    await this.userModel.remove(user);
+  async remove(userId: string): Promise<IRemoveResponse> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('Somthing wrong with the server');
+    }
+    await this.userModel.deleteOne({ id: user.id });
     return {
       email: user.email,
       msg: 'user deleted',
     };
   }
 
-  private async checkPassword(password: string, user: User) {
+  private async checkPassword(password: string, user: IUser): Promise<boolean> {
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       throw new NotFoundException('Wrong email or password.');
@@ -73,19 +83,19 @@ export class UsersService {
 
   private async isUsernameUnique(username: string) {
     const user = await this.userModel.findOne({ username: username });
-    if (user) {
+    if (user?.username === username) {
       throw new BadRequestException('Username must be unique.');
     }
   }
 
   private async isEmailUnique(email: string) {
     const user = await this.userModel.findOne({ email: email });
-    if (user) {
+    if (user?.email === email) {
       throw new BadRequestException('Email must be unique.');
     }
   }
 
-  async findUserByUsername(username: string): Promise<User | undefined> {
+  async findUserByUsername(username: string): Promise<IUser | undefined> {
     const user = await this.userModel.findOne({ username });
     if (!user) {
       throw new BadRequestException("This user doesn't exist");
@@ -93,7 +103,7 @@ export class UsersService {
     return this.buildUserInfo(user);
   }
 
-  async findUserByEmail(email: string): Promise<User | undefined> {
+  async findUserByEmail(email: string): Promise<IUser | undefined> {
     const user = await this.userModel.findOne({ email });
     if (!user) {
       throw new BadRequestException("This user doesn't exist");

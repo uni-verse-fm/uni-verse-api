@@ -3,16 +3,20 @@ import {
   Get,
   Post,
   Body,
+  Patch,
   Param,
   Delete,
   UseGuards,
   Query,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { Public } from 'src/auth/decorators/public.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Public } from '../auth/decorators/public.decorator';
+import { User as CurrentUser } from '../auth/decorators/user.decorator';
+import { CurrentUserRequest } from './interfaces/current-user-request.interface';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
@@ -46,8 +50,8 @@ export class UsersController {
     return this.usersService.findUserByEmail(email);
   }
 
-  @Delete(':username')
-  remove(@Param('username') username: string) {
-    return this.usersService.remove(username);
+  @Delete()
+  remove(@CurrentUser() request: CurrentUserRequest) {
+    return this.usersService.remove(request.userId);
   }
 }

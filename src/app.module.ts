@@ -1,21 +1,21 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { Database } from './database';
-import { DatabaseModule } from './database/database.module';
-import { ReleasesModule } from './releases/releases.module';
-import { ResourcePacksModule } from './resource-packs/resource-packs.module';
-import { PlaylistsModule } from './playlists/playlists.module';
+
+const mongoHostName = process.env.MONGO_HOSNAME || 'localhost';
+const mongoUsername = process.env.MONGO_USER;
+const mongoPassword = process.env.MONGO_PASSWORD;
+const mongoPort = process.env.MONGO_PORT || 27017;
 @Module({
   imports: [
     AuthModule,
     UsersModule,
-    ReleasesModule,
-    ResourcePacksModule,
-    PlaylistsModule,
-    DatabaseModule,
+    MongooseModule.forRoot(
+      `mongodb://${mongoUsername}:${mongoPassword}@${mongoHostName}:${mongoPort}`,
+    ),
   ],
   controllers: [],
-  providers: [Database],
+  providers: [],
 })
 export class AppModule {}
