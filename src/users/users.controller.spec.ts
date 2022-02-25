@@ -106,20 +106,6 @@ describe('UsersController', () => {
     });
   });
 
-  describe('findUserByEmail', () => {
-    const encodedMail = encodeURIComponent(mockUsers[0].email);
-
-    it('should return a user', async () => {
-      return request(app.getHttpServer())
-        .get(`/users/user?email=${encodedMail}`)
-        .expect(200)
-        .expect({
-          email: mockUsers[0].email,
-          username: mockUsers[0].username,
-        });
-    });
-  });
-
   describe('findUserByUsername', () => {
     it('should return a user', async () => {
       return request(app.getHttpServer())
