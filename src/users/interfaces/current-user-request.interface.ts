@@ -1,3 +1,3 @@
 export interface CurrentUserRequest {
-    readonly userId: string;
+  readonly userId: string;
 }

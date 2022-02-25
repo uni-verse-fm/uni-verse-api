@@ -1,5 +1,5 @@
 const mockedJwtService = {
-    sign: () => 'mercure23beta'
-}
+  sign: () => 'mercure23beta',
+};
 
 export default mockedJwtService;

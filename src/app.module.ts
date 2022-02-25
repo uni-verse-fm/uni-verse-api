@@ -8,12 +8,14 @@ const mongoUsername = process.env.MONGO_USER;
 const mongoPassword = process.env.MONGO_PASSWORD;
 const mongoPort = process.env.MONGO_PORT || 27017;
 @Module({
-    imports: [
-        AuthModule,
-        UsersModule,
-        MongooseModule.forRoot(`mongodb://${mongoUsername}:${mongoPassword}@${mongoHostName}:${mongoPort}`),
-    ],
-    controllers: [],
-    providers: [],
+  imports: [
+    AuthModule,
+    UsersModule,
+    MongooseModule.forRoot(
+      `mongodb://${mongoUsername}:${mongoPassword}@${mongoHostName}:${mongoPort}`,
+    ),
+  ],
+  controllers: [],
+  providers: [],
 })
-export class AppModule { }
+export class AppModule {}
