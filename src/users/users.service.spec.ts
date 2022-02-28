@@ -1,133 +1,102 @@
-import { getModelToken, MongooseModule } from '@nestjs/mongoose';
-import { Test, TestingModule } from '@nestjs/testing';
-import {
-  mockCreateResponse,
-  mockCreateUser,
-  mockUsers,
-} from '../test-utils/data/data-test';
-import { userRepoMockModel } from '../test-utils/mocks/users-mock.service';
-import { AuthService } from '../auth/auth.service';
-import { UsersService } from './users.service';
-import { User } from './schemas/user.schema';
-import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { getModelToken } from '@nestjs/mongoose';
+import { Test, TestingModule } from '@nestjs/testing';
+import { mockCreateResponse, mockCreateUser, mockUsers } from '../test-utils/data/data-test';
 import mockedJwtService from '../test-utils/mocks/jwt-mock.service';
+import { userRepoMockModel } from '../test-utils/mocks/users-mock.service';
+import { User } from './schemas/user.schema';
+import { UsersService } from './users.service';
 
 describe('UsersService', () => {
-  let userService: UsersService;
-  let login: jest.Mock;
+    let userService: UsersService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        UsersService,
-        {
-          provide: AuthService,
-          useValue: {
-            login: jest.fn(() => 'mercure23beta'),
-          },
-        },
-        {
-          provide: getModelToken(User.name),
-          useValue: userRepoMockModel,
-        },
-        {
-          provide: JwtService,
-          useValue: mockedJwtService,
-        },
-      ],
-    }).compile();
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            providers: [
+                UsersService,
+                {
+                    provide: JwtService,
+                    useValue: mockedJwtService,
+                },
+                {
+                    provide: ConfigService,
+                    useValue: {
+                        get: jest.fn().mockReturnValue('60s'),
+                    }
+                },
+                {
+                    provide: getModelToken(User.name),
+                    useValue: userRepoMockModel,
+                },
+            ],
+        }).compile();
 
-    userService = module.get<UsersService>(UsersService);
-  });
-
-  describe('findAll', () => {
-    it('should return an array of users', async () => {
-      userRepoMockModel.find;
-      const result = await userService.findAll();
-      expect(result).toStrictEqual(
-        mockUsers.map((mockUser) => ({
-          id: mockUser._id,
-          username: mockUser.username,
-          email: mockUser.email,
-        })),
-      );
+        userService = module.get<UsersService>(UsersService);
     });
-  });
 
-  describe('findUserByEmail', () => {
-    let mockUser = mockUsers[0];
-    let expected = {
-      username: mockUser.username,
-      email: mockUser.email,
-    };
-
-    it('should return a user', async () => {
-      userRepoMockModel.findOne;
-      const result = await userService.findUserByEmail(mockUser.email);
-      expect(result).toStrictEqual(expected);
+    describe('findAll', () => {
+        it('should return an array of users', async () => {
+            const result = await userService.findAll();
+            expect(result).toStrictEqual(
+                mockUsers.map((mockUser) => ({
+                    id: mockUser._id,
+                    username: mockUser.username,
+                    email: mockUser.email,
+                })),
+            );
+        });
     });
-  });
 
-  describe('findUserByUsername', () => {
-    let mockUser = mockUsers[0];
-    let expected = {
-      username: mockUser.username,
-      email: mockUser.email,
-    };
+    describe('find user by email', () => {
+        let mockUser = mockUsers[0];
+        let expected = {
+            id: mockUser._id,
+            username: mockUser.username,
+            email: mockUser.email,
+            password: mockUser.password
+        };
 
-    it('should return a user', async () => {
-      userRepoMockModel.findOne;
-      const result = await userService.findUserByEmail(mockUser.username);
-      expect(result).toStrictEqual(expected);
+        it('should return a user', async () => {
+            const result = await userService.findUserByEmail(mockUser.email);
+            expect(result).toStrictEqual(expected);
+        });
     });
-  });
 
-  describe('remove', () => {
-    let mockUser = mockUsers[0];
-    let mockEmail = mockUser.email;
-    let userId = '0';
+    describe('find user by username', () => {
+        let mockUser = mockUsers[0];
+        let expected = {
+            id: mockUser._id,
+            username: mockUser.username,
+            email: mockUser.email,
+        };
 
-    it('should return a user', async () => {
-      userRepoMockModel.findById;
-      const result = await userService.remove(userId);
-      expect(result).toStrictEqual({ email: mockEmail, msg: 'user deleted' });
+        it('should return a user', async () => {
+            const result = await userService.findUserByUsername(mockUser.username);
+            expect(result).toStrictEqual(expected);
+        });
     });
-  });
 
-  describe('login', () => {
-    const loginUser = {
-      email: mockUsers[0].email,
-      password: mockUsers[0].password,
-    };
-    const expected = {
-      username: mockUsers[0].username,
-      email: mockUsers[0].email,
-      jwt: 'mercure23beta',
-    };
-    it('should return an array of users', async () => {
-      const bcryptCompare = jest.fn().mockResolvedValue(true);
-      (bcrypt.compare as jest.Mock) = bcryptCompare;
-      userRepoMockModel.findOne;
-      login;
-      const result = await userService.login(loginUser);
-      expect(result).toStrictEqual(expected);
-    });
-  });
+    describe('remove', () => {
+        let mockUser = mockUsers[0];
+        let mockEmail = mockUser.email;
+        let userId = '0';
 
-  describe('register', () => {
-    const expected = {
-      username: mockUsers[0].username,
-      email: mockUsers[0].email,
-      jwt: 'mercure23beta',
-    };
-    it('should return an array of users', async () => {
-      const bcryptCompare = jest.fn().mockResolvedValue(true);
-      (bcrypt.compare as jest.Mock) = bcryptCompare;
-      userRepoMockModel.findOne;
-      userRepoMockModel.create;
-      const result = await userService.create(mockCreateUser);
-      expect(result).toStrictEqual(mockCreateResponse);
+        it('should return a user', async () => {
+            const result = await userService.remove(userId);
+            expect(result).toStrictEqual({ email: mockEmail, msg: 'user deleted' });
+        });
     });
-  });
+
+    describe('create', () => {
+        const expected = {
+            username: mockUsers[0].username,
+            email: mockUsers[0].email,
+            jwt: 'mercure23beta',
+        };
+        it('should return a user without password', async () => {
+            const result = await userService.create(mockCreateUser);
+            expect(result).toStrictEqual(mockCreateResponse);
+        });
+    });
 });

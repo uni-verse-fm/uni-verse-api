@@ -1,49 +1,35 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  UseGuards,
+    Controller,
+    Get,
+    Param,
+    Delete,
+    UseGuards,
+    Request,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { LoginUserDto } from './dto/login-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Public } from '../auth/decorators/public.decorator';
-import { User as CurrentUser } from '../auth/decorators/user.decorator';
-import { CurrentUserRequest } from './interfaces/current-user-request.interface';
+import { IRequestWithUser } from './interfaces/request-with-user.interface';
+
 
 @Controller('users')
-@UseGuards(JwtAuthGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+    constructor(
+        private readonly usersService: UsersService,
+    ) { }
 
-  @Post('register')
-  @Public()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
+    @Get()
+    findAll() {
+        return this.usersService.findAll();
+    }
 
-  @Post('login')
-  @Public()
-  login(@Body() loginUserDto: LoginUserDto) {
-    return this.usersService.login(loginUserDto);
-  }
+    @Get(':username')
+    findOneByUsername(@Param('username') username: string) {
+        return this.usersService.findUserByUsername(username);
+    }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Get(':username')
-  findOneByUsername(@Param('username') username: string) {
-    return this.usersService.findUserByUsername(username);
-  }
-
-  @Delete()
-  remove(@CurrentUser() request: CurrentUserRequest) {
-    return this.usersService.remove(request.userId);
-  }
+    @UseGuards(JwtAuthGuard)
+    @Delete()
+    remove(@Request() request: IRequestWithUser) {
+        return this.usersService.remove(request.user.id);
+    }
 }

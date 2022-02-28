@@ -3,11 +3,13 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import * as cookieParser from 'cookie-parser';
 
 const API_VERSION = 2;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
   const configService = app.get<ConfigService>(ConfigService);
 
   app.setGlobalPrefix(`api/v${API_VERSION}`);
@@ -22,8 +24,5 @@ async function bootstrap() {
   SwaggerModule.setup(`api/v${API_VERSION}/docs`, app, document);
 
   await app.listen(configService.get('PORT') || 3000);
-
-  const reflector = app.get(Reflector);
-  app.useGlobalGuards(new JwtAuthGuard(reflector));
 }
 bootstrap();
