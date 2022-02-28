@@ -95,6 +95,8 @@ describe('AuthController', () => {
         });
     });
 
-    afterEach(() => app.close())
-
+    afterAll(done => {
+        app.close();
+        done();
+    })
 });

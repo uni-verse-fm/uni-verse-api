@@ -113,4 +113,9 @@ describe('UsersController', () => {
                 .expect(expected);
         });
     });
+
+    afterAll(done => {
+        app.close();
+        done();
+    })
 });
