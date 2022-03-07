@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: uni-verse-conf
+data:
+  MONGO_HOSTNAME: uni-verse-database-service:3222
+  MONGO_USERNAME: uni
+  MONGO_PASSWORD: password
+  MONGO_PORT: "27017"
+  JWT_SECRET: "secret"
+  JWT_EXPIRATION_TIME: "9999999999999999999"
+  JWT_ACCESS_TOKEN_EXPIRATION_TIME: "99999999999999999"
