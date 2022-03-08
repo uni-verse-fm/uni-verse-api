@@ -24,5 +24,7 @@ async function bootstrap() {
   SwaggerModule.setup(`api/v${API_VERSION}/docs`, app, document);
 
   await app.listen(configService.get('PORT') || 3000);
+
+  console.log(`Turnnig 💫 on port ${configService.get('PORT') || 3000}`);
 }
 bootstrap();
