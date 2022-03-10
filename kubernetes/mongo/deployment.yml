@@ -20,3 +20,6 @@ spec:
             cpu: "500m"
         ports:
         - containerPort: 27017
+        envFrom:
+          - configMapRef:
+              name: uni-verse-conf
