@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/co
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { IUser } from '../users/interfaces/user.interface';
+import { User } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -22,12 +22,23 @@ export class AuthService {
         return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get('JWT_EXPIRATION_TIME')}`;
     }
 
-    public async getAuthenticatedUser(email: string, password: string): Promise<IUser> {
+    public async getAuthenticatedUser(email: string, password: string): Promise<User> {
         const user = await this.usersService.findUserByEmail(email);
         if (!user) {
             throw new UnauthorizedException("User doesn't exist");
         }
         await this.checkPassword(password, user);
+        return {
+            ...user,
+            password: undefined
+        };
+    }
+
+    public async getAuthenticatedUserById(id: string): Promise<User> {
+        const user = await this.usersService.findById(id);
+        if (!user) {
+            throw new UnauthorizedException("User doesn't exist");
+        }
         return user;
     }
 
@@ -36,7 +47,7 @@ export class AuthService {
     }
 
 
-    async checkPassword(password: string, user: IUser): Promise<boolean> {
+    async checkPassword(password: string, user: User): Promise<boolean> {
         const match = await bcrypt.compare(password, user.password);
         if (!match) {
             throw new UnauthorizedException('Wrong email or password.');

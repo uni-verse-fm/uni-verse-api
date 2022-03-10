@@ -5,24 +5,33 @@ import {
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
-import { IUser } from './interfaces/user.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { IRemoveResponse } from './interfaces/remove-response.interface';
 import { IUserResponse } from './interfaces/user-response.interface';
-import { User } from './schemas/user.schema';
+import { User, UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export class UsersService {
+    
     constructor(
         @InjectModel(User.name)
-        private userModel: Model<IUser>,
+        private userModel: Model<UserDocument>,
     ) { }
 
-    async create(createUserDto: CreateUserDto): Promise<IUser> {
+    async create(createUserDto: CreateUserDto): Promise<UserDocument> {
         await this.isEmailUnique(createUserDto.email);
         await this.isUsernameUnique(createUserDto.username);
-        let user = await this.userModel.create(createUserDto);
+        let userWithEmptyReleases = {
+            ...createUserDto,
+            releases: []
+        }
+        let user = await this.userModel.create(userWithEmptyReleases);
         return this.buildRegistrationInfo(user);
+    }
+
+    async find(username: string): Promise<IUserResponse[] | IUserResponse> {
+        if(username) return await this.findUserByUsername(username);
+        return await this.findAll();
     }
 
     async findAll(): Promise<IUserResponse[]> {
@@ -64,7 +73,7 @@ export class UsersService {
         }
     }
 
-    async findUserByUsername(username: string): Promise<IUser | undefined> {
+    async findUserByUsername(username: string): Promise<IUserResponse | undefined> {
         const user = await this.userModel.findOne({ username });
         if (!user) {
             throw new BadRequestException("This user doesn't exist");
@@ -72,28 +81,30 @@ export class UsersService {
         return this.buildUserInfo(user);
     }
 
-    async findUserByEmail(email: string): Promise<IUser | undefined> {
+    async findUserByEmail(email: string): Promise<UserDocument | undefined> {
         const user = await this.userModel.findOne({ email });
         if (!user) {
             throw new BadRequestException("This user doesn't exist");
         }
-        return {
-            ...this.buildUserInfo(user),
-            password: user.password
-        };
+        return user;
     }
 
-    async findUserById(userId: string): Promise<IUser | undefined> {
+    async findUserById(userId: string): Promise<IUserResponse | undefined> {
+        const user = await this.findById(userId);
+        return this.buildUserInfo(user);
+    }
+
+    async findById(userId: string): Promise<User | undefined> {
         const user = await this.userModel.findById(userId);
         if (!user) {
             throw new BadRequestException("This user doesn't exist");
         }
-        return this.buildUserInfo(user);
+        return user;
     }
 
-    private buildUserInfo(user: IUser): any {
+    private buildUserInfo(user: User): IUserResponse {
         return {
-            id: user._id,
+            id: user._id.toString(),
             username: user.username,
             email: user.email,
         };

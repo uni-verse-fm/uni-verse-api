@@ -23,9 +23,8 @@ export class AuthController {
     @Post('login')
     login(@Request() request: IRequestWithUser, @Res() response: Response) {
         const { user } = request;
-        const cookie = this.authService.getCookieWithJwtToken(user._id);
+        const cookie = this.authService.getCookieWithJwtToken(user.id);
         response.setHeader('Set-Cookie', cookie);
-        user.password = undefined;
         return response.send(user);
     }
 

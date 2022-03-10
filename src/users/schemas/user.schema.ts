@@ -1,35 +1,56 @@
 import * as bcrypt from 'bcrypt';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { ObjectId, Document } from 'mongoose';
+import { Release } from '../../releases/schemas/release.schema';
+import { Transform, Type } from 'class-transformer';
 
 export type UserDocument = User & Document;
 
-@Schema()
+@Schema({
+    toJSON: {
+        getters: true,
+        virtuals: true,
+    },
+})
 export class User {
-  @Prop({ unique: true })
-  username: string;
+    @Transform(({ value }) => value.toString())
+    _id: ObjectId;
 
-  @Prop({ unique: true })
-  email: string;
+    @Prop({ unique: true })
+    username: string;
 
-  @Prop()
-  password: string;
+    @Prop({ unique: true })
+    email: string;
+
+    @Prop()
+    password: string;
+
+    @Type(() => Release)
+    releases: Release[]
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.virtual('releases', {
+    ref: 'Release',
+    localField: '_id',
+    foreignField: 'author',
+});
 
 UserSchema.pre('save', async function (next) {
-  try {
-    if (!this.isModified('password')) {
-      return next();
+    try {
+        if (!this.isModified('password')) {
+            return next();
+        }
+
+        const hashed = await bcrypt.hash(this['password'], 10);
+
+        this['password'] = hashed;
+
+        return next();
+    } catch (err) {
+        return next(err);
     }
-
-    const hashed = await bcrypt.hash(this['password'], 10);
-
-    this['password'] = hashed;
-
-    return next();
-  } catch (err) {
-    return next(err);
-  }
 });
+
+export { UserSchema };
