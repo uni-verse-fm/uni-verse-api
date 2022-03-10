@@ -4,7 +4,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mockCreateResponse, mockCreateUser, mockUsers } from '../test-utils/data/data-test';
 import mockedJwtService from '../test-utils/mocks/jwt-mock.service';
-import { userRepoMockModel } from '../test-utils/mocks/users-mock.service';
+import { UserRepoMockModel } from '../test-utils/mocks/users-mock.service';
 import { User } from './schemas/user.schema';
 import { UsersService } from './users.service';
 
@@ -27,7 +27,7 @@ describe('UsersService', () => {
                 },
                 {
                     provide: getModelToken(User.name),
-                    useValue: userRepoMockModel,
+                    useValue: UserRepoMockModel,
                 },
             ],
         }).compile();
@@ -51,7 +51,7 @@ describe('UsersService', () => {
     describe('find user by email', () => {
         let mockUser = mockUsers[0];
         let expected = {
-            id: mockUser._id,
+            _id: mockUser._id,
             username: mockUser.username,
             email: mockUser.email,
             password: mockUser.password

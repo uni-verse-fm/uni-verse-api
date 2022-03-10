@@ -1,6 +1,5 @@
 import { Request } from "express";
-import { IUser } from "./user.interface";
-
+import { UserDocument } from "../schemas/user.schema";
 export interface IRequestWithUser extends Request {
-    readonly user: IUser;
+    readonly user: UserDocument;
 }

@@ -58,7 +58,10 @@ describe('AuthService', () => {
             let userEmail = '96abdou96@gmail.com';
             let userPassword = 'Super123+';
             let user = await service.getAuthenticatedUser(userEmail, userPassword);
-            expect(user).toBe(mockUsers[0]);
+            expect(user).toStrictEqual({
+                ...mockUsers[0],
+                password: undefined
+            });
         });
     });
 });
