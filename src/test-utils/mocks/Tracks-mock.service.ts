@@ -17,7 +17,7 @@ export default class TracksRepoMockModel {
     }
 
     find = () => this.tracks;
-    findOne = (trackTitle: TrackInformation) => this.tracks.filter(track => track.title === trackTitle.title);
+    findOne = (trackTitle: TrackInformation) => this.tracks.filter(track => track.title !== trackTitle.title)[0];
     findById = (id: string) => this.tracks.filter(track => track._id.toString() === id);
     deleteOne = (trackTitle: TrackInformation) => this.tracks.filter(track => track.title === trackTitle.title);
     create = (trackTitle: TrackInformation) => this.tracks.filter(track => track.title === trackTitle.title);

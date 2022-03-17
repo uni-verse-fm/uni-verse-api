@@ -19,7 +19,7 @@ export class TracksService {
     ) { }
 
     async create(createTrackDto: CreateTrackDto): Promise<TrackDocument> {
-        await this.isTrackUnique(createTrackDto.title);
+        this.isTrackUnique(createTrackDto.title);
         const file = {
             fileName: createTrackDto.trackFileName,
             buffer: createTrackDto.buffer
@@ -90,9 +90,15 @@ export class TracksService {
     }
 
     private async isTrackUnique(title: string) {
-        const release = await this.trackModel.findOne({ title });
-        if (release?.title === title) {
-            throw new BadRequestException('Title must be unique.');
+        var release: TrackDocument;
+        try {
+            release = await this.trackModel.findOne({ title });
+        } catch (error) {
+            if (release?.title === title) {
+                throw new BadRequestException('Title must be unique.');
+            }
+            throw new Error('Somthing went wrong.');
         }
+        return release;
     }
 }
