@@ -9,7 +9,6 @@ import { FormDataParserInterceptor } from '../utils/create-release.interceptor';
 import { CreateReleaseDto } from './dto/create-release.dto';
 import { UpdateReleaseDto } from './dto/update-release.dto';
 import { ReleasesService } from './releases.service';
-import 'multer';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 
