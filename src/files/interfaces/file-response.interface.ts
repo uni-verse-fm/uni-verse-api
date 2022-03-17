@@ -1,4 +1,4 @@
 export default interface IFileResponse {
-    fileName: string;
-    trackFileUrl: string;
+  fileName: string;
+  trackFileUrl: string;
 }

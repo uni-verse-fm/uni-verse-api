@@ -10,30 +10,30 @@ export type TrackDocument = Track & Document;
 
 @Schema()
 export class Track {
-    @Transform(({ value }) => value.toString())
-    _id: ObjectId;
+  @Transform(({ value }) => value.toString())
+  _id: ObjectId;
 
-    @Prop()
-    title: string;
+  @Prop()
+  title: string;
 
-    @Prop()
-    trackFileUrl: string;
+  @Prop()
+  trackFileUrl: string;
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Release' })
-    @Type(() => Release)
-    release: Release;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Release' })
+  @Type(() => Release)
+  release: Release;
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-    @Type(() => User)
-    author: User;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Type(() => User)
+  author: User;
 
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-    @Type(() => User)
-    feats: User[];
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Type(() => User)
+  feats: User[];
 }
 
 const TrackSchema = SchemaFactory.createForClass(Track);
 
-TrackSchema.index({ title: 'text' })
+TrackSchema.index({ title: 'text' });
 
 export { TrackSchema };

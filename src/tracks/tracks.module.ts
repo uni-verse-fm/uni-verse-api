@@ -6,11 +6,11 @@ import { FilesService } from '../files/files.service';
 import { FilesModule } from '../files/files.module';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([{ name: Track.name, schema: TrackSchema }]),
-        FilesModule
-    ],
-    controllers: [],
-    providers: [TracksService, FilesService]
+  imports: [
+    MongooseModule.forFeature([{ name: Track.name, schema: TrackSchema }]),
+    FilesModule,
+  ],
+  controllers: [],
+  providers: [TracksService, FilesService],
 })
-export class TracksModule { }
+export class TracksModule {}

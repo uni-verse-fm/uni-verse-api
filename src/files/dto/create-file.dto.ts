@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateFileDto {
-    @ApiProperty({ type: 'string', format: 'binary' })
-    files: Array<Express.Multer.File>;
+  @ApiProperty({ type: 'string', format: 'binary' })
+  files: Array<Express.Multer.File>;
 }

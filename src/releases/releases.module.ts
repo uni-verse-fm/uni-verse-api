@@ -10,15 +10,15 @@ import { UsersService } from '../users/users.service';
 import { User, UserSchema } from '../users/schemas/user.schema';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([{ name: Release.name, schema: ReleaseSchema }]),
-        MongooseModule.forFeature([{ name: Track.name, schema: TrackSchema }]),
-        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    ],
-    controllers: [ReleasesController],
-    providers: [ReleasesService, UsersService, TracksService, FilesService],
-    exports: [ReleasesService],
+  imports: [
+    MongooseModule.forFeature([{ name: Release.name, schema: ReleaseSchema }]),
+    MongooseModule.forFeature([{ name: Track.name, schema: TrackSchema }]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+  ],
+  controllers: [ReleasesController],
+  providers: [ReleasesService, UsersService, TracksService, FilesService],
+  exports: [ReleasesService],
 })
-class ReleasesModule { }
+class ReleasesModule {}
 
 export default ReleasesModule;
