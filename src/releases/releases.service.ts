@@ -130,7 +130,7 @@ export class ReleasesService {
     private async isReleaseUnique(title: string) {
         const release = await this.releaseModel.findOne({ title });
         if (release?.title === title) {
-            throw new BadRequestException('Title must be unique.');
+            throw new BadRequestException('Release must be unique.');
         }
     }
 }
