@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { AuthService } from '../auth.service';
-import { TokenPayload } from '../token-payload.interface';
+import { TokenPayload } from '../interfaces/token-payload.interface';
 import { User } from '../../users/schemas/user.schema';
 
 @Injectable()

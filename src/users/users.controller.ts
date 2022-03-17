@@ -10,7 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from './interfaces/request-with-user.interface';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 
 @ApiTags('users')
@@ -36,6 +36,7 @@ export class UsersController {
     @UseGuards(JwtAuthGuard)
     @Delete()
     @ApiOperation({ summary: 'Delete a user' })
+    @ApiCookieAuth('Set-Cookie')
     remove(@Request() request: IRequestWithUser) {
         return this.usersService.remove(request.user.id);
     }

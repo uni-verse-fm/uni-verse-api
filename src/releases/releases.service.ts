@@ -6,7 +6,7 @@ import { Release, ReleaseDocument } from './schemas/release.schema';
 import { Model } from 'mongoose';
 import { User } from '../users/schemas/user.schema';
 import { IReleaseResponse } from './interfaces/release-response.interface';
-import { CreateFileDto } from '../files/dto/create-file.dto';
+import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
 import { TracksService } from '../tracks/tracks.service';
 import { TrackDocument } from '../tracks/schemas/track.schema';
 
@@ -19,7 +19,7 @@ export class ReleasesService {
         private tracksService: TracksService,
     ) { }
 
-    async create(files: CreateFileDto[], createRelease: CreateReleaseDto, author: User, feats: User[]) {
+    async create(files: SimpleCreateFileDto[], createRelease: CreateReleaseDto, author: User, feats: User[]) {
 
         await this.isReleaseUnique(createRelease.title);
 
@@ -46,7 +46,7 @@ export class ReleasesService {
         return this.buildReleaseInfo(release);
     }
 
-    private orderedTracks(files: CreateFileDto[], createRelease: CreateReleaseDto): Map<string, Buffer> {
+    private orderedTracks(files: SimpleCreateFileDto[], createRelease: CreateReleaseDto): Map<string, Buffer> {
         const releaseFilesNames: string[] = createRelease.tracks.map(track => track.trackFileName)
         const filesFilesNames: string[] = files.map(file => file.fileName)
         const fileNamesToFiles: Map<String, Buffer> = new Map(files.map(file => [file.fileName, file.buffer]));
@@ -59,27 +59,12 @@ export class ReleasesService {
                     nameToBuffer.set(releaseFileName, fileNamesToFiles.get(releaseFileName))
                     return true;
                 }
-                throw new Error(`File with track name "${releaseFileName}" doesn't exist`);
+                throw new BadRequestException(`File with track name "${releaseFileName}" doesn't exist`);
             });
 
             return nameToBuffer;
         }
-        throw new Error("The number of tracks the number of files should be the same.");
-    }
-
-    private nameToBuffer(files: CreateFileDto[], createRelease: CreateReleaseDto) {
-        const releaseFilesNames: String[] = createRelease.tracks.map(track => track.trackFileName)
-        const filesFilesNames: String[] = files.map(file => file.fileName)
-
-        if (releaseFilesNames.length === filesFilesNames.length) {
-            return releaseFilesNames.every(releaseFileName => {
-                if (filesFilesNames.includes(releaseFileName)) {
-                    return true;
-                }
-                return new Error(`File with track name "${releaseFileName}" doesn't exist`);
-            });
-        }
-        return new Error("The number of tracks the number of files should be the same.");
+        throw new BadRequestException("The number of tracks the number of files should be the same.");
     }
 
     async find(title: string): Promise<ReleaseDocument[] | ReleaseDocument> {

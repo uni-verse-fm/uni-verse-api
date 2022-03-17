@@ -6,7 +6,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
-import { ApiBasicAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 
 
@@ -30,9 +30,14 @@ export class AuthController {
     @ApiBody({ type: LoginDto })
     login(@Request() request: IRequestWithUser, @Res() response: Response) {
         const { user } = request;
+        const simplifiedUser = {
+            id: user.id,
+            username: user.username,
+            email: user.email
+        }
         const cookie = this.authService.getCookieWithJwtToken(user.id);
         response.setHeader('Set-Cookie', cookie);
-        return response.send(user);
+        return response.send(simplifiedUser);
     }
 
     @UseGuards(JwtAuthGuard)

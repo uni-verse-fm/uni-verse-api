@@ -1,20 +1,16 @@
 import { Body, Controller, Request, Delete, Get, Param, Patch, Post, Query, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CreateFileDto } from '../files/dto/create-file.dto';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 import { User } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
-import { FormDataParserInterceptor } from '../utils/create-release.interceptor';
-import { CreateReleaseDto } from './dto/create-release.dto';
+import { FormDataParserInterceptor } from '../utils/interceptors/create-release.interceptor';
 import { UpdateReleaseDto } from './dto/update-release.dto';
 import { ReleasesService } from './releases.service';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
-
-
-interface CreateReleaseBody {
-    data: CreateReleaseDto
-}
+import { ApiConsumes, ApiCookieAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
+import { ApiMultiFileWithMetadata } from '../utils/swagger/multiple-file.decorator';
+import { CreateReleaseWraperDto } from './dto/create-release-wraper.dto';
 
 @ApiTags('releases')
 @Controller('releases')
@@ -40,15 +36,17 @@ export class ReleasesController {
     @UseGuards(JwtAuthGuard)
     @Post()
     @ApiOperation({ summary: 'Publish a release' })
+    @ApiConsumes('multipart/form-data')
+    @ApiMultiFileWithMetadata()
+    @ApiCookieAuth('Set-Cookie')
     @UseInterceptors(FilesInterceptor('files'), FormDataParserInterceptor)
-    async createRelease(@UploadedFiles() files: Array<Express.Multer.File>, @Body() body: CreateReleaseBody, @Request() request: IRequestWithUser) {
-        console.log(files)
+    async createRelease(@UploadedFiles() files: Array<Express.Multer.File>, @Body() body: CreateReleaseWraperDto, @Request() request: IRequestWithUser) {
         var feats: User[] = [];
         if (body.data.feats)
             for (var feat of body.data.feats!) {
                 feats.push(await this.usersService.findUserByUsername(feat.username))
             }
-        const filesBuffers: CreateFileDto[] = files.map(file => ({ fileName: file.originalname, buffer: file.buffer }))
+        const filesBuffers: SimpleCreateFileDto[] = files.map(file => ({ fileName: file.originalname, buffer: file.buffer }))
         return this.releasesService.create(filesBuffers, body.data, request.user, feats);
     }
 
@@ -62,6 +60,7 @@ export class ReleasesController {
     @UseGuards(JwtAuthGuard)
     @Delete(':id')
     @ApiOperation({ summary: 'Delete a release' })
+    @ApiCookieAuth('Set-Cookie')
     removeRelease(@Param('id') id: string) {
         return this.releasesService.remove(id);
     }

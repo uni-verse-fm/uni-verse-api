@@ -11,6 +11,7 @@ import * as passport from 'passport';
 import { LocalStrategy } from './strategies/local.strategy';
 import * as data from '../test-utils/data/mock_data.json'
 import { data2list } from '../test-utils/mocks/standard-mock.service';
+import { LoginDto } from './dto/login.dto';
 
 const users = data2list(data.users)
 const user = data.users.abdou
@@ -19,7 +20,7 @@ const user1 = data.users.yoni
 
 describe('AuthController', () => {
     let app: INestApplication;
-    const loginUser = {
+    const loginUser: LoginDto = {
         email: user.email,
         password: 'Super123+',
     };
@@ -79,7 +80,7 @@ describe('AuthController', () => {
         it('should return a user with jwt', () => {
 
             const result = {
-                _id: user._id,
+                id: user._id,
                 email: user.email,
                 username: user.username
             };

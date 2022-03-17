@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFileDto } from './dto/create-file.dto';
+import { SimpleCreateFileDto } from './dto/simple-create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import IFileResponse from './interfaces/file-response.interface';
 
 @Injectable()
 export class FilesService {
-    create(createFileDto: CreateFileDto): IFileResponse {
+    create(createFileDto: SimpleCreateFileDto): IFileResponse {
         console.log(createFileDto);
         return {
             fileName: "example",

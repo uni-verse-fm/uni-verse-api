@@ -63,7 +63,6 @@ describe('TracksService', () => {
         };
         it('should return one track infos', async () => {
             const result = await tracksService.create(body)
-            console.log(JSON.stringify(result))
             expect(result).toStrictEqual(expected);
         });
     })

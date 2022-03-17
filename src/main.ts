@@ -17,6 +17,11 @@ async function bootstrap() {
         .setTitle('Uni Verse FM')
         .setDescription('Planet main api backend 🪐')
         .setVersion(`${API_VERSION}`)
+        .addCookieAuth('auth-cookie', {
+            type: 'http',
+            in: 'Header',
+            scheme: 'Bearer'
+        }, 'Set-Cookie')
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
