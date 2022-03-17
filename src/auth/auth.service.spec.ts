@@ -60,10 +60,7 @@ describe('AuthService', () => {
             let userEmail = '96abdou96@gmail.com';
             let userPassword = 'Super123+';
             let user = await service.getAuthenticatedUser(userEmail, userPassword);
-            expect(user).toStrictEqual({
-                ...user,
-                password: undefined
-            });
+            expect(user).toStrictEqual(user);
         });
     });
 });

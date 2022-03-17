@@ -31,7 +31,7 @@ export class AuthController {
     login(@Request() request: IRequestWithUser, @Res() response: Response) {
         const { user } = request;
         const simplifiedUser = {
-            id: user.id,
+            id: user._id,
             username: user.username,
             email: user.email
         }
