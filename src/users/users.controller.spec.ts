@@ -4,11 +4,7 @@ import {
     ValidationPipe,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ReleaseRepoMockModel, UserRepoMockModel } from '../test-utils/mocks/users-mock.service';
-import {
-    mockReleases,
-    mockUsers,
-} from '../test-utils/data/data-test';
+import RepoMockModel from '../test-utils/mocks/standard-mock.service';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import * as request from 'supertest';
@@ -20,9 +16,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { LocalStrategy } from '../auth/strategies/local.strategy';
 import { AuthController } from '../auth/auth.controller';
-import { ReleasesService } from '../releases/releases.service';
-import { Release } from '../releases/schemas/release.schema';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import * as data from '../test-utils/data/mock_data.json';
+import { FilesService } from '../files/files.service';
+
+const author = data.users.jayz;
+const user = data.users.kanye;
 
 describe('UsersController', () => {
     let app: INestApplication;
@@ -44,7 +43,7 @@ describe('UsersController', () => {
                 UsersService,
                 AuthService,
                 JwtStrategy,
-                ReleasesService,
+                FilesService,
                 LocalStrategy,
                 {
                     provide: ConfigService,
@@ -54,18 +53,14 @@ describe('UsersController', () => {
                 },
                 {
                     provide: getModelToken(User.name),
-                    useValue: UserRepoMockModel,
-                },
-                {
-                    provide: getModelToken(Release.name),
-                    useValue: ReleaseRepoMockModel,
+                    useValue: new RepoMockModel(data.users, 4, 2),
                 },
             ],
         }).overrideGuard(JwtAuthGuard)
             .useValue({
                 canActivate: (context: ExecutionContext) => {
                     const req = context.switchToHttp().getRequest();
-                    req.user = { id: "0" };
+                    req.user = author;
                     return true
                 },
             })
@@ -77,36 +72,36 @@ describe('UsersController', () => {
     });
 
     describe('find all users', () => {
+        const expected = Object.entries(data.users).map(user => ({
+            id: user[1]._id,
+            username: user[1].username,
+            email: user[1].email,
+        }))
         it('should return all users', async () => {
             return request(app.getHttpServer())
                 .get('/users')
                 .expect(200)
-                .expect(
-                    mockUsers.map((mockUser) => ({
-                        id: mockUser._id,
-                        username: mockUser.username,
-                        email: mockUser.email,
-                    })),
-                );
+                .expect(expected);
         });
     });
 
     describe('find user by username', () => {
+        const username = encodeURI(user.username)
         it('should return a user', async () => {
             return request(app.getHttpServer())
-                .get(`/users?username=${mockUsers[0].username}`)
+                .get(`/users?username=${username}`)
                 .expect(200)
                 .expect({
-                    id: mockUsers[0]._id,
-                    email: mockUsers[0].email,
-                    username: mockUsers[0].username,
+                    id: user._id,
+                    email: user.email,
+                    username: user.username,
                 });
         });
     });
     describe('delete my user', () => {
 
         const expected = {
-            email: mockUsers[0].email,
+            email: user.email,
             msg: 'user deleted',
         };
 
@@ -117,50 +112,6 @@ describe('UsersController', () => {
                 .expect(expected);
         });
     });
-
-    describe('create a release', () => {
-
-        const body = {
-            title: mockReleases[0].title,
-            description: mockReleases[0].description,
-            coverUrl: mockReleases[0].coverUrl,
-        };
-
-        const expected = {
-            title: mockReleases[0].title,
-            description: mockReleases[0].description,
-            coverUrl: mockReleases[0].coverUrl,
-            author: {
-                id: mockReleases[0].author._id,
-                username: mockReleases[0].author.username,
-                email: mockReleases[0].author.email
-            }
-        };
-
-        it('should return a release', async () => {
-
-            return await request(app.getHttpServer())
-                .post('/users/me/release')
-                .send(body)
-                .expect(expected);
-        });
-    });
-
-    describe('delete my release', () => {
-
-        const expected = {
-            id: mockReleases[0]._id,
-            title: mockReleases[0].title,
-            msg: 'Release deleted',
-        };
-
-        it('should return the release', async () => {
-            return await request(app.getHttpServer())
-                .delete(`/users/me/release/${mockReleases[0]._id}`)
-                .expect(expected);
-        });
-    });
-
 
     afterAll(done => {
         app.close();

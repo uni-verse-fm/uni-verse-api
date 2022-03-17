@@ -1,9 +1,8 @@
 import { IUserResponse } from "../../users/interfaces/user-response.interface";
 
-export interface IReleaseResponse {
+export interface ITrackResponse {
     title: string;
-    description: string;
-    coverUrl: string;
+    trackFileUrl: string;
     author: IUserResponse;
     feats: IUserResponse[];
 }

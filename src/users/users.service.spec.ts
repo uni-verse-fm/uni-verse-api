@@ -2,9 +2,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { mockCreateResponse, mockCreateUser, mockUsers } from '../test-utils/data/data-test';
+import * as data from '../test-utils/data/mock_data.json';
 import mockedJwtService from '../test-utils/mocks/jwt-mock.service';
-import { UserRepoMockModel } from '../test-utils/mocks/users-mock.service';
+import RepoMockModel from '../test-utils/mocks/standard-mock.service';
 import { User } from './schemas/user.schema';
 import { UsersService } from './users.service';
 
@@ -27,7 +27,7 @@ describe('UsersService', () => {
                 },
                 {
                     provide: getModelToken(User.name),
-                    useValue: UserRepoMockModel,
+                    useValue: new RepoMockModel(data.users),
                 },
             ],
         }).compile();
@@ -38,18 +38,17 @@ describe('UsersService', () => {
     describe('findAll', () => {
         it('should return an array of users', async () => {
             const result = await userService.findAll();
-            expect(result).toStrictEqual(
-                mockUsers.map((mockUser) => ({
-                    id: mockUser._id,
-                    username: mockUser.username,
-                    email: mockUser.email,
-                })),
-            );
+            const expected = Object.entries(data.users).map(user => ({
+                id: user[1]._id,
+                username: user[1].username,
+                email: user[1].email,
+            }))
+            expect(result).toStrictEqual(expected);
         });
     });
 
     describe('find user by email', () => {
-        let mockUser = mockUsers[0];
+        let mockUser = data.users.abdou;
         let expected = {
             _id: mockUser._id,
             username: mockUser.username,
@@ -64,11 +63,12 @@ describe('UsersService', () => {
     });
 
     describe('find user by username', () => {
-        let mockUser = mockUsers[0];
+        let mockUser = data.users.abdou;
         let expected = {
-            id: mockUser._id,
+            _id: mockUser._id,
             username: mockUser.username,
             email: mockUser.email,
+            password: mockUser.password,
         };
 
         it('should return a user', async () => {
@@ -78,7 +78,7 @@ describe('UsersService', () => {
     });
 
     describe('remove', () => {
-        let mockUser = mockUsers[0];
+        let mockUser = data.users.abdou;
         let mockEmail = mockUser.email;
         let userId = '0';
 
@@ -89,14 +89,18 @@ describe('UsersService', () => {
     });
 
     describe('create', () => {
+        const user = {
+            username: data.users.yoni.username,
+            email: data.users.yoni.email,
+            password: data.users.yoni.password,
+        }
         const expected = {
-            username: mockUsers[0].username,
-            email: mockUsers[0].email,
-            jwt: 'mercure23beta',
+            username: data.users.yoni.username,
+            email: data.users.yoni.email,
         };
         it('should return a user without password', async () => {
-            const result = await userService.create(mockCreateUser);
-            expect(result).toStrictEqual(mockCreateResponse);
+            const result = await userService.create(user);
+            expect(result).toStrictEqual(expected);
         });
     });
 });

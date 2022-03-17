@@ -6,11 +6,10 @@ import { AuthModule } from './auth/auth.module';
 import ReleasesModule from './releases/releases.module';
 import UsersModule from './users/users.module';
 import { WelcomeController } from './welcome.controller';
+import { TracksModule } from './tracks/tracks.module';
+import { FilesModule } from './files/files.module';
 @Module({
     imports: [
-        AuthModule,
-        UsersModule,
-        ReleasesModule,
         ConfigModule.forRoot({
             validationSchema: Joi.object({
                 MONGO_HOSTNAME: Joi.string().required(),
@@ -40,6 +39,11 @@ import { WelcomeController } from './welcome.controller';
             },
             inject: [ConfigService],
         }),
+        AuthModule,
+        UsersModule,
+        ReleasesModule,
+        TracksModule,
+        FilesModule,
     ],
     controllers: [WelcomeController],
     providers: [],

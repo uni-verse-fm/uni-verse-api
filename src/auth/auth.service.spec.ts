@@ -1,10 +1,12 @@
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { mockUsers } from '../test-utils/data/data-test';
 import mockedJwtService from '../test-utils/mocks/jwt-mock.service';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
+import * as data from '../test-utils/data/mock_data.json'
+
+const user = data.users.abdou
 
 describe('AuthService', () => {
     let service: AuthService;
@@ -26,7 +28,7 @@ describe('AuthService', () => {
                 {
                     provide: UsersService,
                     useValue: {
-                        findUserByEmail: jest.fn().mockReturnValue(mockUsers[0])
+                        findUserByEmail: jest.fn().mockReturnValue(user)
                     },
                 },
             ],
@@ -59,7 +61,7 @@ describe('AuthService', () => {
             let userPassword = 'Super123+';
             let user = await service.getAuthenticatedUser(userEmail, userPassword);
             expect(user).toStrictEqual({
-                ...mockUsers[0],
+                ...user,
                 password: undefined
             });
         });

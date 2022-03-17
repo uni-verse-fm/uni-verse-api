@@ -6,7 +6,11 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
+import { ApiBasicAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { LoginDto } from './dto/login.dto';
 
+
+@ApiTags('authentication')
 @Controller('auth')
 export class AuthController {
     constructor(
@@ -15,12 +19,15 @@ export class AuthController {
     ) { }
 
     @Post('register')
+    @ApiOperation({ summary: 'Register a user' })
     create(@Body() createUserDto: CreateUserDto) {
         return this.usersService.create(createUserDto);
     }
 
     @UseGuards(LocalAuthGuard)
     @Post('login')
+    @ApiOperation({ summary: 'Login' })
+    @ApiBody({ type: LoginDto })
     login(@Request() request: IRequestWithUser, @Res() response: Response) {
         const { user } = request;
         const cookie = this.authService.getCookieWithJwtToken(user.id);
@@ -30,7 +37,8 @@ export class AuthController {
 
     @UseGuards(JwtAuthGuard)
     @Post('logout')
-    async logOut(@Request() request: IRequestWithUser, @Res() response: Response) {
+    @ApiOperation({ summary: 'Logout' })
+    async logOut(@Res() response: Response) {
         response.setHeader('Set-Cookie', this.authService.getCookieForLogOut());
         return response.sendStatus(200);
     }

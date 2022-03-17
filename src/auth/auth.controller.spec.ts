@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { mockCreateResponse, mockCreateUser, mockUsers } from '../test-utils/data/data-test';
 import { AuthController } from './auth.controller';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
@@ -10,11 +9,18 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as passport from 'passport';
 import { LocalStrategy } from './strategies/local.strategy';
+import * as data from '../test-utils/data/mock_data.json'
+import { data2list } from '../test-utils/mocks/standard-mock.service';
+
+const users = data2list(data.users)
+const user = data.users.abdou
+const user1 = data.users.yoni
+
 
 describe('AuthController', () => {
     let app: INestApplication;
     const loginUser = {
-        email: mockUsers[0].email,
+        email: user.email,
         password: 'Super123+',
     };
 
@@ -37,8 +43,11 @@ describe('AuthController', () => {
                 {
                     provide: UsersService,
                     useValue: {
-                        findUserByEmail: (email: string) => mockUsers.find(user => user.email === email),
-                        create: () => mockCreateResponse
+                        findUserByEmail: (email: string) => users.find(user => user.email === email),
+                        create: () => ({
+                            username: user1.username,
+                            email: user1.email,
+                        })
                     },
                 },
             ],
@@ -63,16 +72,16 @@ describe('AuthController', () => {
         it('should return 401 if password is incorrect', () => {
             return request(app.getHttpServer())
                 .post('/auth/login')
-                .send({email: mockUsers[0].email, password: 'anything'})
+                .send({email: user.email, password: 'anything'})
                 .expect(401)
         })
 
         it('should return a user with jwt', () => {
 
             const result = {
-                _id: mockUsers[0]._id,
-                email: mockUsers[0].email,
-                username: mockUsers[0].username
+                _id: user._id,
+                email: user.email,
+                username: user.username
             };
 
             return request(app.getHttpServer())
@@ -84,14 +93,24 @@ describe('AuthController', () => {
     });
 
     describe('register', () => {
+
+        const body = {
+            username: user1.username,
+            email: user1.email,
+            password: user1.password,
+        }
+        const expected = {
+            username: user1.username,
+            email: user1.email,
+        };
         
         it('should return a user without password', () => {
 
             return request(app.getHttpServer())
                 .post('/auth/register')
-                .send(mockCreateUser)
+                .send(user1)
                 .expect(201)
-                .expect(mockCreateResponse);
+                .expect(expected);
         });
     });
 

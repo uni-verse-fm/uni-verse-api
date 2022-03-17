@@ -3,28 +3,25 @@ import { Transform, Type } from 'class-transformer';
 import { ObjectId } from 'mongodb';
 import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
-import { Track } from '../../tracks/schemas/track.schema';
+import { Release } from '../../releases/schemas/release.schema';
 import { User } from '../../users/schemas/user.schema';
 
-export type ReleaseDocument = Release & Document;
+export type TrackDocument = Track & Document;
 
 @Schema()
-export class Release {
+export class Track {
     @Transform(({ value }) => value.toString())
     _id: ObjectId;
 
     @Prop()
     title: string;
 
-    @Prop({
-        set: (content: string) => {
-            return content.trim();
-        },
-    })
-    description: string;
-
     @Prop()
-    coverUrl: string;
+    trackFileUrl: string;
+
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Release' })
+    @Type(() => Release)
+    release: Release;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
     @Type(() => User)
@@ -33,13 +30,10 @@ export class Release {
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
     @Type(() => User)
     feats: User[];
-
-    @Type(() => Track)
-    tracks: Track[];
 }
 
-const ReleaseSchema = SchemaFactory.createForClass(Release);
+const TrackSchema = SchemaFactory.createForClass(Track);
 
-ReleaseSchema.index({ title: 'text', description: 'text' })
+TrackSchema.index({ title: 'text' })
 
-export { ReleaseSchema };
+export { TrackSchema };

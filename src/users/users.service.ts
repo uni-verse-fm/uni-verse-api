@@ -30,7 +30,7 @@ export class UsersService {
     }
 
     async find(username: string): Promise<IUserResponse[] | IUserResponse> {
-        if(username) return await this.findUserByUsername(username);
+        if(username) return this.buildUserInfo(await this.findUserByUsername(username));
         return await this.findAll();
     }
 
@@ -73,12 +73,12 @@ export class UsersService {
         }
     }
 
-    async findUserByUsername(username: string): Promise<IUserResponse | undefined> {
+    async findUserByUsername(username: string): Promise<User | undefined> {
         const user = await this.userModel.findOne({ username });
         if (!user) {
             throw new BadRequestException("This user doesn't exist");
         }
-        return this.buildUserInfo(user);
+        return user;
     }
 
     async findUserByEmail(email: string): Promise<UserDocument | undefined> {

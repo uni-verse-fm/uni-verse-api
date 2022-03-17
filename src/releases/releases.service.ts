@@ -6,6 +6,9 @@ import { Release, ReleaseDocument } from './schemas/release.schema';
 import { Model } from 'mongoose';
 import { User } from '../users/schemas/user.schema';
 import { IReleaseResponse } from './interfaces/release-response.interface';
+import { CreateFileDto } from '../files/dto/create-file.dto';
+import { TracksService } from '../tracks/tracks.service';
+import { TrackDocument } from '../tracks/schemas/track.schema';
 
 @Injectable()
 export class ReleasesService {
@@ -13,19 +16,74 @@ export class ReleasesService {
     constructor(
         @InjectModel(Release.name)
         private releaseModel: Model<ReleaseDocument>,
+        private tracksService: TracksService,
     ) { }
-    
-    async create(createReleaseDto: CreateReleaseDto, author: User) {
-        const createdRelease = new this.releaseModel({
-            ...createReleaseDto,
-            author
+
+    async create(files: CreateFileDto[], createRelease: CreateReleaseDto, author: User, feats: User[]) {
+
+        await this.isReleaseUnique(createRelease.title);
+
+        const orderedTracks = this.orderedTracks(files, createRelease);
+
+        const tracks: Promise<TrackDocument>[] = createRelease.tracks.map(async (track) => {
+            const createTrack = {
+                ...track,
+                author,
+                feats,
+                buffer: orderedTracks.get(track.trackFileName)
+            };
+            return await this.tracksService.create(createTrack);
         })
-        const release = await createdRelease.save()
+
+        const createdRelease = {
+            ...createRelease,
+            author,
+            feats,
+            tracks
+        }
+        const release = await this.releaseModel.create(createdRelease)
+
         return this.buildReleaseInfo(release);
     }
 
+    private orderedTracks(files: CreateFileDto[], createRelease: CreateReleaseDto): Map<string, Buffer> {
+        const releaseFilesNames: string[] = createRelease.tracks.map(track => track.trackFileName)
+        const filesFilesNames: string[] = files.map(file => file.fileName)
+        const fileNamesToFiles: Map<String, Buffer> = new Map(files.map(file => [file.fileName, file.buffer]));
+
+        var nameToBuffer: Map<string, Buffer> = new Map<string, Buffer>();
+
+        if (releaseFilesNames.length === filesFilesNames.length) {
+            releaseFilesNames.every(releaseFileName => {
+                if (filesFilesNames.includes(releaseFileName)) {
+                    nameToBuffer.set(releaseFileName, fileNamesToFiles.get(releaseFileName))
+                    return true;
+                }
+                throw new Error(`File with track name "${releaseFileName}" doesn't exist`);
+            });
+
+            return nameToBuffer;
+        }
+        throw new Error("The number of tracks the number of files should be the same.");
+    }
+
+    private nameToBuffer(files: CreateFileDto[], createRelease: CreateReleaseDto) {
+        const releaseFilesNames: String[] = createRelease.tracks.map(track => track.trackFileName)
+        const filesFilesNames: String[] = files.map(file => file.fileName)
+
+        if (releaseFilesNames.length === filesFilesNames.length) {
+            return releaseFilesNames.every(releaseFileName => {
+                if (filesFilesNames.includes(releaseFileName)) {
+                    return true;
+                }
+                return new Error(`File with track name "${releaseFileName}" doesn't exist`);
+            });
+        }
+        return new Error("The number of tracks the number of files should be the same.");
+    }
+
     async find(title: string): Promise<ReleaseDocument[] | ReleaseDocument> {
-        if(title) return await this.findByTitle(title);
+        if (title) return await this.findByTitle(title);
         return await this.findAll();
     }
 
@@ -35,7 +93,7 @@ export class ReleasesService {
 
     async findOne(id: string): Promise<ReleaseDocument> {
         const release = await this.releaseModel.findById(id);
-        if(!release) {
+        if (!release) {
             throw new BadRequestException("This release doesn't exist");
         }
         return release;
@@ -43,7 +101,7 @@ export class ReleasesService {
 
     async findByTitle(title: string): Promise<ReleaseDocument> {
         const release = await this.releaseModel.findOne({ title });
-        if(!release) {
+        if (!release) {
             throw new BadRequestException("A release with this title doesn't exist");
         }
         return release;
@@ -71,11 +129,23 @@ export class ReleasesService {
             title: release.title,
             description: release.description,
             coverUrl: release.coverUrl,
+            feats: release.feats.map(feat => ({
+                id: feat._id.toString(),
+                username: feat.username,
+                email: feat.email,
+            })),
             author: {
                 id: release.author._id.toString(),
                 username: release.author.username,
                 email: release.author.email,
             }
+        }
+    }
+
+    private async isReleaseUnique(title: string) {
+        const release = await this.releaseModel.findOne({ title });
+        if (release?.title === title) {
+            throw new BadRequestException('Title must be unique.');
         }
     }
 }
