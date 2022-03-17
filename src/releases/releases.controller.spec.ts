@@ -26,7 +26,7 @@ const author = data.users.jayz;
 
 describe('ReleasesController', () => {
     let app: INestApplication;
-
+    
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [ReleasesController],
