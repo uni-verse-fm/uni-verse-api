@@ -164,4 +164,6 @@ dist
 
 # Support for Project snippet scope
 
+mongodb-data
+
 # End of https://www.toptal.com/developers/gitignore/api/node,visualstudiocode
