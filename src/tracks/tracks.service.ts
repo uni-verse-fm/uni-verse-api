@@ -66,11 +66,11 @@ export class TracksService {
     );
   }
 
-  async findAll() {
+  async findAllTracks() {
     return await this.trackModel.find();
   }
 
-  async findOne(id: string): Promise<TrackDocument> {
+  async findTrackById(id: string): Promise<TrackDocument> {
     const track = await this.trackModel.findById(id);
     if (!track) {
       throw new BadRequestException("This track doesn't exist");
@@ -78,7 +78,7 @@ export class TracksService {
     return track;
   }
 
-  async findByTitle(title: string): Promise<TrackDocument> {
+  async findTrackByTitle(title: string): Promise<TrackDocument> {
     const track = await this.trackModel.findOne({ title });
     if (!track) {
       throw new BadRequestException("A track with this title doesn't exist");
@@ -86,12 +86,12 @@ export class TracksService {
     return track;
   }
 
-  update(id: string, updateTrackDto: UpdateTrackDto) {
+  updateTrack(id: string, updateTrackDto: UpdateTrackDto) {
     return `This action updates a #${id} track`;
   }
 
-  async remove(id: string) {
-    const track = await this.findOne(id);
+  async removeTrack(id: string) {
+    const track = await this.findTrackById(id);
     if (!track) {
       throw new NotFoundException('Somthing wrong with the server');
     }

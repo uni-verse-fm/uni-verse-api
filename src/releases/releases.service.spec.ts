@@ -72,7 +72,7 @@ describe('ReleasesService', () => {
   describe('When create one release', () => {
     create_artists.forEach((user) => {
       it('', async () => {
-        const createdUser = await usersService.create(user);
+        const createdUser = await usersService.createUser(user);
         expect(createdUser.email).toBe(user.email);
         expect(createdUser.username).toBe(user.username);
       });

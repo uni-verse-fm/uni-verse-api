@@ -26,7 +26,7 @@ export class UsersController {
   @ApiQuery({ name: 'username', required: false })
   @ApiOperation({ summary: 'Find all users or one user by username' })
   find(@Query('username') username = '') {
-    return this.usersService.find(username);
+    return this.usersService.findUsers(username);
   }
 
   @Get(':id')
@@ -40,6 +40,6 @@ export class UsersController {
   @ApiOperation({ summary: 'Delete a user' })
   @ApiCookieAuth('Set-Cookie')
   remove(@Request() request: IRequestWithUser) {
-    return this.usersService.remove(request.user.id);
+    return this.usersService.removeUser(request.user.id);
   }
 }

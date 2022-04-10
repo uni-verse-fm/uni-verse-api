@@ -14,12 +14,14 @@
         },
         "jayz": {
             "_id": "2",
+
             "username": "jay-z",
             "email": "jay-z@gmail.com",
             "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
         },
         "pharrell": {
             "_id": "3",
+
             "username": "pharrell williams",
             "email": "pharrell.williams@gmail.com",
             "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
@@ -238,54 +240,15 @@
     "playlists": {
         "fav_1": {
             "_id": "0",
-            "name": "favorite 1",
-            "creator": {
-                "$ref": "#/users/abdou"
-            },
-            "tracks": {
-                "0": {
-                    "$ref": "#/tracks/change_clothes"
-                },
-                "1": {
-                    "$ref": "#/tracks/threat"
-                },
-                "2": {
-                    "$ref": "#/tracks/mte"
-                },
-                "3": {
-                    "$ref": "#/tracks/young_girl"
-                },
-                "4": {
-                    "$ref": "#/tracks/number_one"
-                }
-            }
+            "title": "my playlist 1",
+            "owner": "0",
+            "tracks": ["0", "1", "2"]  
         },
         "fav_2": {
             "_id": "1",
-            "name": "favorite 1",
-            "creator": {
-                "$ref": "#/users/yoni"
-            },
-            "tracks": {
-                "0": {
-                    "$ref": "#/tracks/change_clothes"
-                },
-                "1": {
-                    "$ref": "#/tracks/encore"
-                },
-                "2": {
-                    "$ref": "#/tracks/new_day"
-                },
-                "3": {
-                    "$ref": "#/tracks/ghi"
-                },
-                "4": {
-                    "$ref": "#/tracks/angel"
-                },
-                "5": {
-                    "$ref": "#/tracks/number_one"
-                }
-            }
+            "title": "my playlist 2",
+            "owner": "0",
+            "tracks": ["3", "4", "5"]  
         }
     },
     "tracks": {
@@ -742,5 +705,13 @@
                 }
             }
         ]
+    },
+    "create_playlists": {
+        "my_playlist1": {
+            "title": "my_playlist1"
+        },
+        "my_playlist2": {
+            "title": "my_playlist2"
+        }
     }
 }

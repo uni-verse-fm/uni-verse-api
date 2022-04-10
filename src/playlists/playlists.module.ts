@@ -10,8 +10,6 @@ import { User, UserSchema } from '../users/schemas/user.schema';
     imports: [
         MongooseModule.forFeature([
             { name: Playlist.name, schema: PlaylistSchema },
-            { name: Track.name, schema: TrackSchema },
-            { name: User.name, schema: UserSchema }
         ]),
     ],
     controllers: [PlaylistsController],
