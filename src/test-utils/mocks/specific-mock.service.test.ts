@@ -1,7 +1,6 @@
-import * as mongoose from 'mongoose';
 import { Track } from '../../tracks/schemas/track.schema';
 import * as data from '../data/mock_data.json';
-import { data2list } from './standard-mock.service';
+import { data2list } from './standard-mock.service.test';
 
 
 export default class SpecificRepoMockModel {

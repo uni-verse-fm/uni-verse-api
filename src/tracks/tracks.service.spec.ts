@@ -3,13 +3,13 @@ import { TracksService } from './tracks.service';
 import * as data from '../test-utils/data/mock_data.json';
 import {
     data2list,
-} from '../test-utils/mocks/standard-mock.service';
+} from '../test-utils/mocks/standard-mock.service.test';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Track, TrackSchema } from './schemas/track.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { FilesService } from '../files/files.service';
 import { UsersService } from '../users/users.service';
-import { closeInMongodConnection, rootMongooseTestModule } from '../test-utils/in-memory/mongoose.helper';
+import { closeInMongodConnection, rootMongooseTestModule } from '../test-utils/in-memory/mongoose.helper.test';
 
 const users = data.users;
 const tracks = data.tracks;

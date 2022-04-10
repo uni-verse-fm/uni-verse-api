@@ -4,7 +4,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import RepoMockModel from '../test-utils/mocks/standard-mock.service';
+import RepoMockModel from '../test-utils/mocks/standard-mock.service.test';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import * as request from 'supertest';

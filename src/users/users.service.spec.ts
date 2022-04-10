@@ -3,9 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as data from '../test-utils/data/mock_data.json';
-import { closeInMongodConnection, rootMongooseTestModule } from '../test-utils/in-memory/mongoose.helper';
-import mockedJwtService from '../test-utils/mocks/jwt-mock.service';
-import { data2list } from '../test-utils/mocks/standard-mock.service';
+import { closeInMongodConnection, rootMongooseTestModule } from '../test-utils/in-memory/mongoose.helper.test';
+import mockedJwtService from '../test-utils/mocks/jwt-mock.service.test';
+import { data2list } from '../test-utils/mocks/standard-mock.service.test';
 import { User, UserSchema } from './schemas/user.schema';
 import { UsersService } from './users.service';
 

@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import mockedJwtService from '../test-utils/mocks/jwt-mock.service';
+import mockedJwtService from '../test-utils/mocks/jwt-mock.service.test';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import * as data from '../test-utils/data/mock_data.json';

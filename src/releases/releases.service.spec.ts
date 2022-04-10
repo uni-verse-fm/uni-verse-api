@@ -2,7 +2,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
     data2list,
-} from '../test-utils/mocks/standard-mock.service';
+} from '../test-utils/mocks/standard-mock.service.test';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { ReleasesService } from './releases.service';
 import { Release, ReleaseSchema } from './schemas/release.schema';
@@ -14,7 +14,7 @@ import { UsersService } from '../users/users.service';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
-} from '../test-utils/in-memory/mongoose.helper';
+} from '../test-utils/in-memory/mongoose.helper.test';
 
 const release = data.releases.black_album;
 

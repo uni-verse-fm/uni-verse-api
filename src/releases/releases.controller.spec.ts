@@ -13,15 +13,15 @@ import * as data from '../test-utils/data/mock_data.json';
 import { Release } from './schemas/release.schema';
 import RepoMockModel, {
     data2list,
-} from '../test-utils/mocks/standard-mock.service';
+} from '../test-utils/mocks/standard-mock.service.test';
 import { TracksService } from '../tracks/tracks.service';
 import { Track } from '../tracks/schemas/track.schema';
 import { FilesService } from '../files/files.service';
 import { User } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
-import TracksRepoMockModel from '../test-utils/mocks/Tracks-mock.service';
+import TracksRepoMockModel from '../test-utils/mocks/Tracks-mock.service.test';
 import { Model, Connection } from 'mongoose';
-import { closeInMongodConnection, rootMongooseTestModule } from '../test-utils/in-memory/mongoose.helper';
+import { closeInMongodConnection, rootMongooseTestModule } from '../test-utils/in-memory/mongoose.helper.test';
 
 
 const release = data.releases.black_album;
