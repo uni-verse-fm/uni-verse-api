@@ -23,7 +23,7 @@ services:
     container_name: mongodb
     restart: always
     volumes:
-      - mongodb-data:/data/db
+      - ./mongodb-data:/data/db
     ports:
       - 27017:27017
     env_file:
@@ -32,8 +32,8 @@ services:
   mongo-express:
     image: mongo-express
     container_name: server-mongo-express
-    volumes:
-      - mongodb-data
+    # volumes:
+    #   - ./mongodb-data:/data/db
     depends_on:
       - mongodb
     ports:
@@ -41,6 +41,6 @@ services:
     restart: always
     env_file:
       - docker.env
+
 volumes:
   mongodb-data:
-    name: mongodb-data
