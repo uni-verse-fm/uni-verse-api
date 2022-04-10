@@ -36,6 +36,8 @@ export class ReleasesController {
   constructor(private readonly releasesService: ReleasesService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find all releases or one release by title' })
   @ApiQuery({ name: 'title', required: false })
   find(@Query('title') title: string) {
@@ -43,17 +45,19 @@ export class ReleasesController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find one release by id' })
   findOne(@Param('id') id: string) {
     return this.releasesService.findOne(id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Publish a release' })
   @ApiConsumes('multipart/form-data')
   @ApiMultiFileWithMetadata()
-  @ApiCookieAuth('Set-Cookie')
   @UseInterceptors(FilesInterceptor('files'), FormDataParserInterceptor)
   async createRelease(
     @UploadedFiles() files: Array<Express.Multer.File>,
@@ -75,8 +79,9 @@ export class ReleasesController {
     return JSON.stringify(body).replace(/ /g, '');
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Update a release' })
   updateRelease(
     @Param('id') id: string,
@@ -85,8 +90,9 @@ export class ReleasesController {
     return this.releasesService.update(id, updateReleaseDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Delete a release' })
   @ApiCookieAuth('Set-Cookie')
   removeRelease(@Param('id') id: string) {

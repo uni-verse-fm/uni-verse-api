@@ -27,7 +27,7 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ summary: 'Register a user' })
   create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+    return this.usersService.createUser(createUserDto);
   }
 
   @UseGuards(LocalAuthGuard)

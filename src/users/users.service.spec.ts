@@ -41,7 +41,7 @@ describe('UsersService', () => {
   describe('create', () => {
     create_users.forEach((user) => {
       it(`should create a user with email ${user.email}`, async () => {
-        const createdUser = await userService.create(user);
+        const createdUser = await userService.createUser(user);
         expect(createdUser.email).toBe(user.email);
         expect(createdUser.username).toBe(user.username);
       });
@@ -50,7 +50,7 @@ describe('UsersService', () => {
 
   describe('findAll', () => {
     it('should return an array of users', async () => {
-      const result = await userService.findAll();
+      const result = await userService.findAllUsers();
       const expected = Object.entries(data.users)
         .map((user) => ({
           username: user[1].username,
@@ -72,7 +72,6 @@ describe('UsersService', () => {
   describe('find user by email', () => {
     const mockUser = data.users.abdou;
     const expected = {
-      _id: mockUser._id,
       username: mockUser.username,
       email: mockUser.email,
       password: mockUser.password,
@@ -108,7 +107,7 @@ describe('UsersService', () => {
 
     it('should return a user', async () => {
       const abdou = await userService.findUserByUsername(mockUser.username);
-      const result = await userService.remove(abdou._id.toString());
+      const result = await userService.removeUser(abdou._id.toString());
       expect(result).toStrictEqual({ email: mockEmail, msg: 'user deleted' });
     });
   });

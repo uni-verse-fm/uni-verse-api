@@ -45,7 +45,7 @@ describe('AuthController', () => {
           useValue: {
             findUserByEmail: (email: string) =>
               users.find((user) => user.email === email),
-            create: () => ({
+            createUser: () => ({
               username: user1.username,
               email: user1.email,
             }),

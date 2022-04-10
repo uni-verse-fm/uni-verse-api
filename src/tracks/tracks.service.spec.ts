@@ -73,7 +73,7 @@ describe('TracksService', () => {
   describe('create tracks', () => {
     create_artists.forEach((user) => {
       it('', async () => {
-        const createdUser = await usersService.create(user);
+        const createdUser = await usersService.createUser(user);
         expect(createdUser.email).toBe(user.email);
         expect(createdUser.username).toBe(user.username);
       });
@@ -117,7 +117,7 @@ describe('TracksService', () => {
         trackFileUrl: track.trackFileUrl,
       }));
 
-      const result = await tracksService.findAll();
+      const result = await tracksService.findAllTracks();
       const cleanedResult = result.map((track) => ({
         title: track.title,
         trackFileUrl: track.trackFileUrl,
@@ -135,11 +135,11 @@ describe('TracksService', () => {
 
   describe('When ask one track by id', () => {
     it('should return one track', async () => {
-      const track = await tracksService.findByTitle(
+      const track = await tracksService.findTrackByTitle(
         tracks.change_clothes.title,
       );
 
-      const result = await tracksService.findOne(track._id);
+      const result = await tracksService.findTrackById(track._id);
       expect(result).toStrictEqual(track);
     });
   });
@@ -149,7 +149,7 @@ describe('TracksService', () => {
     const trackFileUrl = 'https://track-example.com';
 
     it('should return one track', async () => {
-      const result = await tracksService.findByTitle(
+      const result = await tracksService.findTrackByTitle(
         tracks.change_clothes.title,
       );
       expect(result._id).toBeDefined();
@@ -162,7 +162,7 @@ describe('TracksService', () => {
 
   describe('When remove one track', () => {
     it('should return one track infos', async () => {
-      const track = await tracksService.findByTitle(
+      const track = await tracksService.findTrackByTitle(
         tracks.change_clothes.title,
       );
       const expected = {
@@ -171,7 +171,7 @@ describe('TracksService', () => {
         msg: 'Track deleted',
       };
 
-      const result = await tracksService.remove(track._id);
+      const result = await tracksService.removeTrack(track._id);
       expect(result).toStrictEqual(expected);
     });
   });

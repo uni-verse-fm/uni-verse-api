@@ -118,7 +118,7 @@ export class ReleasesService {
   async findOne(id: string): Promise<ReleaseDocument> {
     const release = await this.releaseModel.findById(id);
     if (!release) {
-      throw new BadRequestException("This release doesn't exist");
+      throw new BadRequestException(`Release with ID "${id}" not found.`);
     }
     return release;
   }
@@ -126,7 +126,7 @@ export class ReleasesService {
   async findByTitle(title: string): Promise<ReleaseDocument> {
     const release = await this.releaseModel.findOne({ title });
     if (!release) {
-      throw new BadRequestException("A release with this title doesn't exist");
+      throw new NotFoundException(`Release with title ${title} not found.`);
     }
     return release;
   }
@@ -174,10 +174,10 @@ export class ReleasesService {
     try {
       release = await this.releaseModel.findOne({ title });
     } catch (error) {
-      if (release?.title === title) {
-        throw new BadRequestException('Release must be unique.');
-      }
       throw new Error('Somthing went wrong.');
+    }
+    if (release?.title === title) {
+      throw new BadRequestException('Release must be unique.');
     }
   }
 }
