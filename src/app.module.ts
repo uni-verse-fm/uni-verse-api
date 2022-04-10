@@ -8,6 +8,7 @@ import UsersModule from './users/users.module';
 import { WelcomeController } from './welcome.controller';
 import { TracksModule } from './tracks/tracks.module';
 import { FilesModule } from './files/files.module';
+import { PlaylistsModule } from './playlists/playlists.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -44,6 +45,7 @@ import { FilesModule } from './files/files.module';
     ReleasesModule,
     TracksModule,
     FilesModule,
+    PlaylistsModule,
   ],
   controllers: [WelcomeController],
   providers: [],
