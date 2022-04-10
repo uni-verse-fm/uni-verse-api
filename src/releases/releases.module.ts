@@ -11,7 +11,9 @@ import { User, UserSchema } from '../users/schemas/user.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Release.name, schema: ReleaseSchema }]),
+    MongooseModule.forFeature([
+        { name: Release.name, schema: ReleaseSchema }
+    ]),
     MongooseModule.forFeature([{ name: Track.name, schema: TrackSchema }]),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],

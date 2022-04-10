@@ -7,6 +7,7 @@ import {
   MinLength,
 } from 'class-validator';
 import AuthorDto from '../../users/dto/author.dto';
+import { UserDocument } from '../../users/schemas/user.schema';
 
 export class CreateTrackDto {
   @IsNotEmpty()
@@ -27,7 +28,7 @@ export class CreateTrackDto {
   readonly buffer: Buffer;
 
   @IsNotEmpty()
-  readonly author: AuthorDto;
+  readonly author: UserDocument;
 
   @IsArray()
   @IsOptional()

@@ -30,10 +30,11 @@ export class Release {
   @Type(() => User)
   author: User;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }])
   @Type(() => User)
   feats: User[];
 
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Track' }])
   @Type(() => Track)
   tracks: Track[];
 }

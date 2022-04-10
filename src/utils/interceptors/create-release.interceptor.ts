@@ -22,7 +22,6 @@ export class FormDataParserInterceptor implements NestInterceptor {
     } catch (error) {
       throw new BadRequestException(`Can't parse data: ${error}`);
     }
-
     return next.handle();
   }
 }

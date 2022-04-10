@@ -73,16 +73,20 @@ export class UsersService {
     }
   }
 
-  async findUserByUsername(username: string): Promise<User | undefined> {
-    const user = await this.userModel.findOne({ username });
+  async findUserByUsername(username: string): Promise<UserDocument> {
+    const user = await this.userModel.findOne({ username: username });
     if (!user) {
       throw new BadRequestException("This user doesn't exist");
     }
     return user;
   }
 
+  async findManyUsersByUsernames(usernames: string[]): Promise<UserDocument[]> {
+    return await Promise.all(usernames.map((username) => this.findUserByUsername(username)));
+  }
+
   async findUserByEmail(email: string): Promise<UserDocument | undefined> {
-    const user = await this.userModel.findOne({ email });
+    const user = await this.userModel.findOne({ email: email });
     if (!user) {
       throw new BadRequestException("This user doesn't exist");
     }

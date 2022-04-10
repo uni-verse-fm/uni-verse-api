@@ -19,15 +19,15 @@ export class Track {
   @Prop()
   trackFileUrl: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Release' })
-  @Type(() => Release)
-  release: Release;
+//   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Release' })
+//   @Type(() => Release)
+//   release: Release;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   @Type(() => User)
   author: User;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }])
   @Type(() => User)
   feats: User[];
 }

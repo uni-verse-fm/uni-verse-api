@@ -6,7 +6,6 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { CreateTrackDto } from '../../tracks/dto/create-track.dto';
 import AuthorDto from '../../users/dto/author.dto';
 
 export class CreateReleaseDto {
@@ -25,7 +24,7 @@ export class CreateReleaseDto {
   @IsString()
   @MinLength(1)
   @MaxLength(1024)
-  readonly coverFileName: string;
+  readonly coverUrl: string;
 
   @IsArray()
   @IsOptional()
@@ -33,5 +32,27 @@ export class CreateReleaseDto {
 
   @IsArray()
   @IsNotEmpty()
-  readonly tracks: CreateTrackDto[];
+  readonly tracks: CreateReleseTrackDto[];
 }
+
+export class CreateReleseTrackDto {
+    @IsNotEmpty()
+    @IsString()
+    @MinLength(5)
+    @MaxLength(255)
+    readonly title: string;
+  
+    @IsNotEmpty()
+    @IsString()
+    @MinLength(1)
+    @MaxLength(1024)
+    readonly trackFileName: string;
+  
+    @IsNotEmpty()
+    readonly author: AuthorDto;
+  
+    @IsArray()
+    @IsOptional()
+    readonly feats?: AuthorDto[];
+  }
+

@@ -15,7 +15,6 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
-import { User } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { FormDataParserInterceptor } from '../utils/interceptors/create-release.interceptor';
 import { UpdateReleaseDto } from './dto/update-release.dto';
@@ -30,13 +29,13 @@ import {
 import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
 import { ApiMultiFileWithMetadata } from '../utils/swagger/multiple-file.decorator';
 import { CreateReleaseWraperDto } from './dto/create-release-wraper.dto';
+import { CreateReleaseDto } from './dto/create-release.dto';
 
 @ApiTags('releases')
 @Controller('releases')
 export class ReleasesController {
   constructor(
     private readonly releasesService: ReleasesService,
-    private readonly usersService: UsersService,
   ) {}
 
   @Get()
@@ -64,23 +63,24 @@ export class ReleasesController {
     @Body() body: CreateReleaseWraperDto,
     @Request() request: IRequestWithUser,
   ) {
-    const feats: User[] = [];
-    if (body.data.feats) {
-      for (const feat of body.data.feats) {
-        feats.push(await this.usersService.findUserByUsername(feat.username));
-      }
-    }
 
     const filesBuffers: SimpleCreateFileDto[] = files.map((file) => ({
       fileName: file.originalname,
       buffer: file.buffer,
     }));
+
     return this.releasesService.create(
       filesBuffers,
       body.data,
       request.user,
-      feats,
     );
+  }
+
+  @Post('/convert')
+  @ApiOperation({ summary: 'Convert obejct to string' })
+  @ApiCookieAuth('Set-Cookie')
+  convertRelease(@Body() body: CreateReleaseDto) {
+    return JSON.stringify(body).replace(/ /g, "");
   }
 
   @UseGuards(JwtAuthGuard)
