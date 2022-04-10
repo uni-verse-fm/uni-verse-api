@@ -1,81 +1,183 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { CreateReleaseDto } from './dto/create-release.dto';
 import { UpdateReleaseDto } from './dto/update-release.dto';
 import { Release, ReleaseDocument } from './schemas/release.schema';
-import { Model } from 'mongoose';
-import { User } from '../users/schemas/user.schema';
+import { Model, Connection } from 'mongoose';
+import { UserDocument } from '../users/schemas/user.schema';
 import { IReleaseResponse } from './interfaces/release-response.interface';
+import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
+import { TracksService } from '../tracks/tracks.service';
+import { UsersService } from '../users/users.service';
+import { ITrackResponse } from '../tracks/interfaces/track-response.interface';
 
 @Injectable()
 export class ReleasesService {
+  constructor(
+    @InjectModel(Release.name)
+    private releaseModel: Model<ReleaseDocument>,
+    private tracksService: TracksService,
+    private usersService: UsersService,
+    @InjectConnection()
+    private connection: Connection,
+  ) {}
 
-    constructor(
-        @InjectModel(Release.name)
-        private releaseModel: Model<ReleaseDocument>,
-    ) { }
-    
-    async create(createReleaseDto: CreateReleaseDto, author: User) {
-        const createdRelease = new this.releaseModel({
-            ...createReleaseDto,
-            author
-        })
-        const release = await createdRelease.save()
-        return this.buildReleaseInfo(release);
+  async create(
+    files: SimpleCreateFileDto[],
+    createRelease: CreateReleaseDto,
+    author: UserDocument,
+  ) {
+    await this.isReleaseUnique(createRelease.title);
+
+    const feats: UserDocument[] =
+      await this.usersService.findManyUsersByUsernames(
+        createRelease.feats.map((feat) => feat.username),
+      );
+
+    const session = await this.connection.startSession();
+
+    const orderedTracks = this.orderedTracks(files, createRelease);
+
+    session.startTransaction();
+    try {
+      const tracks: ITrackResponse[] =
+        await this.tracksService.createManyTracks(
+          createRelease.tracks.map((track) => ({
+            ...track,
+            author,
+            buffer: orderedTracks.get(track.trackFileName),
+          })),
+        );
+      const createdRelease = {
+        ...createRelease,
+        author,
+        feats: feats.map((feat) => feat._id),
+        tracks: tracks.map((track) => track._id),
+      };
+      const release = await this.releaseModel.create(createdRelease);
+
+      await session.commitTransaction();
+
+      return this.buildReleaseInfo(release, feats);
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
     }
+  }
 
-    async find(title: string): Promise<ReleaseDocument[] | ReleaseDocument> {
-        if(title) return await this.findByTitle(title);
-        return await this.findAll();
-    }
+  private orderedTracks(
+    files: SimpleCreateFileDto[],
+    createRelease: CreateReleaseDto,
+  ): Map<string, Buffer> {
+    const releaseFilesNames: string[] = createRelease.tracks.map(
+      (track) => track.trackFileName,
+    );
+    const filesFilesNames: string[] = files.map((file) => file.fileName);
+    const fileNamesToFiles: Map<string, Buffer> = new Map(
+      files.map((file) => [file.fileName, file.buffer]),
+    );
 
-    async findAll(): Promise<ReleaseDocument[]> {
-        return await this.releaseModel.find();
-    }
+    const nameToBuffer: Map<string, Buffer> = new Map<string, Buffer>();
 
-    async findOne(id: string): Promise<ReleaseDocument> {
-        const release = await this.releaseModel.findById(id);
-        if(!release) {
-            throw new BadRequestException("This release doesn't exist");
+    if (releaseFilesNames.length === filesFilesNames.length) {
+      releaseFilesNames.every((releaseFileName) => {
+        if (filesFilesNames.includes(releaseFileName)) {
+          nameToBuffer.set(
+            releaseFileName,
+            fileNamesToFiles.get(releaseFileName),
+          );
+          return true;
         }
-        return release;
-    }
+        throw new BadRequestException(
+          `File with track name "${releaseFileName}" doesn't exist`,
+        );
+      });
 
-    async findByTitle(title: string): Promise<ReleaseDocument> {
-        const release = await this.releaseModel.findOne({ title });
-        if(!release) {
-            throw new BadRequestException("A release with this title doesn't exist");
-        }
-        return release;
+      return nameToBuffer;
     }
+    throw new BadRequestException(
+      'The number of tracks the number of files should be the same.',
+    );
+  }
 
-    async update(id: string, updateReleaseDto: UpdateReleaseDto) {
-        return `This action updates a #${id} release`;
-    }
+  async find(title: string): Promise<ReleaseDocument[] | ReleaseDocument> {
+    if (title) return await this.findByTitle(title);
+    return await this.findAll();
+  }
 
-    async remove(id: string) {
-        const release = await this.findOne(id);
-        if (!release) {
-            throw new NotFoundException('Somthing wrong with the server');
-        }
-        await this.releaseModel.deleteOne({ id: release._id });
-        return {
-            id: release._id,
-            title: release.title,
-            msg: 'Release deleted',
-        };
-    }
+  async findAll(): Promise<ReleaseDocument[]> {
+    return await this.releaseModel.find();
+  }
 
-    private buildReleaseInfo(release: Release): IReleaseResponse {
-        return {
-            title: release.title,
-            description: release.description,
-            coverUrl: release.coverUrl,
-            author: {
-                id: release.author._id.toString(),
-                username: release.author.username,
-                email: release.author.email,
-            }
-        }
+  async findOne(id: string): Promise<ReleaseDocument> {
+    const release = await this.releaseModel.findById(id);
+    if (!release) {
+      throw new BadRequestException("This release doesn't exist");
     }
+    return release;
+  }
+
+  async findByTitle(title: string): Promise<ReleaseDocument> {
+    const release = await this.releaseModel.findOne({ title });
+    if (!release) {
+      throw new BadRequestException("A release with this title doesn't exist");
+    }
+    return release;
+  }
+
+  async update(id: string, updateReleaseDto: UpdateReleaseDto) {
+    return `This action updates a #${id} release`;
+  }
+
+  async remove(id: string) {
+    const release = await this.findOne(id);
+    if (!release) {
+      throw new NotFoundException('Somthing wrong with the server');
+    }
+    await this.releaseModel.deleteOne({ id: release._id });
+    return {
+      id: release._id.toString(),
+      title: release.title,
+      msg: 'Release deleted',
+    };
+  }
+
+  private buildReleaseInfo(
+    release: Release,
+    feats: UserDocument[],
+  ): IReleaseResponse {
+    return {
+      title: release.title,
+      description: release.description,
+      coverUrl: release.coverUrl,
+      feats: feats.map((feat) => ({
+        id: feat._id.toString(),
+        username: feat.username,
+        email: feat.email,
+      })),
+      author: {
+        id: release.author._id.toString(),
+        username: release.author.username,
+        email: release.author.email,
+      },
+    };
+  }
+
+  private async isReleaseUnique(title: string) {
+    let release: ReleaseDocument;
+    try {
+      release = await this.releaseModel.findOne({ title });
+    } catch (error) {
+      if (release?.title === title) {
+        throw new BadRequestException('Release must be unique.');
+      }
+      throw new Error('Somthing went wrong.');
+    }
+  }
 }

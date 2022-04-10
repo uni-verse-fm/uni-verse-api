@@ -1,94 +1,221 @@
-import { getModelToken } from '@nestjs/mongoose';
+import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as mongoose from 'mongoose';
-import { mockReleases, mockUsers } from '../test-utils/data/data-test';
-import { ReleaseRepoMockModel, UserRepoMockModel } from '../test-utils/mocks/users-mock.service';
-import { User } from '../users/schemas/user.schema';
+import { data2list } from '../test-utils/mocks/standard-mock.service.test';
+import { User, UserSchema } from '../users/schemas/user.schema';
 import { ReleasesService } from './releases.service';
-import { Release } from './schemas/release.schema';
+import { Release, ReleaseSchema } from './schemas/release.schema';
+import * as data from '../test-utils/data/mock_data.json';
+import { Track, TrackSchema } from '../tracks/schemas/track.schema';
+import { TracksService } from '../tracks/tracks.service';
+import { FilesService } from '../files/files.service';
+import { UsersService } from '../users/users.service';
+import {
+  closeInMongodConnection,
+  rootMongooseTestModule,
+} from '../test-utils/in-memory/mongoose.helper.test';
+
+const release = data.releases.black_album;
+
+const users = data.users;
+
+const create_releases = data2list(data.create_releases);
+const files = data2list(data.create_files);
+
+const artists_emails = [
+  users.jayz.email,
+  users.pharrell.email,
+  users.kanye.email,
+];
+const create_artists = data2list(data.create_users).filter((users) =>
+  artists_emails.includes(users.email),
+);
 
 describe('ReleasesService', () => {
-    let releasesService: ReleasesService;
+  let releasesService: ReleasesService;
+  let usersService: UsersService;
+  let module: TestingModule;
+  let releaseId: string;
 
-    beforeEach(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            providers: [
-                ReleasesService,
-                {
-                    provide: getModelToken(Release.name),
-                    useValue: ReleaseRepoMockModel,
-                },
-                {
-                    provide: getModelToken(User.name),
-                    useValue: UserRepoMockModel,
-                },
-            ],
-        }).compile();
+  beforeAll(async () => {
+    module = await Test.createTestingModule({
+      imports: [
+        rootMongooseTestModule(),
+        MongooseModule.forFeature([
+          {
+            name: Release.name,
+            schema: ReleaseSchema,
+          },
+          {
+            name: Track.name,
+            schema: TrackSchema,
+          },
+          {
+            name: User.name,
+            schema: UserSchema,
+          },
+        ]),
+      ],
+      providers: [ReleasesService, TracksService, FilesService, UsersService],
+    }).compile();
 
-        releasesService = module.get<ReleasesService>(ReleasesService);
+    releasesService = module.get<ReleasesService>(ReleasesService);
+    usersService = module.get<UsersService>(UsersService);
+  });
+
+  afterAll(async () => {
+    if (module) {
+      await module.close();
+      await closeInMongodConnection();
+    }
+  });
+
+  describe('When create one release', () => {
+    create_artists.forEach((user) => {
+      it('', async () => {
+        const createdUser = await usersService.create(user);
+        expect(createdUser.email).toBe(user.email);
+        expect(createdUser.username).toBe(user.username);
+      });
     });
 
-    describe('When create one release', () => {
+    create_releases.forEach((release, releaseIndex) => {
+      const test = files[releaseIndex];
+      const files_release = (test as Array<any>).map((file) => ({
+        ...file,
+        buffer: Buffer.from(JSON.parse(JSON.stringify(file.buffer))),
+      }));
 
-        const user: User = {
-            ...mockUsers[0],
-            _id: new mongoose.Schema.Types.ObjectId(mockUsers[0]._id),
-            releases: []
-        }
+      it('should return one release infos', async () => {
+        // the author made the two albums
+        const author = await usersService.findUserByEmail(users.jayz.email);
+        const tracks = data2list(release.tracks);
 
-        const body = {
-            title: mockReleases[0].title,
-            description: mockReleases[0].description,
-            coverUrl: mockReleases[0].coverUrl,
+        const feat_list_from_data = data2list(release.feats);
+
+        const feats = await Promise.all(
+          feat_list_from_data.map((feat) =>
+            usersService.findUserByEmail(feat.email),
+          ),
+        );
+
+        const feats_info = feats.map((feat) => ({
+          email: feat.email,
+          id: feat._id,
+          username: feat.username,
+        }));
+
+        const create_release = {
+          ...release,
+          tracks,
+          feats: feats_info,
         };
 
         const expected = {
-            title: mockReleases[0].title,
-            description: mockReleases[0].description,
-            coverUrl: mockReleases[0].coverUrl,
-            author: {
-                id: mockReleases[0].author._id,
-                username: mockReleases[0].author.username,
-                email: mockReleases[0].author.email,
-            }
+          title: release.title,
+          description: release.description,
+          coverUrl: release.coverUrl,
+          author: {
+            id: author._id.toString(),
+            username: author.username,
+            email: author.email,
+          },
+          feats: feats_info.map((feat) => ({
+            id: feat.id.toString(),
+            username: feat.username,
+            email: feat.email,
+          })),
         };
-        it('should return one release infos', async () => {
-            const release = await releasesService.create(body, user)
-            expect(release).toStrictEqual(expected);
-        });
-    })
 
-    describe('When find all rleases', () => {
-        it('should return a list of releases', async () => {
-            const releases = await releasesService.findAll()
-            expect(releases).toStrictEqual(mockReleases);
-        });
-    })
+        const result = await releasesService.create(
+          files_release,
+          create_release,
+          author,
+        );
+        expect(result).toStrictEqual(expected);
+      });
+    });
+  });
 
-    describe('When find one release by id', () => {
-        it('should return one release', async () => {
-            const release = await releasesService.findOne(mockReleases[0]._id)
-            expect(release).toStrictEqual(mockReleases[0]);
-        });
-    })
+  describe('When find all rleases', () => {
+    it('should return a list of releases', async () => {
+      // the author made the two albums
+      const author = await usersService.findUserByEmail(users.jayz.email);
 
-    describe('When find one release by title', () => {
-        it('should return one release', async () => {
-            const release = await releasesService.findByTitle(mockReleases[0].title)
-            expect(release).toStrictEqual(mockReleases[0]);
-        });
-    })
+      const releases_list = data2list([
+        data.releases.black_album,
+        data.releases.wtt,
+      ]);
 
-    describe('When remove one release', () => {
+      const expected = releases_list.map((release) => ({
+        title: release.title,
+        description: release.description,
+        coverUrl: release.coverUrl,
+        author: author._id.toString(),
+      }));
 
-        const expected = {
-            id: mockReleases[0]._id,
-            title: mockReleases[0].title,
-            msg: 'Release deleted',
-        };
-        it('should return one release infos', async () => {
-            const release = await releasesService.remove(mockReleases[0]._id)
-            expect(release).toStrictEqual(expected);
-        });
-    })
+      const result = await releasesService.findAll();
+
+      const cleanedResult = result.map((release) => ({
+        title: release.title,
+        description: release.description,
+        coverUrl: release.coverUrl,
+        author: release.author._id.toString(),
+      }));
+      expect(cleanedResult).toStrictEqual(expected);
+
+      result.forEach((release) => {
+        expect(release.feats).toBeDefined();
+      });
+    });
+  });
+
+  describe('When find one release by title', () => {
+    it('should return one release', async () => {
+      const coverUrl = 'https://www.release.com';
+      const description = 'one of the greatest';
+      const title = 'balck album';
+      const author = await usersService.findUserByEmail(users.jayz.email);
+
+      const result = await releasesService.findByTitle(release.title);
+
+      releaseId = result._id.toString();
+
+      expect(result.title).toBe(title);
+      expect(result.description).toBe(description);
+      expect(result.coverUrl).toBe(coverUrl);
+      expect(result.author).toStrictEqual(author._id);
+      expect(result.feats).toBeDefined();
+      expect(result.tracks).toBeDefined();
+    });
+  });
+
+  describe('When find one release by id', () => {
+    it('should return one release', async () => {
+      const coverUrl = 'https://www.release.com';
+      const description = 'one of the greatest';
+      const title = 'balck album';
+      const author = await usersService.findUserByEmail(users.jayz.email);
+
+      const result = await releasesService.findOne(releaseId);
+
+      expect(result.title).toBe(title);
+      expect(result.description).toBe(description);
+      expect(result.coverUrl).toBe(coverUrl);
+      expect(result.author).toStrictEqual(author._id);
+      expect(result.feats).toBeDefined();
+      expect(result.tracks).toBeDefined();
+    });
+  });
+
+  describe('When remove one release', () => {
+    it('should return one release infos', async () => {
+      const title = 'balck album';
+      const msg = 'Release deleted';
+
+      const result = await releasesService.remove(releaseId);
+      expect(result.id).toStrictEqual(releaseId);
+      expect(result.title).toStrictEqual(title);
+      expect(result.msg).toStrictEqual(msg);
+    });
+  });
 });

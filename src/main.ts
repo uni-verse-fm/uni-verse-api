@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
@@ -17,6 +17,15 @@ async function bootstrap() {
     .setTitle('Uni Verse FM')
     .setDescription('Planet main api backend 🪐')
     .setVersion(`${API_VERSION}`)
+    .addCookieAuth(
+      'auth-cookie',
+      {
+        type: 'http',
+        in: 'Header',
+        scheme: 'Bearer',
+      },
+      'Set-Cookie',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
