@@ -82,7 +82,9 @@ export class UsersService {
   }
 
   async findManyUsersByUsernames(usernames: string[]): Promise<UserDocument[]> {
-    return await Promise.all(usernames.map((username) => this.findUserByUsername(username)));
+    return await Promise.all(
+      usernames.map((username) => this.findUserByUsername(username)),
+    );
   }
 
   async findUserByEmail(email: string): Promise<UserDocument | undefined> {

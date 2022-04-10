@@ -15,7 +15,6 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
-import { UsersService } from '../users/users.service';
 import { FormDataParserInterceptor } from '../utils/interceptors/create-release.interceptor';
 import { UpdateReleaseDto } from './dto/update-release.dto';
 import { ReleasesService } from './releases.service';
@@ -34,9 +33,7 @@ import { CreateReleaseDto } from './dto/create-release.dto';
 @ApiTags('releases')
 @Controller('releases')
 export class ReleasesController {
-  constructor(
-    private readonly releasesService: ReleasesService,
-  ) {}
+  constructor(private readonly releasesService: ReleasesService) {}
 
   @Get()
   @ApiOperation({ summary: 'Find all releases or one release by title' })
@@ -63,24 +60,19 @@ export class ReleasesController {
     @Body() body: CreateReleaseWraperDto,
     @Request() request: IRequestWithUser,
   ) {
-
     const filesBuffers: SimpleCreateFileDto[] = files.map((file) => ({
       fileName: file.originalname,
       buffer: file.buffer,
     }));
 
-    return this.releasesService.create(
-      filesBuffers,
-      body.data,
-      request.user,
-    );
+    return this.releasesService.create(filesBuffers, body.data, request.user);
   }
 
   @Post('/convert')
   @ApiOperation({ summary: 'Convert obejct to string' })
   @ApiCookieAuth('Set-Cookie')
   convertRelease(@Body() body: CreateReleaseDto) {
-    return JSON.stringify(body).replace(/ /g, "");
+    return JSON.stringify(body).replace(/ /g, '');
   }
 
   @UseGuards(JwtAuthGuard)

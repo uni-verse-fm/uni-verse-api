@@ -18,5 +18,5 @@ export default class RepoMockModel {
   findById = () => this.items[this.simpleId || 0];
   deleteOne = () => this.items[this.simpleId || 0];
   create = () => this.items[this.createId || 1];
-  save = (_: any) => this.items[this.createId || 1];
+  save = () => this.items[this.createId || 1];
 }

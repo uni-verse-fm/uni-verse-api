@@ -36,23 +36,22 @@ export class CreateReleaseDto {
 }
 
 export class CreateReleseTrackDto {
-    @IsNotEmpty()
-    @IsString()
-    @MinLength(5)
-    @MaxLength(255)
-    readonly title: string;
-  
-    @IsNotEmpty()
-    @IsString()
-    @MinLength(1)
-    @MaxLength(1024)
-    readonly trackFileName: string;
-  
-    @IsNotEmpty()
-    readonly author: AuthorDto;
-  
-    @IsArray()
-    @IsOptional()
-    readonly feats?: AuthorDto[];
-  }
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(5)
+  @MaxLength(255)
+  readonly title: string;
 
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(1024)
+  readonly trackFileName: string;
+
+  @IsNotEmpty()
+  readonly author: AuthorDto;
+
+  @IsArray()
+  @IsOptional()
+  readonly feats?: AuthorDto[];
+}
