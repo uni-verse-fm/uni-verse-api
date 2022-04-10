@@ -23,6 +23,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
   @ApiQuery({ name: 'username', required: false })
   @ApiOperation({ summary: 'Find all users or one user by username' })
   find(@Query('username') username = '') {
@@ -30,13 +32,16 @@ export class UsersController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find one user by id' })
   findOneById(@Param('id') id: string) {
     return this.usersService.findUserById(id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete()
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Delete a user' })
   @ApiCookieAuth('Set-Cookie')
   remove(@Request() request: IRequestWithUser) {

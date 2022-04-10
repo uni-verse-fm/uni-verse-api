@@ -24,8 +24,8 @@ export class PlaylistsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Publish a playlist' })
   @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Publish a playlist' })
   create(
     @Body() createPlaylistDto: CreatePlaylistDto,
     @Request() request: IRequestWithUser,
@@ -37,6 +37,8 @@ export class PlaylistsController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find all playlists or one playlist by title' })
   @ApiQuery({ name: 'title', required: false })
   find(@Query('title') title: string) {
@@ -44,12 +46,16 @@ export class PlaylistsController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find one playlist by id' })
   findOne(@Param('id') id: string) {
     return this.playlistsService.findPlaylistById(id);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Update title and add or delete tracks' })
   update(
     @Param('id') id: string,
@@ -64,6 +70,8 @@ export class PlaylistsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Delete a playlist' })
   remove(@Param('id') id: string, @Request() request: IRequestWithUser) {
     return this.playlistsService.removePlaylist(id, request.user);
