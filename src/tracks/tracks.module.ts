@@ -10,8 +10,8 @@ import { User, UserSchema } from '../users/schemas/user.schema';
 @Module({
   imports: [
     MongooseModule.forFeature([
-        { name: Track.name, schema: TrackSchema },
-        { name: User.name, schema: UserSchema }
+      { name: Track.name, schema: TrackSchema },
+      { name: User.name, schema: UserSchema },
     ]),
     FilesModule,
   ],

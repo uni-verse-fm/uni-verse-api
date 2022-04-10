@@ -10,7 +10,6 @@ export type PlaylistDocument = Playlist & Document;
 
 @Schema()
 export class Playlist {
-    
   @Transform(({ value }) => value.toString())
   _id: ObjectId;
 

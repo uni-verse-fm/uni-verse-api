@@ -12,9 +12,9 @@ import { User, UserSchema } from '../users/schemas/user.schema';
 @Module({
   imports: [
     MongooseModule.forFeature([
-        { name: Release.name, schema: ReleaseSchema },
-        { name: Track.name, schema: TrackSchema },
-        { name: User.name, schema: UserSchema }
+      { name: Release.name, schema: ReleaseSchema },
+      { name: Track.name, schema: TrackSchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [ReleasesController],
