@@ -13,10 +13,11 @@ import {
 import { PlaylistsService } from './playlists.service';
 import { CreatePlaylistDto } from './dto/create-playlist.dto';
 import { UpdatePlaylistDto } from './dto/update-playlist.dto';
-import { ApiCookieAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 
+@ApiTags('playlists')
 @Controller('playlists')
 export class PlaylistsController {
   constructor(private readonly playlistsService: PlaylistsService) {}
@@ -43,11 +44,13 @@ export class PlaylistsController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Find one playlist by id' })
   findOne(@Param('id') id: string) {
     return this.playlistsService.findPlaylistById(id);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update title and add or delete tracks' })
   update(
     @Param('id') id: string,
     @Body() updatePlaylistDto: UpdatePlaylistDto,
@@ -61,6 +64,7 @@ export class PlaylistsController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete a playlist' })
   remove(@Param('id') id: string, @Request() request: IRequestWithUser) {
     return this.playlistsService.removePlaylist(id, request.user);
   }
