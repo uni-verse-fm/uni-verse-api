@@ -297,7 +297,9 @@
   },
   "comments": {
     "comment_1": {
+      "_id": "0",
       "content": "cool track",
+      "contentId": "0",
       "isPositive": true,
       "modelType": "Track",
       "owner": {
@@ -306,7 +308,9 @@
       }
     },
     "comment_2": {
+      "_id": "1",
       "content": "bad track",
+      "contentId": "1",
       "isPositive": false,
       "modelType": "Track",
       "owner": {
@@ -315,7 +319,9 @@
       }
     },
     "comment_3": {
+      "_id": "2",
       "content": "cool resource",
+      "contentId": "1",
       "isPositive": true,
       "modelType": "Resource",
       "owner": {
@@ -835,22 +841,22 @@
   },
   "create_comments": {
     "comment_1": {
-      "contentId": "",
+      "contentId": "0",
       "isPositive": true,
       "content": "cool track",
-      "typeOfContent": "TRACK"
+      "typeOfContent": "Track"
     },
     "comment_2": {
-      "contentId": "",
+      "contentId": "1",
       "isPositive": false,
       "content": "bad track",
-      "typeOfContent": "TRACK"
+      "typeOfContent": "Track"
     },
     "comment_3": {
-      "contentId": "",
+      "contentId": "2",
       "isPositive": true,
       "content": "cool resource",
-      "typeOfContent": "RESOURCE"
+      "typeOfContent": "Resource"
     }
   }
 }

@@ -27,6 +27,8 @@ const playlists = data2list(data.playlists);
 
 const playlist1 = data.playlists.fav_1;
 
+const create_playlist = data.create_playlists.my_playlist1;
+
 const author = data.users.jayz;
 
 const create_expected = {
@@ -75,7 +77,7 @@ describe('PlaylistsController', () => {
             }),
             findPlaylistById: jest.fn(() => {
               return {
-                ...release,
+                ...playlist1,
               };
             }),
             updatePlaylist: jest.fn(() => {
@@ -123,6 +125,25 @@ describe('PlaylistsController', () => {
         .get('/playlists')
         .expect(200)
         .expect(playlists);
+    });
+  });
+
+  describe('find one playlist by id', () => {
+    it('shoul return one comment', () => {
+      return request(app.getHttpServer())
+        .get(`/playlists/${playlist1._id}`)
+        .expect(200)
+        .expect(playlist1);
+    });
+  });
+
+  describe('create a playlist', () => {
+
+    it('should return a playlist', () => {
+      return request(app.getHttpServer())
+        .post('/playlists')
+        .send(create_playlist)
+        .expect(create_expected);
     });
   });
 

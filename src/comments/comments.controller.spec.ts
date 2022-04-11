@@ -18,6 +18,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import RepoMockModel, {
   data2list,
 } from '../test-utils/mocks/standard-mock.service.test';
+import * as request from 'supertest';
 import { Track } from '../tracks/schemas/track.schema';
 import { User } from '../users/schemas/user.schema';
 import TracksRepoMockModel from '../test-utils/mocks/Tracks-mock.service.test';
@@ -25,7 +26,7 @@ import { Resource } from '../resources/schemas/resource.schema';
 
 const owner = data.users.abdou;
 
-const release = data.releases.black_album;
+const create_comment = data.create_comments.comment_1;
 const comments = data2list(data.comments);
 
 const comment1 = data.comments.comment_1;
@@ -38,7 +39,7 @@ const create_expected = {
 };
 
 const delete_expected = {
-  msg: `Comment ${''} deleted`,
+  msg: `Comment ${comment1._id} deleted`,
 };
 
 describe('CommentsController', () => {
@@ -76,7 +77,7 @@ describe('CommentsController', () => {
             }),
             findCommentById: jest.fn(() => {
               return {
-                ...release,
+                ...comment1,
               };
             }),
             updateComment: jest.fn(() => {
@@ -123,7 +124,48 @@ describe('CommentsController', () => {
     await app.init();
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+  describe('Find all comments', () => {
+    it('should return all comments', async () => {
+      return request(app.getHttpServer())
+        .get('/comments')
+        .expect(200)
+        .expect(comments);
+    });
+  });
+
+  describe('find one comment by id', () => {
+    it('shoul return one comment', () => {
+      return request(app.getHttpServer())
+        .get(`/comments/${comment1._id}`)
+        .expect(200)
+        .expect(comment1);
+    });
+  });
+
+  describe('create a comment', () => {
+
+    it('should return a comment', () => {
+      return request(app.getHttpServer())
+        .post('/comments')
+        .send(create_comment)
+        .expect(create_expected);
+    });
+  });
+
+  describe('Delete my comment', () => {
+    const expected = {
+      msg: `Comment ${comment1._id} deleted`,
+    };
+
+    it('should return an title with a message', async () => {
+      return await request(app.getHttpServer())
+        .delete('/comments/' + comment1._id)
+        .expect(expected);
+    });
+  });
+
+  afterAll((done) => {
+    app.close();
+    done();
   });
 });
