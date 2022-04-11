@@ -35,23 +35,6 @@ import { CreateReleaseDto } from './dto/create-release.dto';
 export class ReleasesController {
   constructor(private readonly releasesService: ReleasesService) {}
 
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Find all releases or one release by title' })
-  @ApiQuery({ name: 'title', required: false })
-  find(@Query('title') title: string) {
-    return this.releasesService.find(title);
-  }
-
-  @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Find one release by id' })
-  findOne(@Param('id') id: string) {
-    return this.releasesService.findReleaseById(id);
-  }
-
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
@@ -76,6 +59,23 @@ export class ReleasesController {
     );
   }
 
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Find all releases or one release by title' })
+  @ApiQuery({ name: 'title', required: false })
+  find(@Query('title') title: string) {
+    return this.releasesService.find(title);
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Find one release by id' })
+  findOne(@Param('id') id: string) {
+    return this.releasesService.findReleaseById(id);
+  }
+
   @Post('/convert')
   @ApiOperation({ summary: 'Convert obejct to string' })
   @ApiCookieAuth('Set-Cookie')
@@ -90,8 +90,9 @@ export class ReleasesController {
   updateRelease(
     @Param('id') id: string,
     @Body() updateReleaseDto: UpdateReleaseDto,
+    @Request() request: IRequestWithUser,
   ) {
-    return this.releasesService.updateRelease(id, updateReleaseDto);
+    return this.releasesService.updateRelease(id, updateReleaseDto, request.user);
   }
 
   @Delete(':id')
@@ -99,7 +100,7 @@ export class ReleasesController {
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Delete a release' })
   @ApiCookieAuth('Set-Cookie')
-  removeRelease(@Param('id') id: string) {
-    return this.releasesService.removeRelease(id);
+  removeRelease(@Param('id') id: string, @Request() request: IRequestWithUser) {
+    return this.releasesService.removeRelease(id, request.user);
   }
 }

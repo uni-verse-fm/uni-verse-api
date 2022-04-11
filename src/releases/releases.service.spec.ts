@@ -1,7 +1,7 @@
 import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { data2list } from '../test-utils/mocks/standard-mock.service.test';
-import { User, UserSchema } from '../users/schemas/user.schema';
+import { User, UserDocument, UserSchema } from '../users/schemas/user.schema';
 import { ReleasesService } from './releases.service';
 import { Release, ReleaseSchema } from './schemas/release.schema';
 import * as data from '../test-utils/data/mock_data.json';
@@ -35,6 +35,7 @@ describe('ReleasesService', () => {
   let usersService: UsersService;
   let module: TestingModule;
   let releaseId: string;
+  let author: UserDocument;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -75,6 +76,8 @@ describe('ReleasesService', () => {
         const createdUser = await usersService.createUser(user);
         expect(createdUser.email).toBe(user.email);
         expect(createdUser.username).toBe(user.username);
+        author = await usersService.findUserByEmail(users.jayz.email);
+        expect(author.id).toBeDefined();
       });
     });
 
@@ -87,7 +90,6 @@ describe('ReleasesService', () => {
 
       it('should return one release infos', async () => {
         // the author made the two albums
-        const author = await usersService.findUserByEmail(users.jayz.email);
         const tracks = data2list(release.tracks);
 
         const feat_list_from_data = data2list(release.feats);
@@ -138,9 +140,6 @@ describe('ReleasesService', () => {
 
   describe('When find all rleases', () => {
     it('should return a list of releases', async () => {
-      // the author made the two albums
-      const author = await usersService.findUserByEmail(users.jayz.email);
-
       const releases_list = data2list([
         data.releases.black_album,
         data.releases.wtt,
@@ -174,7 +173,6 @@ describe('ReleasesService', () => {
       const coverUrl = 'https://www.release.com';
       const description = 'one of the greatest';
       const title = 'balck album';
-      const author = await usersService.findUserByEmail(users.jayz.email);
 
       const result = await releasesService.findReleaseByTitle(release.title);
 
@@ -194,7 +192,6 @@ describe('ReleasesService', () => {
       const coverUrl = 'https://www.release.com';
       const description = 'one of the greatest';
       const title = 'balck album';
-      const author = await usersService.findUserByEmail(users.jayz.email);
 
       const result = await releasesService.findReleaseById(releaseId);
 
@@ -212,7 +209,7 @@ describe('ReleasesService', () => {
       const title = 'balck album';
       const msg = 'Release deleted';
 
-      const result = await releasesService.removeRelease(releaseId);
+      const result = await releasesService.removeRelease(releaseId, author);
       expect(result.id).toStrictEqual(releaseId);
       expect(result.title).toStrictEqual(title);
       expect(result.msg).toStrictEqual(msg);

@@ -88,7 +88,7 @@ describe('ResourcesService', () => {
     it('should return a list of resources', async () => {
       const expected = resources.map((resource) => ({
         title: resource.title,
-        resourceFileUrl: resource.resourceFileUrl,
+        resourceFileUrl: "https://www.example.com",
       }));
 
       const result = await resourcesService.findAllResources();

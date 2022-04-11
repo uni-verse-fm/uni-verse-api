@@ -71,12 +71,8 @@ export class PlaylistsService {
     updatePlaylistDto: UpdatePlaylistDto,
     owner: UserDocument,
   ) {
-    const playlist = await this.findPlaylistById(id);
-    if (!playlist) {
-      throw new NotFoundException('Somthing wrong with the server');
-    }
 
-    this.isUserTheOwnerOfPlaylist(playlist, owner);
+    const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
 
     const trackId = updatePlaylistDto.trackId;
     const playlistTracks = playlist.tracks;
@@ -119,12 +115,8 @@ export class PlaylistsService {
   }
 
   async removePlaylist(id: string, owner: UserDocument) {
-    const playlist = await this.findPlaylistById(id);
-    if (!playlist) {
-      throw new NotFoundException('Somthing wrong with the server');
-    }
-
-    this.isUserTheOwnerOfPlaylist(playlist, owner);
+      
+    const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
 
     await this.playlistModel.deleteOne({ id: playlist._id });
     return {
@@ -135,12 +127,17 @@ export class PlaylistsService {
   }
 
   private async isUserTheOwnerOfPlaylist(
-    playlist: PlaylistDocument,
+    id: string,
     owner: UserDocument,
   ) {
+    const playlist = await this.findPlaylistById(id);
+    if (!playlist) {
+      throw new NotFoundException('Somthing wrong with the server');
+    }
     if (playlist.owner._id.toString() !== owner._id.toString()) {
       throw new BadRequestException('You are not the owner of this playlist.');
     }
+    return playlist;
   }
 
   private async isPlaylistUnique(title: string) {
