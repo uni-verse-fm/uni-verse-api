@@ -70,23 +70,23 @@ describe('ReleasesController', () => {
         {
           provide: ReleasesService,
           useValue: {
-            create: jest.fn(() => {
+            createRelease: jest.fn(() => {
               return {
                 ...create_expected,
               };
             }),
-            findAll: jest.fn(() => {
+            findAllReleases: jest.fn(() => {
               return releases;
             }),
-            findOne: jest.fn(() => {
+            findReleaseById: jest.fn(() => {
               return {
                 ...release,
               };
             }),
-            update: jest.fn(() => {
+            updateRelease: jest.fn(() => {
               return {};
             }),
-            remove: jest.fn(() => {
+            removeRelease: jest.fn(() => {
               return {
                 ...delete_expected,
               };
