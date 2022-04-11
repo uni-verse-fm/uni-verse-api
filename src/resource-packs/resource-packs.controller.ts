@@ -1,7 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Request,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ResourcePacksService } from './resource-packs.service';
 import { UpdateResourcePackDto } from './dto/update-resource-pack.dto';
-import { ApiConsumes, ApiCookieAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiConsumes,
+  ApiCookieAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 import { CreateResourcePackWraperDto } from './dto/create-resource-pack-wraper.dto';
 import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
@@ -21,28 +39,33 @@ export class ResourcePacksController {
   @ApiOperation({ summary: 'Publish a resource pack' })
   @ApiConsumes('multipart/form-data')
   @ApiMultiFileWithMetadata()
-  @UseInterceptors(FilesInterceptor('files'), ResourcePackFormDataParserInterceptor)
+  @UseInterceptors(
+    FilesInterceptor('files'),
+    ResourcePackFormDataParserInterceptor,
+  )
   create(
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() body: CreateResourcePackWraperDto,
-    @Request() request: IRequestWithUser
+    @Request() request: IRequestWithUser,
   ) {
     const filesBuffers: SimpleCreateFileDto[] = files.map((file) => ({
-        fileName: file.originalname,
-        buffer: file.buffer,
-      }));
-      
+      fileName: file.originalname,
+      buffer: file.buffer,
+    }));
+
     return this.resourcePacksService.createResourcePack(
-        filesBuffers,
-        body.data,
-        request.user
+      filesBuffers,
+      body.data,
+      request.user,
     );
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Find all resource packs or one resource pack by title' })
+  @ApiOperation({
+    summary: 'Find all resource packs or one resource pack by title',
+  })
   @ApiQuery({ name: 'title', required: false })
   findAll() {
     return this.resourcePacksService.findAllResourcePacks();
@@ -60,8 +83,14 @@ export class ResourcePacksController {
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Update a resource pack' })
-  update(@Param('id') id: string, @Body() updateResourcePackDto: UpdateResourcePackDto) {
-    return this.resourcePacksService.updateResourcePack(id, updateResourcePackDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateResourcePackDto: UpdateResourcePackDto,
+  ) {
+    return this.resourcePacksService.updateResourcePack(
+      id,
+      updateResourcePackDto,
+    );
   }
 
   @Delete(':id')

@@ -68,7 +68,9 @@ export class ResourcesService {
   async findResourceByTitle(title: string): Promise<ResourceDocument> {
     const resource = await this.resourceModel.findOne({ title });
     if (!resource) {
-      throw new BadRequestException(`Resource with title "${title}" doesn't exist`);
+      throw new BadRequestException(
+        `Resource with title "${title}" doesn't exist`,
+      );
     }
     return resource;
   }

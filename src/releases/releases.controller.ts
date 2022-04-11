@@ -69,7 +69,11 @@ export class ReleasesController {
       buffer: file.buffer,
     }));
 
-    return this.releasesService.createRelease(filesBuffers, body.data, request.user);
+    return this.releasesService.createRelease(
+      filesBuffers,
+      body.data,
+      request.user,
+    );
   }
 
   @Post('/convert')
