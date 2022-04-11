@@ -1,3 +1,3 @@
 export interface ICommentResponse {
-    msg: string;
+  msg: string;
 }

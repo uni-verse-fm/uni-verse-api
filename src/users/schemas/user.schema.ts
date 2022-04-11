@@ -22,7 +22,7 @@ export class User {
   @Prop({ unique: true })
   email: string;
 
-  @Prop({select: false})
+  @Prop({ select: false })
   password: string;
 
   @Type(() => Release)

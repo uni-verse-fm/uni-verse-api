@@ -92,7 +92,11 @@ export class ReleasesController {
     @Body() updateReleaseDto: UpdateReleaseDto,
     @Request() request: IRequestWithUser,
   ) {
-    return this.releasesService.updateRelease(id, updateReleaseDto, request.user);
+    return this.releasesService.updateRelease(
+      id,
+      updateReleaseDto,
+      request.user,
+    );
   }
 
   @Delete(':id')

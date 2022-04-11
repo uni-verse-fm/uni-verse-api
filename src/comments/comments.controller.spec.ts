@@ -1,4 +1,8 @@
-import { ExecutionContext, INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+  ExecutionContext,
+  INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -11,7 +15,9 @@ import { FilesService } from '../files/files.service';
 import { UsersService } from '../users/users.service';
 import { ResourcesService } from '../resources/resources.service';
 import { getModelToken } from '@nestjs/mongoose';
-import RepoMockModel, { data2list } from '../test-utils/mocks/standard-mock.service.test';
+import RepoMockModel, {
+  data2list,
+} from '../test-utils/mocks/standard-mock.service.test';
 import { Track } from '../tracks/schemas/track.schema';
 import { User } from '../users/schemas/user.schema';
 import TracksRepoMockModel from '../test-utils/mocks/Tracks-mock.service.test';
@@ -28,11 +34,11 @@ const create_expected = {
   content: comment1.content,
   isPositive: comment1.isPositive,
   modelType: comment1.modelType,
-  owner: comment1.owner
+  owner: comment1.owner,
 };
 
 const delete_expected = {
-  msg: `Comment ${""} deleted`,
+  msg: `Comment ${''} deleted`,
 };
 
 describe('CommentsController', () => {
@@ -41,16 +47,16 @@ describe('CommentsController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-        imports: [
-            JwtModule.registerAsync({
-              imports: [ConfigModule],
-              inject: [ConfigService],
-              useFactory: async (configService: ConfigService) => ({
-                secret: configService.get('JWT_SECRET'),
-                signOptions: { expiresIn: '6000s' },
-              }),
-            }),
-          ],
+      imports: [
+        JwtModule.registerAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: async (configService: ConfigService) => ({
+            secret: configService.get('JWT_SECRET'),
+            signOptions: { expiresIn: '6000s' },
+          }),
+        }),
+      ],
       controllers: [CommentsController],
       providers: [
         TracksService,
@@ -58,58 +64,58 @@ describe('CommentsController', () => {
         ResourcesService,
         FilesService,
         {
-            provide: CommentsService,
-            useValue: {
-              createComment: jest.fn(() => {
-                return {
-                  ...create_expected,
-                };
-              }),
-              findAllComments: jest.fn(() => {
-                return comments;
-              }),
-              findCommentById: jest.fn(() => {
-                return {
-                  ...release,
-                };
-              }),
-              updateComment: jest.fn(() => {
-                return {};
-              }),
-              removeComment: jest.fn(() => {
-                return {
-                  ...delete_expected,
-                };
-              }),
-              find: jest.fn(() => {
-                return comments;
-              }),
-            },
+          provide: CommentsService,
+          useValue: {
+            createComment: jest.fn(() => {
+              return {
+                ...create_expected,
+              };
+            }),
+            findAllComments: jest.fn(() => {
+              return comments;
+            }),
+            findCommentById: jest.fn(() => {
+              return {
+                ...release,
+              };
+            }),
+            updateComment: jest.fn(() => {
+              return {};
+            }),
+            removeComment: jest.fn(() => {
+              return {
+                ...delete_expected,
+              };
+            }),
+            find: jest.fn(() => {
+              return comments;
+            }),
           },
-          {
-            provide: getModelToken(User.name),
-            useValue: new RepoMockModel(data.users, 4, 2),
-          },
-          {
-            provide: getModelToken(Track.name),
-            useValue: new TracksRepoMockModel(data.tracks),
-          },
-          {
-              // TODO: to change with track like mock
-            provide: getModelToken(Resource.name),
-            useValue: new RepoMockModel(data.resources),
-          },
-        ],
-    })      
-    .overrideGuard(JwtAuthGuard)
-    .useValue({
-      canActivate: (context: ExecutionContext) => {
-        const req = context.switchToHttp().getRequest();
-        req.user = owner;
-        return true;
-      },
+        },
+        {
+          provide: getModelToken(User.name),
+          useValue: new RepoMockModel(data.users, 4, 2),
+        },
+        {
+          provide: getModelToken(Track.name),
+          useValue: new TracksRepoMockModel(data.tracks),
+        },
+        {
+          // TODO: to change with track like mock
+          provide: getModelToken(Resource.name),
+          useValue: new RepoMockModel(data.resources),
+        },
+      ],
     })
-    .compile();
+      .overrideGuard(JwtAuthGuard)
+      .useValue({
+        canActivate: (context: ExecutionContext) => {
+          const req = context.switchToHttp().getRequest();
+          req.user = owner;
+          return true;
+        },
+      })
+      .compile();
 
     controller = module.get<CommentsController>(CommentsController);
     app = module.createNestApplication();

@@ -72,7 +72,7 @@ describe('CommentsService', () => {
         TracksService,
         UsersService,
         ResourcesService,
-        FilesService
+        FilesService,
       ],
     }).compile();
 
@@ -150,9 +150,9 @@ describe('CommentsService', () => {
     it('should return the first comment', async () => {
       const comment = await commentService.createComment(
         {
-            ...commentOneComment,
-            contentId: encore._id.toString(),
-            typeOfContent: ModelType[commentOneComment.typeOfContent],
+          ...commentOneComment,
+          contentId: encore._id.toString(),
+          typeOfContent: ModelType[commentOneComment.typeOfContent],
         },
         user,
       );
@@ -168,9 +168,9 @@ describe('CommentsService', () => {
     it('should return the second comment', async () => {
       const comment = await commentService.createComment(
         {
-            ...commentTwoComment,
-            contentId: threat._id.toString(),
-            typeOfContent: ModelType[commentTwoComment.typeOfContent],
+          ...commentTwoComment,
+          contentId: threat._id.toString(),
+          typeOfContent: ModelType[commentTwoComment.typeOfContent],
         },
         user,
       );
@@ -185,9 +185,9 @@ describe('CommentsService', () => {
     it('should return the third comment', async () => {
       const comment = await commentService.createComment(
         {
-            ...commentThreeComment,
-            contentId: resourceOne._id.toString(),
-            typeOfContent: ModelType[commentThreeComment.typeOfContent],
+          ...commentThreeComment,
+          contentId: resourceOne._id.toString(),
+          typeOfContent: ModelType[commentThreeComment.typeOfContent],
         },
         user,
       );

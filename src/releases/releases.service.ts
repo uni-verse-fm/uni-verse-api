@@ -140,7 +140,6 @@ export class ReleasesService {
   }
 
   async removeRelease(id: string, owner: UserDocument) {
-
     const release = await this.isUserTheOwnerOfRelease(id, owner);
 
     await this.releaseModel.deleteOne({ id: release._id });
@@ -172,10 +171,7 @@ export class ReleasesService {
     };
   }
 
-  private async isUserTheOwnerOfRelease(
-    id: string,
-    owner: UserDocument,
-  ) {
+  private async isUserTheOwnerOfRelease(id: string, owner: UserDocument) {
     const release = await this.findReleaseById(id);
     if (!release) {
       throw new NotFoundException('Somthing wrong with the server');

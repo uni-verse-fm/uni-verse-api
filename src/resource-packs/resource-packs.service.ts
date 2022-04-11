@@ -143,7 +143,6 @@ export class ResourcePacksService {
   }
 
   async removeResourcePack(id: string, owner: UserDocument) {
-
     const resourcePack = await this.isUserTheOwnerOfResourcePack(id, owner);
 
     await this.resourcePackModel.deleteOne({ id: resourcePack._id });
@@ -170,10 +169,7 @@ export class ResourcePacksService {
     };
   }
 
-  private async isUserTheOwnerOfResourcePack(
-    id: string,
-    owner: UserDocument,
-  ) {
+  private async isUserTheOwnerOfResourcePack(id: string, owner: UserDocument) {
     const resourcePack = await this.findResourcePackById(id);
     if (!resourcePack) {
       throw new NotFoundException('Somthing wrong with the server');

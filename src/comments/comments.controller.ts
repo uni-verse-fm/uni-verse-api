@@ -41,7 +41,11 @@ export class CommentsController {
     @Body() updateCommentDto: UpdateCommentDto,
     @Request() request: IRequestWithUser,
   ) {
-    return this.commentsService.updateComment(id, updateCommentDto, request.user);
+    return this.commentsService.updateComment(
+      id,
+      updateCommentDto,
+      request.user,
+    );
   }
 
   @Delete(':id')

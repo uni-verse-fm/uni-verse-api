@@ -71,7 +71,6 @@ export class PlaylistsService {
     updatePlaylistDto: UpdatePlaylistDto,
     owner: UserDocument,
   ) {
-
     const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
 
     const trackId = updatePlaylistDto.trackId;
@@ -115,7 +114,6 @@ export class PlaylistsService {
   }
 
   async removePlaylist(id: string, owner: UserDocument) {
-      
     const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
 
     await this.playlistModel.deleteOne({ id: playlist._id });
@@ -126,10 +124,7 @@ export class PlaylistsService {
     };
   }
 
-  private async isUserTheOwnerOfPlaylist(
-    id: string,
-    owner: UserDocument,
-  ) {
+  private async isUserTheOwnerOfPlaylist(id: string, owner: UserDocument) {
     const playlist = await this.findPlaylistById(id);
     if (!playlist) {
       throw new NotFoundException('Somthing wrong with the server');
