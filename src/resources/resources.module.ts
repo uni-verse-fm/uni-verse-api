@@ -4,6 +4,6 @@ import { UsersService } from '../users/users.service';
 import { ResourcesService } from './resources.service';
 
 @Module({
-    providers: [ResourcesService, FilesService, UsersService],
+  providers: [ResourcesService, FilesService, UsersService],
 })
 export class ResourcesModule {}
