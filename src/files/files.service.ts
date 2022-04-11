@@ -8,7 +8,7 @@ export class FilesService {
   create(createFileDto: SimpleCreateFileDto): IFileResponse {
     return {
       fileName: 'example',
-      fileUrl: 'https://track-example.com',
+      fileUrl: 'https://www.example.com',
     };
   }
 

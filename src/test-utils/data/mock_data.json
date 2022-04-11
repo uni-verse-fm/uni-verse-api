@@ -50,7 +50,7 @@
                 {
                     "_id": "0",
                     "title": "change clothes",
-                    "trackFileUrl": "https://track-example.com",
+                    "trackFileUrl": "https://www.example.com",
                     "author": {
                         "_id": "2",
                         "username": "jay-z",
@@ -69,7 +69,7 @@
                 {
                     "_id": "1",
                     "title": "encore",
-                    "trackFileUrl": "https://track-example.com",
+                    "trackFileUrl": "https://www.example.com",
                     "author": {
                         "_id": "2",
                         "username": "jay-z",
@@ -81,7 +81,7 @@
                 {
                     "_id": "2",
                     "title": "threat",
-                    "trackFileUrl": "https://track-example.com",
+                    "trackFileUrl": "https://www.example.com",
                     "author": [
                         {
                             "_id": "2",
@@ -116,7 +116,7 @@
                 {
                     "_id": "3",
                     "title": "New Day",
-                    "trackFileUrl": "https://track-example.com",
+                    "trackFileUrl": "https://www.example.com",
                     "author": {
                         "_id": "2",
                         "username": "jay-z",
@@ -135,7 +135,7 @@
                 {
                     "_id": "4",
                     "title": "Murder to Excellence",
-                    "trackFileUrl": "https://track-example.com",
+                    "trackFileUrl": "https://www.example.com",
                     "author": {
                         "_id": "2",
                         "username": "jay-z",
@@ -154,7 +154,7 @@
                 {
                     "_id": "5",
                     "title": "gotta have it",
-                    "trackFileUrl": "https://track-example.com",
+                    "trackFileUrl": "https://www.example.com",
                     "author": {
                         "_id": "2",
                         "username": "jay-z",
@@ -188,7 +188,7 @@
                 "0": {
                     "_id": "6",
                     "title": "Young Girl",
-                    "trackFileUrl": "https://track-example.com",
+                    "trackFileUrl": "https://www.example.com",
                     "author": {
                         "_id": "3",
                         "username": "pharrell williams",
@@ -207,7 +207,7 @@
                 "1": {
                     "_id": "7",
                     "title": "angel",
-                    "trackFileUrl": "https://track-example.com",
+                    "trackFileUrl": "https://www.example.com",
                     "author": {
                         "_id": "3",
                         "username": "pharrell williams",
@@ -218,7 +218,7 @@
                 "2": {
                     "_id": "8",
                     "title": "Number One",
-                    "trackFileUrl": "https://track-example.com",
+                    "trackFileUrl": "https://www.example.com",
                     "author": {
                         "_id": "3",
                         "username": "pharrell williams",
@@ -255,7 +255,7 @@
         "change_clothes": {
             "_id": "0",
             "title": "change clothes",
-            "trackFileUrl": "https://track-example.com",
+            "trackFileUrl": "https://www.example.com",
             "author": {
                 "_id": "2",
                 "username": "jay-z",
@@ -274,7 +274,7 @@
         "encore": {
             "_id": "1",
             "title": "encore",
-            "trackFileUrl": "https://track-example.com",
+            "trackFileUrl": "https://www.example.com",
             "author": {
                 "_id": "2",
                 "username": "jay-z",
@@ -286,7 +286,7 @@
         "threat": {
             "_id": "2",
             "title": "threat",
-            "trackFileUrl": "https://track-example.com",
+            "trackFileUrl": "https://www.example.com",
             "author": [
                 {
                     "_id": "2",
@@ -299,7 +299,7 @@
         "new_day": {
             "_id": "3",
             "title": "New Day",
-            "trackFileUrl": "https://track-example.com",
+            "trackFileUrl": "https://www.example.com",
             "author": {
                 "_id": "2",
                 "username": "jay-z",
@@ -318,7 +318,7 @@
         "mte": {
             "_id": "4",
             "title": "Murder to Excellence",
-            "trackFileUrl": "https://track-example.com",
+            "trackFileUrl": "https://www.example.com",
             "author": {
                 "_id": "2",
                 "username": "jay-z",
@@ -337,7 +337,7 @@
         "ghi": {
             "_id": "5",
             "title": "gotta have it",
-            "trackFileUrl": "https://track-example.com",
+            "trackFileUrl": "https://www.example.com",
             "author": {
                 "_id": "2",
                 "username": "jay-z",
@@ -356,7 +356,7 @@
         "young_girl": {
             "_id": "6",
             "title": "Young Girl",
-            "trackFileUrl": "https://track-example.com",
+            "trackFileUrl": "https://www.example.com",
             "author": {
                 "_id": "3",
                 "username": "pharrell williams",
@@ -375,7 +375,7 @@
         "angel": {
             "_id": "7",
             "title": "angel",
-            "trackFileUrl": "https://track-example.com",
+            "trackFileUrl": "https://www.example.com",
             "author": {
                 "_id": "3",
                 "username": "pharrell williams",
@@ -386,7 +386,7 @@
         "number_one": {
             "_id": "8",
             "title": "Number One",
-            "trackFileUrl": "https://track-example.com",
+            "trackFileUrl": "https://www.example.com",
             "author": {
                 "_id": "3",
                 "username": "pharrell williams",
@@ -406,26 +406,26 @@
     "resources": {
         "resource_1": {
             "_id": "0",
-            "title": "resource 2",
-            "trackFileUrl": "https://track-example.com",
+            "title": "resource 1",
+            "trackFileUrl": "https://www.example.com",
             "author": "0"
         },
         "resource_2": {
             "_id": "1",
             "title": "resource 2",
-            "trackFileUrl": "https://track-example.com",
+            "trackFileUrl": "https://www.example.com",
             "author": "0"
         },
         "resource_3": {
             "_id": "2",
-            "title": "resource 2",
-            "trackFileUrl": "https://track-example.com",
+            "title": "resource 3",
+            "trackFileUrl": "https://www.example.com",
             "author": "2"
         },
         "resource_4": {
             "_id": "3",
-            "title": "resource 2",
-            "trackFileUrl": "https://track-example.com",
+            "title": "resource 3",
+            "trackFileUrl": "https://www.example.com",
             "author": "2"
         }
     },
@@ -819,7 +819,7 @@
     "create_resources": {
         "resource1": {
             "title": "resource 1",
-            "resourceFileUrl": "https://resource-example.com",
+            "resourceFileUrl": "https://www.example.com",
             "buffer": {
                 "type": "Buffer",
                 "data": [
@@ -843,7 +843,7 @@
         },
         "resource2": {
             "title": "resource 2",
-            "resourceFileUrl": "https://resource-example.com",
+            "resourceFileUrl": "https://www.example.com",
             "buffer": {
                 "type": "Buffer",
                 "data": [
@@ -859,7 +859,7 @@
         },
         "resource3": {
             "title": "resource 3",
-            "resourceFileUrl": "https://resource-example.com",
+            "resourceFileUrl": "https://www.example.com",
             "buffer": {
                 "type": "Buffer",
                 "data": [

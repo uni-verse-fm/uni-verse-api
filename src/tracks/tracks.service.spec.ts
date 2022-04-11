@@ -82,7 +82,7 @@ describe('TracksService', () => {
     create_tracks.forEach((track) => {
       it(`should return track ${track.title} infos`, async () => {
         const author = await usersService.findUserByEmail(track.author.email);
-        const trackFileUrl = 'https://track-example.com';
+        const trackFileUrl = 'https://www.example.com';
         const feats = await Promise.all(
           track.feats.map((feat: { email: string }) =>
             usersService.findUserByEmail(feat.email),
@@ -95,7 +95,7 @@ describe('TracksService', () => {
           author,
         };
 
-        const result = await tracksService.create(body);
+        const result = await tracksService.createTrack(body);
         expect(result.author).toBe(author);
         expect(result.feats).toStrictEqual(
           feats.map((feat) => ({
@@ -146,7 +146,7 @@ describe('TracksService', () => {
 
   describe('When ask one track by title', () => {
     const title = 'change clothes';
-    const trackFileUrl = 'https://track-example.com';
+    const trackFileUrl = 'https://www.example.com';
 
     it('should return one track', async () => {
       const result = await tracksService.findTrackByTitle(
