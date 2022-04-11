@@ -27,12 +27,12 @@ export class CommentsService {
     let contentType: TrackDocument | ResourceDocument;
 
     switch (createCommentDto.typeOfContent) {
-      case ModelType.TRACK:
+      case ModelType.Track:
         contentType = await this.tracksService.findTrackById(
           createCommentDto.contentId,
         );
         break;
-      case ModelType.RESOURCE:
+      case ModelType.Resource:
         contentType = await this.resourcesService.findResourceById(
           createCommentDto.contentId,
         );

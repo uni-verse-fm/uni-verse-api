@@ -13,7 +13,6 @@ import { TracksService } from '../tracks/tracks.service';
 import { User, UserDocument, UserSchema } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { CommentsService } from './comments.service';
-import { ICommentResponse } from './interfaces/comment-response.interface';
 import * as data from '../test-utils/data/mock_data.json';
 import { ModelType } from './dto/create-comment.dto';
 import { Comment, CommentSchema } from './schemas/comment.schema';
