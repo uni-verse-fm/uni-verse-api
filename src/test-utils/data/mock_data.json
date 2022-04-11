@@ -403,6 +403,32 @@
             ]
         }
     },
+    "resources": {
+        "resource_1": {
+            "_id": "0",
+            "title": "resource 2",
+            "trackFileUrl": "https://track-example.com",
+            "author": "0"
+        },
+        "resource_2": {
+            "_id": "1",
+            "title": "resource 2",
+            "trackFileUrl": "https://track-example.com",
+            "author": "0"
+        },
+        "resource_3": {
+            "_id": "2",
+            "title": "resource 2",
+            "trackFileUrl": "https://track-example.com",
+            "author": "2"
+        },
+        "resource_4": {
+            "_id": "3",
+            "title": "resource 2",
+            "trackFileUrl": "https://track-example.com",
+            "author": "2"
+        }
+    },
     "create_users": {
         "abdou": {
             "username": "al/ghom",
@@ -704,6 +730,82 @@
                     ]
                 }
             }
+        ],
+        "resources_pack_1": [
+            {
+                "fileName": "resource_1",
+                "buffer": {
+                    "type": "Buffer",
+                    "data": [
+                        99,
+                        104,
+                        97,
+                        110,
+                        103,
+                        101,
+                        32,
+                        99,
+                        108,
+                        111,
+                        116,
+                        104,
+                        101,
+                        115
+                    ]
+                }
+            },
+            {
+                "fileName": "resource_2",
+                "buffer": {
+                    "type": "Buffer",
+                    "data": [
+                        101,
+                        110,
+                        99,
+                        111,
+                        114,
+                        101
+                    ]
+                }
+            }
+        ],
+        "resources_pack_2": [
+            {
+                "fileName": "resource_3",
+                "buffer": {
+                    "type": "Buffer",
+                    "data": [
+                        99,
+                        104,
+                        97,
+                        110,
+                        103,
+                        101,
+                        32,
+                        99,
+                        108,
+                        111,
+                        116,
+                        104,
+                        101,
+                        115
+                    ]
+                }
+            },
+            {
+                "fileName": "resource_4",
+                "buffer": {
+                    "type": "Buffer",
+                    "data": [
+                        101,
+                        110,
+                        99,
+                        111,
+                        114,
+                        101
+                    ]
+                }
+            }
         ]
     },
     "create_playlists": {
@@ -712,6 +814,63 @@
         },
         "my_playlist2": {
             "title": "my_playlist2"
+        }
+    },
+    "create_resources": {
+        "resource1": {
+            "title": "resource 1",
+            "resourceFileUrl": "https://resource-example.com",
+            "buffer": {
+                "type": "Buffer",
+                "data": [
+                    99,
+                    104,
+                    97,
+                    110,
+                    103,
+                    101,
+                    32,
+                    99,
+                    108,
+                    111,
+                    116,
+                    104,
+                    101,
+                    115
+                ]
+            },
+            "author": "0"
+        },
+        "resource2": {
+            "title": "resource 2",
+            "resourceFileUrl": "https://resource-example.com",
+            "buffer": {
+                "type": "Buffer",
+                "data": [
+                    101,
+                    110,
+                    99,
+                    111,
+                    114,
+                    101
+                ]
+            },
+            "author": "0"
+        },
+        "resource3": {
+            "title": "resource 3",
+            "resourceFileUrl": "https://resource-example.com",
+            "buffer": {
+                "type": "Buffer",
+                "data": [
+                    116,
+                    104,
+                    114,
+                    101,
+                    97,
+                    116
+                ]
+            }
         }
     }
 }

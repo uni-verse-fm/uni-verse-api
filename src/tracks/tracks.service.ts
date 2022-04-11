@@ -47,7 +47,7 @@ export class TracksService {
     const createTrack = {
       ...createTrackDto,
       feats,
-      trackFileUrl: result.trackFileUrl,
+      trackFileUrl: result.fileUrl,
     };
 
     const newTrack = new this.trackModel(createTrack);
