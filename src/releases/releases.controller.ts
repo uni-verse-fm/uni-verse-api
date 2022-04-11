@@ -15,7 +15,7 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
-import { FormDataParserInterceptor } from '../utils/interceptors/create-release.interceptor';
+import { ReleaseFormDataParserInterceptor } from '../utils/interceptors/create-release.interceptor';
 import { UpdateReleaseDto } from './dto/update-release.dto';
 import { ReleasesService } from './releases.service';
 import {
@@ -58,7 +58,7 @@ export class ReleasesController {
   @ApiOperation({ summary: 'Publish a release' })
   @ApiConsumes('multipart/form-data')
   @ApiMultiFileWithMetadata()
-  @UseInterceptors(FilesInterceptor('files'), FormDataParserInterceptor)
+  @UseInterceptors(FilesInterceptor('files'), ReleaseFormDataParserInterceptor)
   async createRelease(
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() body: CreateReleaseWraperDto,
