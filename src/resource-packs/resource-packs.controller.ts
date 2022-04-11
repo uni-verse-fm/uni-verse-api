@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ResourcePacksService } from './resource-packs.service';
 import { UpdateResourcePackDto } from './dto/update-resource-pack.dto';
-import { ApiConsumes, ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiCookieAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 import { CreateResourcePackWraperDto } from './dto/create-resource-pack-wraper.dto';
 import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
@@ -18,7 +18,7 @@ export class ResourcePacksController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Publish a release' })
+  @ApiOperation({ summary: 'Publish a resource pack' })
   @ApiConsumes('multipart/form-data')
   @ApiMultiFileWithMetadata()
   @UseInterceptors(FilesInterceptor('files'), ResourcePackFormDataParserInterceptor)
@@ -40,21 +40,35 @@ export class ResourcePacksController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Find all resource packs or one resource pack by title' })
+  @ApiQuery({ name: 'title', required: false })
   findAll() {
     return this.resourcePacksService.findAllResourcePacks();
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Find one resource pack by id' })
   findOne(@Param('id') id: string) {
     return this.resourcePacksService.findResourcePackById(id);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Update a resource pack' })
   update(@Param('id') id: string, @Body() updateResourcePackDto: UpdateResourcePackDto) {
     return this.resourcePacksService.updateResourcePack(id, updateResourcePackDto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Delete a resource pack' })
+  @ApiCookieAuth('Set-Cookie')
   remove(@Param('id') id: string) {
     return this.resourcePacksService.removeResourcePack(id);
   }

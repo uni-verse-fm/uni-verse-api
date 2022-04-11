@@ -26,7 +26,7 @@ export class ReleasesService {
     private connection: Connection,
   ) {}
 
-  async create(
+  async createRelease(
     files: SimpleCreateFileDto[],
     createRelease: CreateReleaseDto,
     author: UserDocument,
@@ -107,15 +107,15 @@ export class ReleasesService {
   }
 
   async find(title: string): Promise<ReleaseDocument[] | ReleaseDocument> {
-    if (title) return await this.findByTitle(title);
-    return await this.findAll();
+    if (title) return await this.findReleaseByTitle(title);
+    return await this.findAllReleases();
   }
 
-  async findAll(): Promise<ReleaseDocument[]> {
+  async findAllReleases(): Promise<ReleaseDocument[]> {
     return await this.releaseModel.find();
   }
 
-  async findOne(id: string): Promise<ReleaseDocument> {
+  async findReleaseById(id: string): Promise<ReleaseDocument> {
     const release = await this.releaseModel.findById(id);
     if (!release) {
       throw new BadRequestException(`Release with ID "${id}" not found.`);
@@ -123,7 +123,7 @@ export class ReleasesService {
     return release;
   }
 
-  async findByTitle(title: string): Promise<ReleaseDocument> {
+  async findReleaseByTitle(title: string): Promise<ReleaseDocument> {
     const release = await this.releaseModel.findOne({ title });
     if (!release) {
       throw new NotFoundException(`Release with title ${title} not found.`);
@@ -131,12 +131,12 @@ export class ReleasesService {
     return release;
   }
 
-  async update(id: string, updateReleaseDto: UpdateReleaseDto) {
+  async updateRelease(id: string, updateReleaseDto: UpdateReleaseDto) {
     return `This action updates a #${id} release`;
   }
 
-  async remove(id: string) {
-    const release = await this.findOne(id);
+  async removeRelease(id: string) {
+    const release = await this.findReleaseById(id);
     if (!release) {
       throw new NotFoundException('Somthing wrong with the server');
     }

@@ -49,7 +49,7 @@ export class ReleasesController {
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find one release by id' })
   findOne(@Param('id') id: string) {
-    return this.releasesService.findOne(id);
+    return this.releasesService.findReleaseById(id);
   }
 
   @Post()
@@ -69,7 +69,7 @@ export class ReleasesController {
       buffer: file.buffer,
     }));
 
-    return this.releasesService.create(filesBuffers, body.data, request.user);
+    return this.releasesService.createRelease(filesBuffers, body.data, request.user);
   }
 
   @Post('/convert')
@@ -87,7 +87,7 @@ export class ReleasesController {
     @Param('id') id: string,
     @Body() updateReleaseDto: UpdateReleaseDto,
   ) {
-    return this.releasesService.update(id, updateReleaseDto);
+    return this.releasesService.updateRelease(id, updateReleaseDto);
   }
 
   @Delete(':id')
@@ -96,6 +96,6 @@ export class ReleasesController {
   @ApiOperation({ summary: 'Delete a release' })
   @ApiCookieAuth('Set-Cookie')
   removeRelease(@Param('id') id: string) {
-    return this.releasesService.remove(id);
+    return this.releasesService.removeRelease(id);
   }
 }

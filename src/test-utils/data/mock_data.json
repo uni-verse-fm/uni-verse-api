@@ -235,6 +235,52 @@
             }
         }
     },
+    "resource_packs": {
+        "resource_pack1": {
+            "_id": "0",
+            "title": "resource pack 1",
+            "description": "my resource pack 1",
+            "coverUrl": "https://www.resource-pack.com",
+            "previewUrl": "https://www.resource-pack.com",
+            "author": "0",
+            "resources": [
+                {
+                    "title": "resource 1",
+                    "resourceFileName": "resource_1",
+                    "author": {
+                        "username": "abdou",
+                        "email": "96abdou96@gmail.com"
+                    }
+                },
+                {
+                    "title": "resource 2",
+                    "resourceFileName": "resource_2",
+                    "author": {
+                        "username": "abdou",
+                        "email": "96abdou96@gmail.com"
+                    }
+                }
+            ]
+        },
+        "resource_pack2": {
+            "_id": "1",
+            "title": "resource pack 2",
+            "description": "my resource pack 2",
+            "coverUrl": "https://www.resource-pack.com",
+            "previewUrl": "https://www.resource-pack.com",
+            "author": "2",
+            "resources": [
+                {
+                    "title": "resource 3",
+                    "resourceFileName": "resource_3",
+                    "author": {
+                        "username": "yoni",
+                        "email": "vagahbond@gmail.com"
+                    }
+                }
+            ]
+        }
+    },
     "playlists": {
         "fav_1": {
             "_id": "0",
@@ -829,20 +875,6 @@
                         104,
                         101,
                         115
-                    ]
-                }
-            },
-            {
-                "fileName": "resource_4",
-                "buffer": {
-                    "type": "Buffer",
-                    "data": [
-                        101,
-                        110,
-                        99,
-                        111,
-                        114,
-                        101
                     ]
                 }
             }
