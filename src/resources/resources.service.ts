@@ -60,7 +60,7 @@ export class ResourcesService {
   async findResourceById(id: string): Promise<ResourceDocument> {
     const resource = await this.resourceModel.findById(id);
     if (!resource) {
-      throw new BadRequestException("This resource doesn't exist");
+      throw new BadRequestException(`Resource with ID "${id}" doesn't exist`);
     }
     return resource;
   }
@@ -68,7 +68,7 @@ export class ResourcesService {
   async findResourceByTitle(title: string): Promise<ResourceDocument> {
     const resource = await this.resourceModel.findOne({ title });
     if (!resource) {
-      throw new BadRequestException("A resource with this title doesn't exist");
+      throw new BadRequestException(`Resource with title "${title}" doesn't exist`);
     }
     return resource;
   }

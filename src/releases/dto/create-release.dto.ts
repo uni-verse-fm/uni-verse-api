@@ -32,10 +32,10 @@ export class CreateReleaseDto {
 
   @IsArray()
   @IsNotEmpty()
-  readonly tracks: CreateReleseTrackDto[];
+  readonly tracks: CreateReleaseTrackDto[];
 }
 
-export class CreateReleseTrackDto {
+export class CreateReleaseTrackDto {
   @IsNotEmpty()
   @IsString()
   @MinLength(5)
