@@ -43,7 +43,6 @@ const delete_expected = {
 };
 
 describe('CommentsController', () => {
-  let controller: CommentsController;
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -118,7 +117,6 @@ describe('CommentsController', () => {
       })
       .compile();
 
-    controller = module.get<CommentsController>(CommentsController);
     app = module.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
@@ -143,7 +141,6 @@ describe('CommentsController', () => {
   });
 
   describe('create a comment', () => {
-
     it('should return a comment', () => {
       return request(app.getHttpServer())
         .post('/comments')

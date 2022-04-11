@@ -22,7 +22,6 @@ import { User } from '../users/schemas/user.schema';
 import TracksRepoMockModel from '../test-utils/mocks/Tracks-mock.service.test';
 import { Track } from '../tracks/schemas/track.schema';
 
-const release = data.releases.black_album;
 const playlists = data2list(data.playlists);
 
 const playlist1 = data.playlists.fav_1;
@@ -44,7 +43,6 @@ const delete_expected = {
 };
 
 describe('PlaylistsController', () => {
-  let controller: PlaylistsController;
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -113,7 +111,6 @@ describe('PlaylistsController', () => {
       })
       .compile();
 
-    controller = module.get<PlaylistsController>(PlaylistsController);
     app = module.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
@@ -138,7 +135,6 @@ describe('PlaylistsController', () => {
   });
 
   describe('create a playlist', () => {
-
     it('should return a playlist', () => {
       return request(app.getHttpServer())
         .post('/playlists')

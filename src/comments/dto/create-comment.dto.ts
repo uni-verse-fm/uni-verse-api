@@ -8,8 +8,8 @@ import {
 } from 'class-validator';
 
 export enum ModelType {
-  Track = "Track",
-  Resource = "Resource",
+  Track = 'Track',
+  Resource = 'Resource',
 }
 
 export class CreateCommentDto {
