@@ -1,14 +1,13 @@
 import {
   IsArray,
   IsNotEmpty,
-  IsOptional,
   IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
 import AuthorDto from '../../users/dto/author.dto';
 
-export class CreateReleaseDto {
+export class CreateResourcePackDto {
   @IsNotEmpty()
   @IsString()
   @MinLength(5)
@@ -26,16 +25,18 @@ export class CreateReleaseDto {
   @MaxLength(1024)
   readonly coverUrl: string;
 
-  @IsArray()
-  @IsOptional()
-  readonly feats?: AuthorDto[];
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(1024)
+  readonly previewUrl: string;
 
   @IsArray()
   @IsNotEmpty()
-  readonly tracks: CreateReleaseTrackDto[];
+  readonly resources: CreateReleaseResourceDto[];
 }
 
-export class CreateReleaseTrackDto {
+export class CreateReleaseResourceDto {
   @IsNotEmpty()
   @IsString()
   @MinLength(5)
@@ -46,12 +47,8 @@ export class CreateReleaseTrackDto {
   @IsString()
   @MinLength(1)
   @MaxLength(1024)
-  readonly trackFileName: string;
+  readonly resourceFileName: string;
 
   @IsNotEmpty()
   readonly author: AuthorDto;
-
-  @IsArray()
-  @IsOptional()
-  readonly feats?: AuthorDto[];
 }

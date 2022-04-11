@@ -126,7 +126,7 @@ describe('ReleasesService', () => {
           })),
         };
 
-        const result = await releasesService.create(
+        const result = await releasesService.createRelease(
           files_release,
           create_release,
           author,
@@ -153,7 +153,7 @@ describe('ReleasesService', () => {
         author: author._id.toString(),
       }));
 
-      const result = await releasesService.findAll();
+      const result = await releasesService.findAllReleases();
 
       const cleanedResult = result.map((release) => ({
         title: release.title,
@@ -176,7 +176,7 @@ describe('ReleasesService', () => {
       const title = 'balck album';
       const author = await usersService.findUserByEmail(users.jayz.email);
 
-      const result = await releasesService.findByTitle(release.title);
+      const result = await releasesService.findReleaseByTitle(release.title);
 
       releaseId = result._id.toString();
 
@@ -196,7 +196,7 @@ describe('ReleasesService', () => {
       const title = 'balck album';
       const author = await usersService.findUserByEmail(users.jayz.email);
 
-      const result = await releasesService.findOne(releaseId);
+      const result = await releasesService.findReleaseById(releaseId);
 
       expect(result.title).toBe(title);
       expect(result.description).toBe(description);
@@ -212,7 +212,7 @@ describe('ReleasesService', () => {
       const title = 'balck album';
       const msg = 'Release deleted';
 
-      const result = await releasesService.remove(releaseId);
+      const result = await releasesService.removeRelease(releaseId);
       expect(result.id).toStrictEqual(releaseId);
       expect(result.title).toStrictEqual(title);
       expect(result.msg).toStrictEqual(msg);

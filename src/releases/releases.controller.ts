@@ -15,7 +15,7 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
-import { FormDataParserInterceptor } from '../utils/interceptors/create-release.interceptor';
+import { ReleaseFormDataParserInterceptor } from '../utils/interceptors/create-release.interceptor';
 import { UpdateReleaseDto } from './dto/update-release.dto';
 import { ReleasesService } from './releases.service';
 import {
@@ -49,7 +49,7 @@ export class ReleasesController {
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find one release by id' })
   findOne(@Param('id') id: string) {
-    return this.releasesService.findOne(id);
+    return this.releasesService.findReleaseById(id);
   }
 
   @Post()
@@ -58,7 +58,7 @@ export class ReleasesController {
   @ApiOperation({ summary: 'Publish a release' })
   @ApiConsumes('multipart/form-data')
   @ApiMultiFileWithMetadata()
-  @UseInterceptors(FilesInterceptor('files'), FormDataParserInterceptor)
+  @UseInterceptors(FilesInterceptor('files'), ReleaseFormDataParserInterceptor)
   async createRelease(
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() body: CreateReleaseWraperDto,
@@ -69,7 +69,11 @@ export class ReleasesController {
       buffer: file.buffer,
     }));
 
-    return this.releasesService.create(filesBuffers, body.data, request.user);
+    return this.releasesService.createRelease(
+      filesBuffers,
+      body.data,
+      request.user,
+    );
   }
 
   @Post('/convert')
@@ -87,7 +91,7 @@ export class ReleasesController {
     @Param('id') id: string,
     @Body() updateReleaseDto: UpdateReleaseDto,
   ) {
-    return this.releasesService.update(id, updateReleaseDto);
+    return this.releasesService.updateRelease(id, updateReleaseDto);
   }
 
   @Delete(':id')
@@ -96,6 +100,6 @@ export class ReleasesController {
   @ApiOperation({ summary: 'Delete a release' })
   @ApiCookieAuth('Set-Cookie')
   removeRelease(@Param('id') id: string) {
-    return this.releasesService.remove(id);
+    return this.releasesService.removeRelease(id);
   }
 }

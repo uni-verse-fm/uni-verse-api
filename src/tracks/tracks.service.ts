@@ -73,7 +73,7 @@ export class TracksService {
   async findTrackById(id: string): Promise<TrackDocument> {
     const track = await this.trackModel.findById(id);
     if (!track) {
-      throw new BadRequestException("This track doesn't exist");
+      throw new BadRequestException(`Track with ID "${id}" doesn't exist`);
     }
     return track;
   }
@@ -81,7 +81,9 @@ export class TracksService {
   async findTrackByTitle(title: string): Promise<TrackDocument> {
     const track = await this.trackModel.findOne({ title });
     if (!track) {
-      throw new BadRequestException("A track with this title doesn't exist");
+      throw new BadRequestException(
+        `Resource with title "${title}" doesn't exist`,
+      );
     }
     return track;
   }

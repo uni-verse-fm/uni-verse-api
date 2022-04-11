@@ -6,10 +6,10 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import ICreateRelease from '../../releases/interfaces/create-release.interface';
+import ICreateResourcePack from '../../resource-packs/interfaces/create-resource-pack.interface';
 
 @Injectable()
-export class ReleaseFormDataParserInterceptor implements NestInterceptor {
+export class ResourcePackFormDataParserInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
 
@@ -17,7 +17,7 @@ export class ReleaseFormDataParserInterceptor implements NestInterceptor {
       throw new BadRequestException('Data is not available in the Form Data');
 
     try {
-      const body: ICreateRelease = JSON.parse(request.body.data);
+      const body: ICreateResourcePack = JSON.parse(request.body.data);
       request.body.data = body;
     } catch (error) {
       throw new BadRequestException(`Can't parse data: ${error}`);
