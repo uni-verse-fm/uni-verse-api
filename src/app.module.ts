@@ -9,6 +9,7 @@ import { WelcomeController } from './welcome.controller';
 import { TracksModule } from './tracks/tracks.module';
 import { FilesModule } from './files/files.module';
 import { PlaylistsModule } from './playlists/playlists.module';
+import { ResourcesModule } from './resources/resources.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -46,6 +47,7 @@ import { PlaylistsModule } from './playlists/playlists.module';
     TracksModule,
     FilesModule,
     PlaylistsModule,
+    ResourcesModule,
   ],
   controllers: [WelcomeController],
   providers: [],

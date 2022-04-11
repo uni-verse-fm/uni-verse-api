@@ -23,7 +23,7 @@ export class TracksService {
     private usersService: UsersService,
   ) {}
 
-  async create(
+  async createTrack(
     createTrackDto: CreateTrackDto,
     session: ClientSession | null = null,
   ): Promise<ITrackResponse> {
@@ -47,7 +47,7 @@ export class TracksService {
     const createTrack = {
       ...createTrackDto,
       feats,
-      trackFileUrl: result.trackFileUrl,
+      trackFileUrl: result.fileUrl,
     };
 
     const newTrack = new this.trackModel(createTrack);
@@ -62,7 +62,7 @@ export class TracksService {
     session: ClientSession | null = null,
   ): Promise<ITrackResponse[]> {
     return await Promise.all(
-      tracks.map((track) => this.create(track, session)),
+      tracks.map((track) => this.createTrack(track, session)),
     );
   }
 

@@ -91,17 +91,17 @@ describe('PlaylistsService', () => {
         JSON.parse(JSON.stringify(threatTrack.buffer)),
       );
       const commonTrackInfos = {
-        trackFileUrl: 'https://track-example.com',
+        trackFileUrl: 'https://www.example.com',
         feats: [],
         author: artist,
       };
-      encore = await tracksService.create({
+      encore = await tracksService.createTrack({
         ...commonTrackInfos,
         title: encoreTrack.title,
         buffer: encoreBuffer,
         trackFileName: encoreTrack.trackFileName,
       });
-      threat = await tracksService.create({
+      threat = await tracksService.createTrack({
         ...commonTrackInfos,
         title: threatTrack.title,
         buffer: threatBuffer,
