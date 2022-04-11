@@ -27,10 +27,10 @@ export class CreateResourcePackDto {
 
     @IsArray()
     @IsNotEmpty()
-    readonly resources: CreateReleaseTrackDto[];
+    readonly resources: CreateReleaseResourceDto[];
 }
 
-export class CreateReleaseTrackDto {
+export class CreateReleaseResourceDto {
     @IsNotEmpty()
     @IsString()
     @MinLength(5)
