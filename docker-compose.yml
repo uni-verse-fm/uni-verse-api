@@ -46,9 +46,10 @@ services:
     container_name: minio
     ports:
       - 9000:9000
+      - 9001:9001
     volumes:
       - ./minio-data:/data
-    command: server /data
+    command: minio server --console-address ":9001" /data
     restart: always
     env_file:
       - docker.env

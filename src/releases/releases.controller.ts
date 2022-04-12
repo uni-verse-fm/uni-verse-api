@@ -25,7 +25,10 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
+import {
+  FileMimeType,
+  SimpleCreateFileDto,
+} from '../files/dto/simple-create-file.dto';
 import { ApiMultiFileWithMetadata } from '../utils/swagger/multiple-file.decorator';
 import { CreateReleaseWraperDto } from './dto/create-release-wraper.dto';
 import { CreateReleaseDto } from './dto/create-release.dto';
@@ -47,13 +50,15 @@ export class ReleasesController {
     @Body() body: CreateReleaseWraperDto,
     @Request() request: IRequestWithUser,
   ) {
-    const filesBuffers: SimpleCreateFileDto[] = files.map((file) => ({
+    const simpleCreateFiles: SimpleCreateFileDto[] = files.map((file) => ({
       fileName: file.originalname,
       buffer: file.buffer,
+      size: file.size,
+      mimetype: FileMimeType[file.mimetype],
     }));
 
     return this.releasesService.createRelease(
-      filesBuffers,
+      simpleCreateFiles,
       body.data,
       request.user,
     );

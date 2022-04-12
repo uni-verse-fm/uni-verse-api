@@ -47,7 +47,12 @@ export class ResourcePacksService {
           createResourcePack.resources.map((resource) => ({
             ...resource,
             author,
-            buffer: orderedTracks.get(resource.resourceFileName),
+            file: {
+                fileName: resource.resourceFileName,
+                buffer: orderedTracks.get(resource.resourceFileName).buffer,
+                size: orderedTracks.get(resource.resourceFileName).size,
+                mimetype: orderedTracks.get(resource.resourceFileName).mimetype,
+            },
           })),
         );
       const createdResourcePack = {
@@ -73,21 +78,21 @@ export class ResourcePacksService {
   private orderedResources(
     files: SimpleCreateFileDto[],
     createResourcePack: CreateResourcePackDto,
-  ): Map<string, Buffer> {
+  ): Map<string, SimpleCreateFileDto> {
     const resourcePackFilesNames: string[] = createResourcePack.resources.map(
       (resource) => resource.resourceFileName,
     );
     const filesFilesNames: string[] = files.map((file) => file.fileName);
-    const fileNamesToFiles: Map<string, Buffer> = new Map(
-      files.map((file) => [file.fileName, file.buffer]),
+    const fileNamesToFiles: Map<string, SimpleCreateFileDto> = new Map(
+      files.map((file) => [file.fileName, file]),
     );
 
-    const nameToBuffer: Map<string, Buffer> = new Map<string, Buffer>();
+    const nameToFile: Map<string, SimpleCreateFileDto> = new Map<string, SimpleCreateFileDto>();
 
     if (resourcePackFilesNames.length === filesFilesNames.length) {
       resourcePackFilesNames.every((resourcePackFileName) => {
         if (filesFilesNames.includes(resourcePackFileName)) {
-          nameToBuffer.set(
+            nameToFile.set(
             resourcePackFileName,
             fileNamesToFiles.get(resourcePackFileName),
           );
@@ -98,7 +103,7 @@ export class ResourcePacksService {
         );
       });
 
-      return nameToBuffer;
+      return nameToFile;
     }
     throw new BadRequestException(
       'The number of resources the number of files should be the same.',

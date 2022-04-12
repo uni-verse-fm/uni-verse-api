@@ -22,7 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 import { CreateResourcePackWraperDto } from './dto/create-resource-pack-wraper.dto';
-import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
+import { FileMimeType, SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ResourcePackFormDataParserInterceptor } from '../utils/interceptors/create-resource-pack.interceptor copy';
@@ -51,6 +51,8 @@ export class ResourcePacksController {
     const filesBuffers: SimpleCreateFileDto[] = files.map((file) => ({
       fileName: file.originalname,
       buffer: file.buffer,
+      size: file.size,
+      mimetype: FileMimeType[file.mimetype],
     }));
 
     return this.resourcePacksService.createResourcePack(

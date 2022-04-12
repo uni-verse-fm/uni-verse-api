@@ -13,6 +13,8 @@ import IFileResponse from '../files/interfaces/file-response.interface';
 import { UsersService } from '../users/users.service';
 import { UserDocument } from '../users/schemas/user.schema';
 import { IDeleteTrackResponse } from './interfaces/track-delete-response.interface copy';
+import { FileMimeType } from '../files/dto/simple-create-file.dto';
+import { BucketName } from '../files/minio.service';
 
 @Injectable()
 export class TracksService {
@@ -34,8 +36,10 @@ export class TracksService {
     const file = {
       fileName: createTrackDto.trackFileName,
       buffer: createTrackDto.buffer,
+      size: 4000,
+      mimetype: FileMimeType.MPEG
     };
-    const result: IFileResponse = this.filesService.create(file);
+    const result: IFileResponse = this.filesService.create(file, BucketName.Resources);
 
     if (createTrackDto.feats) {
       for (const feat of createTrackDto.feats) {

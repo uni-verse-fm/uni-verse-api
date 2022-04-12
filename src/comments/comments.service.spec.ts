@@ -17,6 +17,7 @@ import * as data from '../test-utils/data/mock_data.json';
 import { ModelType } from './dto/create-comment.dto';
 import { Comment, CommentSchema } from './schemas/comment.schema';
 import { FilesService } from '../files/files.service';
+import { FileMimeType } from '../files/dto/simple-create-file.dto';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -139,7 +140,12 @@ describe('CommentsService', () => {
 
       resourceOne = await resourcesService.createResource({
         ...resourceOnResource,
-        buffer: resourceBuffer,
+        file: {
+            buffer: resourceBuffer,
+            size: 400,
+            fileName: resourceOnResource.resourceFileName,
+            mimetype: FileMimeType.MPEG,
+        },
         author: user,
       });
       expect(encore.id).toBeDefined();
@@ -235,7 +241,6 @@ describe('CommentsService', () => {
   describe('When remove one comment', () => {
     it('should return one comment message', async () => {
       const msg = `Comment ${commentId} deleted`;
-
       const comment = await commentService.removeComment(commentId, user);
       expect(comment.msg).toBe(msg);
     });

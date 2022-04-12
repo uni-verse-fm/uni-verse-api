@@ -66,7 +66,7 @@ export class UsersService {
   }
 
   async findUserByEmail(email: string): Promise<UserDocument | undefined> {
-    const user = await this.userModel.findOne({ email: email });
+    const user = await this.userModel.findOne({ email: email }).select('+password');
     if (!user) {
       throw new BadRequestException("This user doesn't exist");
     }
