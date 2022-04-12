@@ -86,10 +86,12 @@ export class ResourcePacksController {
   update(
     @Param('id') id: string,
     @Body() updateResourcePackDto: UpdateResourcePackDto,
+    @Request() request: IRequestWithUser,
   ) {
     return this.resourcePacksService.updateResourcePack(
       id,
       updateResourcePackDto,
+      request.user,
     );
   }
 
@@ -98,7 +100,7 @@ export class ResourcePacksController {
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Delete a resource pack' })
   @ApiCookieAuth('Set-Cookie')
-  remove(@Param('id') id: string) {
-    return this.resourcePacksService.removeResourcePack(id);
+  remove(@Param('id') id: string, @Request() request: IRequestWithUser) {
+    return this.resourcePacksService.removeResourcePack(id, request.user);
   }
 }

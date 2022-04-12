@@ -11,6 +11,7 @@ import { FilesModule } from './files/files.module';
 import { PlaylistsModule } from './playlists/playlists.module';
 import { ResourcesModule } from './resources/resources.module';
 import { ResourcePacksModule } from './resource-packs/resource-packs.module';
+import { CommentsModule } from './comments/comments.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -50,6 +51,7 @@ import { ResourcePacksModule } from './resource-packs/resource-packs.module';
     PlaylistsModule,
     ResourcesModule,
     ResourcePacksModule,
+    CommentsModule,
   ],
   controllers: [WelcomeController],
   providers: [],

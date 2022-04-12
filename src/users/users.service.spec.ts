@@ -81,7 +81,6 @@ describe('UsersService', () => {
       const result = await userService.findUserByEmail(mockUser.email);
       expect(result.username).toBe(expected.username);
       expect(result.email).toBe(expected.email);
-      expect(result.password).toBeDefined();
     });
   });
 
@@ -97,7 +96,6 @@ describe('UsersService', () => {
       const result = await userService.findUserByUsername(mockUser.username);
       expect(result.username).toBe(expected.username);
       expect(result.email).toBe(expected.email);
-      expect(result.password).toBeDefined();
     });
   });
 

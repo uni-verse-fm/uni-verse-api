@@ -131,15 +131,17 @@ export class ReleasesService {
     return release;
   }
 
-  async updateRelease(id: string, updateReleaseDto: UpdateReleaseDto) {
+  async updateRelease(
+    id: string,
+    updateReleaseDto: UpdateReleaseDto,
+    owner: UserDocument,
+  ) {
     return `This action updates a #${id} release`;
   }
 
-  async removeRelease(id: string) {
-    const release = await this.findReleaseById(id);
-    if (!release) {
-      throw new NotFoundException('Somthing wrong with the server');
-    }
+  async removeRelease(id: string, owner: UserDocument) {
+    const release = await this.isUserTheOwnerOfRelease(id, owner);
+
     await this.releaseModel.deleteOne({ id: release._id });
     return {
       id: release._id.toString(),
@@ -167,6 +169,17 @@ export class ReleasesService {
         email: release.author.email,
       },
     };
+  }
+
+  private async isUserTheOwnerOfRelease(id: string, owner: UserDocument) {
+    const release = await this.findReleaseById(id);
+    if (!release) {
+      throw new NotFoundException('Somthing wrong with the server');
+    }
+    if (release.author._id.toString() !== owner._id.toString()) {
+      throw new BadRequestException('You are not the owner of this release.');
+    }
+    return release;
   }
 
   private async isReleaseUnique(title: string) {

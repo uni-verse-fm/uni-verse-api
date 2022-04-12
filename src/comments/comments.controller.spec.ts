@@ -7,42 +7,42 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { PlaylistsController } from './playlists.controller';
+import { CommentsController } from './comments.controller';
+import { CommentsService } from './comments.service';
 import * as data from '../test-utils/data/mock_data.json';
-import { UsersService } from '../users/users.service';
-import * as request from 'supertest';
+import { TracksService } from '../tracks/tracks.service';
 import { FilesService } from '../files/files.service';
+import { UsersService } from '../users/users.service';
+import { ResourcesService } from '../resources/resources.service';
+import { getModelToken } from '@nestjs/mongoose';
 import RepoMockModel, {
   data2list,
 } from '../test-utils/mocks/standard-mock.service.test';
-import { PlaylistsService } from './playlists.service';
-import { TracksService } from '../tracks/tracks.service';
-import { getModelToken } from '@nestjs/mongoose';
+import * as request from 'supertest';
+import { Track } from '../tracks/schemas/track.schema';
 import { User } from '../users/schemas/user.schema';
 import TracksRepoMockModel from '../test-utils/mocks/Tracks-mock.service.test';
-import { Track } from '../tracks/schemas/track.schema';
+import { Resource } from '../resources/schemas/resource.schema';
 
-const playlists = data2list(data.playlists);
+const owner = data.users.abdou;
 
-const playlist1 = data.playlists.fav_1;
+const create_comment = data.create_comments.comment_1;
+const comments = data2list(data.comments);
 
-const create_playlist = data.create_playlists.my_playlist1;
-
-const author = data.users.jayz;
+const comment1 = data.comments.comment_1;
 
 const create_expected = {
-  title: playlist1.title,
-  owner: playlist1.owner,
-  tracks: playlist1.tracks,
+  content: comment1.content,
+  isPositive: comment1.isPositive,
+  modelType: comment1.modelType,
+  owner: comment1.owner,
 };
 
 const delete_expected = {
-  id: playlist1._id,
-  title: playlist1.title,
-  msg: 'Playlist deleted',
+  msg: `Comment ${comment1._id} deleted`,
 };
 
-describe('PlaylistsController', () => {
+describe('CommentsController', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -57,37 +57,38 @@ describe('PlaylistsController', () => {
           }),
         }),
       ],
-      controllers: [PlaylistsController],
+      controllers: [CommentsController],
       providers: [
         TracksService,
-        FilesService,
         UsersService,
+        ResourcesService,
+        FilesService,
         {
-          provide: PlaylistsService,
+          provide: CommentsService,
           useValue: {
-            createPlaylist: jest.fn(() => {
+            createComment: jest.fn(() => {
               return {
                 ...create_expected,
               };
             }),
-            findAllPlaylists: jest.fn(() => {
-              return playlists;
+            findAllComments: jest.fn(() => {
+              return comments;
             }),
-            findPlaylistById: jest.fn(() => {
+            findCommentById: jest.fn(() => {
               return {
-                ...playlist1,
+                ...comment1,
               };
             }),
-            updatePlaylist: jest.fn(() => {
+            updateComment: jest.fn(() => {
               return {};
             }),
-            removePlaylist: jest.fn(() => {
+            removeComment: jest.fn(() => {
               return {
                 ...delete_expected,
               };
             }),
             find: jest.fn(() => {
-              return playlists;
+              return comments;
             }),
           },
         },
@@ -99,13 +100,18 @@ describe('PlaylistsController', () => {
           provide: getModelToken(Track.name),
           useValue: new TracksRepoMockModel(data.tracks),
         },
+        {
+          // TODO: to change with track like mock
+          provide: getModelToken(Resource.name),
+          useValue: new RepoMockModel(data.resources),
+        },
       ],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({
         canActivate: (context: ExecutionContext) => {
           const req = context.switchToHttp().getRequest();
-          req.user = author;
+          req.user = owner;
           return true;
         },
       })
@@ -116,43 +122,41 @@ describe('PlaylistsController', () => {
     await app.init();
   });
 
-  describe('Find all playlists', () => {
-    it('should return all playlists', async () => {
+  describe('Find all comments', () => {
+    it('should return all comments', async () => {
       return request(app.getHttpServer())
-        .get('/playlists')
+        .get('/comments')
         .expect(200)
-        .expect(playlists);
+        .expect(comments);
     });
   });
 
-  describe('find one playlist by id', () => {
+  describe('find one comment by id', () => {
     it('shoul return one comment', () => {
       return request(app.getHttpServer())
-        .get(`/playlists/${playlist1._id}`)
+        .get(`/comments/${comment1._id}`)
         .expect(200)
-        .expect(playlist1);
+        .expect(comment1);
     });
   });
 
-  describe('create a playlist', () => {
-    it('should return a playlist', () => {
+  describe('create a comment', () => {
+    it('should return a comment', () => {
       return request(app.getHttpServer())
-        .post('/playlists')
-        .send(create_playlist)
+        .post('/comments')
+        .send(create_comment)
         .expect(create_expected);
     });
   });
 
-  describe('Delete my playlist', () => {
+  describe('Delete my comment', () => {
     const expected = {
-      id: playlist1._id,
-      title: playlist1.title,
-      msg: 'Playlist deleted',
+      msg: `Comment ${comment1._id} deleted`,
     };
 
     it('should return an title with a message', async () => {
       return await request(app.getHttpServer())
-        .delete('/playlists/' + playlist1._id)
+        .delete('/comments/' + comment1._id)
         .expect(expected);
     });
   });

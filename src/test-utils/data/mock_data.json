@@ -1,948 +1,862 @@
 {
-    "users": {
-        "abdou": {
-            "_id": "0",
-            "username": "al/ghom",
-            "email": "96abdou96@gmail.com",
-            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-        },
-        "yoni": {
-            "_id": "1",
-            "username": "Vagahbond",
-            "email": "vagahbond@gmail.com",
-            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-        },
-        "jayz": {
-            "_id": "2",
-            "username": "jay-z",
-            "email": "jay-z@gmail.com",
-            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-        },
-        "pharrell": {
-            "_id": "3",
-            "username": "pharrell williams",
-            "email": "pharrell.williams@gmail.com",
-            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-        },
-        "kanye": {
-            "_id": "4",
-            "username": "kanye west",
-            "email": "kanye.west@gmail.com",
-            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-        }
+  "users": {
+    "abdou": {
+      "_id": "0",
+      "username": "al/ghom",
+      "email": "96abdou96@gmail.com",
+      "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
     },
-    "releases": {
-        "black_album": {
-            "_id": "0",
-            "title": "balck album",
-            "description": "one of the greatest",
-            "coverUrl": "https://www.release.com",
-            "author": {
-                "_id": "2",
-                "username": "jay-z",
-                "email": "jay-z@gmail.com",
-                "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-            },
-            "feats": [],
-            "tracks": [
-                {
-                    "_id": "0",
-                    "title": "change clothes",
-                    "trackFileUrl": "https://www.example.com",
-                    "author": {
-                        "_id": "2",
-                        "username": "jay-z",
-                        "email": "jay-z@gmail.com",
-                        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                    },
-                    "feats": [
-                        {
-                            "_id": "3",
-                            "username": "pharrell williams",
-                            "email": "pharrell.williams@gmail.com",
-                            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                        }
-                    ]
-                },
-                {
-                    "_id": "1",
-                    "title": "encore",
-                    "trackFileUrl": "https://www.example.com",
-                    "author": {
-                        "_id": "2",
-                        "username": "jay-z",
-                        "email": "jay-z@gmail.com",
-                        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                    },
-                    "feats": []
-                },
-                {
-                    "_id": "2",
-                    "title": "threat",
-                    "trackFileUrl": "https://www.example.com",
-                    "author": [
-                        {
-                            "_id": "2",
-                            "username": "jay-z",
-                            "email": "jay-z@gmail.com",
-                            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                        }
-                    ]
-                }
-            ]
-        },
-        "wtt": {
-            "_id": "1",
-            "title": "Watch the Throne",
-            "description": "just legendary",
-            "coverUrl": "https://www.release.com",
-            "author": {
-                "_id": "2",
-                "username": "jay-z",
-                "email": "jay-z@gmail.com",
-                "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-            },
-            "feats": [
-                {
-                    "_id": "4",
-                    "username": "kanye west",
-                    "email": "kanye.west@gmail.com",
-                    "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                }
-            ],
-            "tracks": [
-                {
-                    "_id": "3",
-                    "title": "New Day",
-                    "trackFileUrl": "https://www.example.com",
-                    "author": {
-                        "_id": "2",
-                        "username": "jay-z",
-                        "email": "jay-z@gmail.com",
-                        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                    },
-                    "feats": [
-                        {
-                            "_id": "4",
-                            "username": "kanye west",
-                            "email": "kanye.west@gmail.com",
-                            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                        }
-                    ]
-                },
-                {
-                    "_id": "4",
-                    "title": "Murder to Excellence",
-                    "trackFileUrl": "https://www.example.com",
-                    "author": {
-                        "_id": "2",
-                        "username": "jay-z",
-                        "email": "jay-z@gmail.com",
-                        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                    },
-                    "feats": [
-                        {
-                            "_id": "4",
-                            "username": "kanye west",
-                            "email": "kanye.west@gmail.com",
-                            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                        }
-                    ]
-                },
-                {
-                    "_id": "5",
-                    "title": "gotta have it",
-                    "trackFileUrl": "https://www.example.com",
-                    "author": {
-                        "_id": "2",
-                        "username": "jay-z",
-                        "email": "jay-z@gmail.com",
-                        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                    },
-                    "feats": [
-                        {
-                            "_id": "4",
-                            "username": "kanye west",
-                            "email": "kanye.west@gmail.com",
-                            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                        }
-                    ]
-                }
-            ]
-        },
-        "imm": {
-            "_id": "2",
-            "title": "In My Mind",
-            "description": "cool to hear",
-            "coverUrl": "https://www.release.com",
-            "author": {
-                "_id": "3",
-                "username": "pharrell williams",
-                "email": "pharrell.williams@gmail.com",
-                "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-            },
-            "feat": [],
-            "tracks": {
-                "0": {
-                    "_id": "6",
-                    "title": "Young Girl",
-                    "trackFileUrl": "https://www.example.com",
-                    "author": {
-                        "_id": "3",
-                        "username": "pharrell williams",
-                        "email": "pharrell.williams@gmail.com",
-                        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                    },
-                    "feats": [
-                        {
-                            "_id": "2",
-                            "username": "jay-z",
-                            "email": "jay-z@gmail.com",
-                            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                        }
-                    ]
-                },
-                "1": {
-                    "_id": "7",
-                    "title": "angel",
-                    "trackFileUrl": "https://www.example.com",
-                    "author": {
-                        "_id": "3",
-                        "username": "pharrell williams",
-                        "email": "pharrell.williams@gmail.com",
-                        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                    }
-                },
-                "2": {
-                    "_id": "8",
-                    "title": "Number One",
-                    "trackFileUrl": "https://www.example.com",
-                    "author": {
-                        "_id": "3",
-                        "username": "pharrell williams",
-                        "email": "pharrell.williams@gmail.com",
-                        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                    },
-                    "feats": [
-                        {
-                            "_id": "4",
-                            "username": "kanye west",
-                            "email": "kanye.west@gmail.com",
-                            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                        }
-                    ]
-                }
-            }
-        }
+    "yoni": {
+      "_id": "1",
+      "username": "Vagahbond",
+      "email": "vagahbond@gmail.com",
+      "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
     },
-    "resource_packs": {
-        "resource_pack1": {
-            "_id": "0",
-            "title": "resource pack 1",
-            "description": "my resource pack 1",
-            "coverUrl": "https://www.resource-pack.com",
-            "previewUrl": "https://www.resource-pack.com",
-            "author": "0",
-            "resources": [
-                {
-                    "title": "resource 1",
-                    "resourceFileName": "resource_1",
-                    "author": {
-                        "username": "abdou",
-                        "email": "96abdou96@gmail.com"
-                    }
-                },
-                {
-                    "title": "resource 2",
-                    "resourceFileName": "resource_2",
-                    "author": {
-                        "username": "abdou",
-                        "email": "96abdou96@gmail.com"
-                    }
-                }
-            ]
-        },
-        "resource_pack2": {
-            "_id": "1",
-            "title": "resource pack 2",
-            "description": "my resource pack 2",
-            "coverUrl": "https://www.resource-pack.com",
-            "previewUrl": "https://www.resource-pack.com",
-            "author": "2",
-            "resources": [
-                {
-                    "title": "resource 3",
-                    "resourceFileName": "resource_3",
-                    "author": {
-                        "username": "yoni",
-                        "email": "vagahbond@gmail.com"
-                    }
-                }
-            ]
-        }
+    "jayz": {
+      "_id": "2",
+      "username": "jay-z",
+      "email": "jay-z@gmail.com",
+      "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
     },
-    "playlists": {
-        "fav_1": {
-            "_id": "0",
-            "title": "my playlist 1",
-            "owner": "0",
-            "tracks": ["0", "1", "2"]  
-        },
-        "fav_2": {
-            "_id": "1",
-            "title": "my playlist 2",
-            "owner": "0",
-            "tracks": ["3", "4", "5"]  
-        }
+    "pharrell": {
+      "_id": "3",
+      "username": "pharrell williams",
+      "email": "pharrell.williams@gmail.com",
+      "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
     },
-    "tracks": {
-        "change_clothes": {
-            "_id": "0",
-            "title": "change clothes",
-            "trackFileUrl": "https://www.example.com",
-            "author": {
-                "_id": "2",
-                "username": "jay-z",
-                "email": "jay-z@gmail.com",
-                "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-            },
-            "feats": [
-                {
-                    "_id": "3",
-                    "username": "pharrell williams",
-                    "email": "pharrell.williams@gmail.com",
-                    "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                }
-            ]
-        },
-        "encore": {
-            "_id": "1",
-            "title": "encore",
-            "trackFileUrl": "https://www.example.com",
-            "author": {
-                "_id": "2",
-                "username": "jay-z",
-                "email": "jay-z@gmail.com",
-                "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-            },
-            "feats": []
-        },
-        "threat": {
-            "_id": "2",
-            "title": "threat",
-            "trackFileUrl": "https://www.example.com",
-            "author": [
-                {
-                    "_id": "2",
-                    "username": "jay-z",
-                    "email": "jay-z@gmail.com",
-                    "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                }
-            ]
-        },
-        "new_day": {
-            "_id": "3",
-            "title": "New Day",
-            "trackFileUrl": "https://www.example.com",
-            "author": {
-                "_id": "2",
-                "username": "jay-z",
-                "email": "jay-z@gmail.com",
-                "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-            },
-            "feats": [
-                {
-                    "_id": "4",
-                    "username": "kanye west",
-                    "email": "kanye.west@gmail.com",
-                    "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                }
-            ]
-        },
-        "mte": {
-            "_id": "4",
-            "title": "Murder to Excellence",
-            "trackFileUrl": "https://www.example.com",
-            "author": {
-                "_id": "2",
-                "username": "jay-z",
-                "email": "jay-z@gmail.com",
-                "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-            },
-            "feats": [
-                {
-                    "_id": "4",
-                    "username": "kanye west",
-                    "email": "kanye.west@gmail.com",
-                    "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                }
-            ]
-        },
-        "ghi": {
-            "_id": "5",
-            "title": "gotta have it",
-            "trackFileUrl": "https://www.example.com",
-            "author": {
-                "_id": "2",
-                "username": "jay-z",
-                "email": "jay-z@gmail.com",
-                "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-            },
-            "feats": [
-                {
-                    "_id": "4",
-                    "username": "kanye west",
-                    "email": "kanye.west@gmail.com",
-                    "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                }
-            ]
-        },
-        "young_girl": {
-            "_id": "6",
-            "title": "Young Girl",
-            "trackFileUrl": "https://www.example.com",
-            "author": {
-                "_id": "3",
-                "username": "pharrell williams",
-                "email": "pharrell.williams@gmail.com",
-                "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-            },
-            "feats": [
-                {
-                    "_id": "2",
-                    "username": "jay-z",
-                    "email": "jay-z@gmail.com",
-                    "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                }
-            ]
-        },
-        "angel": {
-            "_id": "7",
-            "title": "angel",
-            "trackFileUrl": "https://www.example.com",
-            "author": {
-                "_id": "3",
-                "username": "pharrell williams",
-                "email": "pharrell.williams@gmail.com",
-                "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-            }
-        },
-        "number_one": {
-            "_id": "8",
-            "title": "Number One",
-            "trackFileUrl": "https://www.example.com",
-            "author": {
-                "_id": "3",
-                "username": "pharrell williams",
-                "email": "pharrell.williams@gmail.com",
-                "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-            },
-            "feats": [
-                {
-                    "_id": "4",
-                    "username": "kanye west",
-                    "email": "kanye.west@gmail.com",
-                    "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
-                }
-            ]
-        }
-    },
-    "resources": {
-        "resource_1": {
-            "_id": "0",
-            "title": "resource 1",
-            "trackFileUrl": "https://www.example.com",
-            "author": "0"
-        },
-        "resource_2": {
-            "_id": "1",
-            "title": "resource 2",
-            "trackFileUrl": "https://www.example.com",
-            "author": "0"
-        },
-        "resource_3": {
-            "_id": "2",
-            "title": "resource 3",
-            "trackFileUrl": "https://www.example.com",
-            "author": "2"
-        },
-        "resource_4": {
-            "_id": "3",
-            "title": "resource 3",
-            "trackFileUrl": "https://www.example.com",
-            "author": "2"
-        }
-    },
-    "create_users": {
-        "abdou": {
-            "username": "al/ghom",
-            "email": "96abdou96@gmail.com",
-            "password": "Super123+"
-        },
-        "yoni": {
-            "username": "Vagahbond",
-            "email": "vagahbond@gmail.com",
-            "password": "Super123+"
-        },
-        "jayz": {
-            "username": "jay-z",
-            "email": "jay-z@gmail.com",
-            "password": "Super123+"
-        },
-        "pharrell": {
-            "username": "pharrell williams",
-            "email": "pharrell.williams@gmail.com",
-            "password": "Super123+"
-        },
-        "kanye": {
-            "username": "kanye west",
-            "email": "kanye.west@gmail.com",
-            "password": "Super123+"
-        }
-    },
-    "create_tracks": {
-        "change_clothes": {
-            "title": "change clothes",
-            "trackFileName": "track_1",
-            "buffer": {
-                "type": "Buffer",
-                "data": [
-                    99,
-                    104,
-                    97,
-                    110,
-                    103,
-                    101,
-                    32,
-                    99,
-                    108,
-                    111,
-                    116,
-                    104,
-                    101,
-                    115
-                ]
-            },
-            "author": {
-                "email": "jay-z@gmail.com"
-            },
-            "feats": [
-                {
-                    "username": "pharrell williams",
-                    "email": "pharrell.williams@gmail.com"
-                }
-            ]
-        },
-        "encore": {
-            "title": "encore",
-            "trackFileName": "track_2",
-            "buffer": {
-                "type": "Buffer",
-                "data": [
-                    101,
-                    110,
-                    99,
-                    111,
-                    114,
-                    101
-                ]
-            },
-            "author": {
-                "email": "jay-z@gmail.com"
-            },
-            "feats": []
-        },
-        "threat": {
-            "title": "threat",
-            "trackFileName": "track_3",
-            "buffer": {
-                "type": "Buffer",
-                "data": [
-                    116,
-                    104,
-                    114,
-                    101,
-                    97,
-                    116
-                ]
-            },
-            "author": {
-                "username": "jay-z",
-                "email": "jay-z@gmail.com"
-            },
-            "feats": []
-        }
-    },
-    "create_resource_packs": {
-        "resource_pack1": {
-            "title": "resource pack 1",
-            "description": "my resource pack 1",
-            "coverUrl": "https://www.resource-pack.com",
-            "previewUrl": "https://www.resource-pack.com",
-            "resources": [
-                {
-                    "title": "resource 1",
-                    "resourceFileName": "resource_1",
-                    "author": {
-                        "username": "abdou",
-                        "email": "96abdou96@gmail.com"
-                    }
-                },
-                {
-                    "title": "resource 2",
-                    "resourceFileName": "resource_2",
-                    "author": {
-                        "username": "abdou",
-                        "email": "96abdou96@gmail.com"
-                    }
-                }
-            ]
-        },
-        "resource_pack2": {
-            "title": "resource pack 2",
-            "description": "my resource pack 2",
-            "coverUrl": "https://www.resource-pack.com",
-            "previewUrl": "https://www.resource-pack.com",
-            "resources": [
-                {
-                    "title": "resource 3",
-                    "resourceFileName": "resource_3",
-                    "author": {
-                        "username": "yoni",
-                        "email": "vagahbond@gmail.com"
-                    }
-                }
-            ]
-        }
-    },
-    "create_releases": {
-        "black_album": {
-            "title": "balck album",
-            "description": "one of the greatest",
-            "coverUrl": "https://www.release.com",
-            "feats": [],
-            "tracks": [
-                {
-                    "title": "change clothes",
-                    "trackFileName": "track_1",
-                    "author": {
-                        "username": "jay-z",
-                        "email": "jay-z@gmail.com"
-                    },
-                    "feats": [
-                        {
-                            "username": "pharrell williams",
-                            "email": "pharrell.williams@gmail.com"
-                        }
-                    ]
-                },
-                {
-                    "title": "encore",
-                    "trackFileName": "track_2",
-                    "author": {
-                        "username": "jay-z",
-                        "email": "jay-z@gmail.com"
-                    },
-                    "feats": []
-                },
-                {
-                    "title": "threat",
-                    "trackFileName": "track_1",
-                    "author": {
-                        "username": "jay-z",
-                        "email": "jay-z@gmail.com"
-                    },
-                    "feats": []
-                }
-            ]
-        },
-        "wtt": {
-            "title": "Watch the Throne",
-            "description": "just legendary",
-            "coverUrl": "https://www.release.com",
-            "feats": [
-                {
-                    "username": "kanye west",
-                    "email": "kanye.west@gmail.com"
-                }
-            ],
-            "tracks": [
-                {
-                    "title": "New Day",
-                    "trackFileName": "track_4",
-                    "author": {
-                        "username": "jay-z",
-                        "email": "jay-z@gmail.com"
-                    },
-                    "feats": [
-                        {
-                            "username": "kanye west",
-                            "email": "kanye.west@gmail.com"
-                        }
-                    ]
-                },
-                {
-                    "title": "Murder to Excellence",
-                    "trackFileName": "track_5",
-                    "author": {
-                        "username": "jay-z",
-                        "email": "jay-z@gmail.com"
-                    },
-                    "feats": [
-                        {
-                            "username": "kanye west",
-                            "email": "kanye.west@gmail.com"
-                        }
-                    ]
-                },
-                {
-                    "title": "gotta have it",
-                    "trackFileName": "track_6",
-                    "author": {
-                        "username": "jay-z",
-                        "email": "jay-z@gmail.com"
-                    },
-                    "feats": [
-                        {
-                            "username": "kanye west",
-                            "email": "kanye.west@gmail.com"
-                        }
-                    ]
-                }
-            ]
-        }
-    },
-    "create_files": {
-        "black_album": [
-            {
-                "fileName": "track_1",
-                "buffer": {
-                    "type": "Buffer",
-                    "data": [
-                        99,
-                        104,
-                        97,
-                        110,
-                        103,
-                        101,
-                        32,
-                        99,
-                        108,
-                        111,
-                        116,
-                        104,
-                        101,
-                        115
-                    ]
-                }
-            },
-            {
-                "fileName": "track_2",
-                "buffer": {
-                    "type": "Buffer",
-                    "data": [
-                        101,
-                        110,
-                        99,
-                        111,
-                        114,
-                        101
-                    ]
-                }
-            },
-            {
-                "fileName": "track_3",
-                "buffer": {
-                    "type": "Buffer",
-                    "data": [
-                        116,
-                        104,
-                        114,
-                        101,
-                        97,
-                        116
-                    ]
-                }
-            }
-        ],
-        "wtt": [
-            {
-                "fileName": "track_4",
-                "buffer": {
-                    "type": "Buffer",
-                    "data": [
-                        99,
-                        104,
-                        97,
-                        110,
-                        103,
-                        101,
-                        32,
-                        99,
-                        108,
-                        111,
-                        116,
-                        104,
-                        101,
-                        115
-                    ]
-                }
-            },
-            {
-                "fileName": "track_5",
-                "buffer": {
-                    "type": "Buffer",
-                    "data": [
-                        101,
-                        110,
-                        99,
-                        111,
-                        114,
-                        101
-                    ]
-                }
-            },
-            {
-                "fileName": "track_6",
-                "buffer": {
-                    "type": "Buffer",
-                    "data": [
-                        116,
-                        104,
-                        114,
-                        101,
-                        97,
-                        116
-                    ]
-                }
-            }
-        ],
-        "resources_pack_1": [
-            {
-                "fileName": "resource_1",
-                "buffer": {
-                    "type": "Buffer",
-                    "data": [
-                        99,
-                        104,
-                        97,
-                        110,
-                        103,
-                        101,
-                        32,
-                        99,
-                        108,
-                        111,
-                        116,
-                        104,
-                        101,
-                        115
-                    ]
-                }
-            },
-            {
-                "fileName": "resource_2",
-                "buffer": {
-                    "type": "Buffer",
-                    "data": [
-                        101,
-                        110,
-                        99,
-                        111,
-                        114,
-                        101
-                    ]
-                }
-            }
-        ],
-        "resources_pack_2": [
-            {
-                "fileName": "resource_3",
-                "buffer": {
-                    "type": "Buffer",
-                    "data": [
-                        99,
-                        104,
-                        97,
-                        110,
-                        103,
-                        101,
-                        32,
-                        99,
-                        108,
-                        111,
-                        116,
-                        104,
-                        101,
-                        115
-                    ]
-                }
-            }
-        ]
-    },
-    "create_playlists": {
-        "my_playlist1": {
-            "title": "my_playlist1"
-        },
-        "my_playlist2": {
-            "title": "my_playlist2"
-        }
-    },
-    "create_resources": {
-        "resource1": {
-            "title": "resource 1",
-            "resourceFileUrl": "https://www.example.com",
-            "buffer": {
-                "type": "Buffer",
-                "data": [
-                    99,
-                    104,
-                    97,
-                    110,
-                    103,
-                    101,
-                    32,
-                    99,
-                    108,
-                    111,
-                    116,
-                    104,
-                    101,
-                    115
-                ]
-            },
-            "author": "0"
-        },
-        "resource2": {
-            "title": "resource 2",
-            "resourceFileUrl": "https://www.example.com",
-            "buffer": {
-                "type": "Buffer",
-                "data": [
-                    101,
-                    110,
-                    99,
-                    111,
-                    114,
-                    101
-                ]
-            },
-            "author": "0"
-        },
-        "resource3": {
-            "title": "resource 3",
-            "resourceFileUrl": "https://www.example.com",
-            "buffer": {
-                "type": "Buffer",
-                "data": [
-                    116,
-                    104,
-                    114,
-                    101,
-                    97,
-                    116
-                ]
-            }
-        }
+    "kanye": {
+      "_id": "4",
+      "username": "kanye west",
+      "email": "kanye.west@gmail.com",
+      "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
     }
+  },
+  "releases": {
+    "black_album": {
+      "_id": "0",
+      "title": "balck album",
+      "description": "one of the greatest",
+      "coverUrl": "https://www.release.com",
+      "author": {
+        "_id": "2",
+        "username": "jay-z",
+        "email": "jay-z@gmail.com",
+        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+      },
+      "feats": [],
+      "tracks": [
+        {
+          "_id": "0",
+          "title": "change clothes",
+          "trackFileUrl": "https://www.example.com",
+          "author": {
+            "_id": "2",
+            "username": "jay-z",
+            "email": "jay-z@gmail.com",
+            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+          },
+          "feats": [
+            {
+              "_id": "3",
+              "username": "pharrell williams",
+              "email": "pharrell.williams@gmail.com",
+              "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+            }
+          ]
+        },
+        {
+          "_id": "1",
+          "title": "encore",
+          "trackFileUrl": "https://www.example.com",
+          "author": {
+            "_id": "2",
+            "username": "jay-z",
+            "email": "jay-z@gmail.com",
+            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+          },
+          "feats": []
+        },
+        {
+          "_id": "2",
+          "title": "threat",
+          "trackFileUrl": "https://www.example.com",
+          "author": [
+            {
+              "_id": "2",
+              "username": "jay-z",
+              "email": "jay-z@gmail.com",
+              "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+            }
+          ]
+        }
+      ]
+    },
+    "wtt": {
+      "_id": "1",
+      "title": "Watch the Throne",
+      "description": "just legendary",
+      "coverUrl": "https://www.release.com",
+      "author": {
+        "_id": "2",
+        "username": "jay-z",
+        "email": "jay-z@gmail.com",
+        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+      },
+      "feats": [
+        {
+          "_id": "4",
+          "username": "kanye west",
+          "email": "kanye.west@gmail.com",
+          "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+        }
+      ],
+      "tracks": [
+        {
+          "_id": "3",
+          "title": "New Day",
+          "trackFileUrl": "https://www.example.com",
+          "author": {
+            "_id": "2",
+            "username": "jay-z",
+            "email": "jay-z@gmail.com",
+            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+          },
+          "feats": [
+            {
+              "_id": "4",
+              "username": "kanye west",
+              "email": "kanye.west@gmail.com",
+              "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+            }
+          ]
+        },
+        {
+          "_id": "4",
+          "title": "Murder to Excellence",
+          "trackFileUrl": "https://www.example.com",
+          "author": {
+            "_id": "2",
+            "username": "jay-z",
+            "email": "jay-z@gmail.com",
+            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+          },
+          "feats": [
+            {
+              "_id": "4",
+              "username": "kanye west",
+              "email": "kanye.west@gmail.com",
+              "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+            }
+          ]
+        },
+        {
+          "_id": "5",
+          "title": "gotta have it",
+          "trackFileUrl": "https://www.example.com",
+          "author": {
+            "_id": "2",
+            "username": "jay-z",
+            "email": "jay-z@gmail.com",
+            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+          },
+          "feats": [
+            {
+              "_id": "4",
+              "username": "kanye west",
+              "email": "kanye.west@gmail.com",
+              "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+            }
+          ]
+        }
+      ]
+    },
+    "imm": {
+      "_id": "2",
+      "title": "In My Mind",
+      "description": "cool to hear",
+      "coverUrl": "https://www.release.com",
+      "author": {
+        "_id": "3",
+        "username": "pharrell williams",
+        "email": "pharrell.williams@gmail.com",
+        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+      },
+      "feat": [],
+      "tracks": {
+        "0": {
+          "_id": "6",
+          "title": "Young Girl",
+          "trackFileUrl": "https://www.example.com",
+          "author": {
+            "_id": "3",
+            "username": "pharrell williams",
+            "email": "pharrell.williams@gmail.com",
+            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+          },
+          "feats": [
+            {
+              "_id": "2",
+              "username": "jay-z",
+              "email": "jay-z@gmail.com",
+              "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+            }
+          ]
+        },
+        "1": {
+          "_id": "7",
+          "title": "angel",
+          "trackFileUrl": "https://www.example.com",
+          "author": {
+            "_id": "3",
+            "username": "pharrell williams",
+            "email": "pharrell.williams@gmail.com",
+            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+          }
+        },
+        "2": {
+          "_id": "8",
+          "title": "Number One",
+          "trackFileUrl": "https://www.example.com",
+          "author": {
+            "_id": "3",
+            "username": "pharrell williams",
+            "email": "pharrell.williams@gmail.com",
+            "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+          },
+          "feats": [
+            {
+              "_id": "4",
+              "username": "kanye west",
+              "email": "kanye.west@gmail.com",
+              "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "resource_packs": {
+    "resource_pack1": {
+      "_id": "0",
+      "title": "resource pack 1",
+      "description": "my resource pack 1",
+      "coverUrl": "https://www.resource-pack.com",
+      "previewUrl": "https://www.resource-pack.com",
+      "author": "0",
+      "resources": [
+        {
+          "title": "resource 1",
+          "resourceFileName": "resource_1",
+          "author": {
+            "username": "abdou",
+            "email": "96abdou96@gmail.com"
+          }
+        },
+        {
+          "title": "resource 2",
+          "resourceFileName": "resource_2",
+          "author": {
+            "username": "abdou",
+            "email": "96abdou96@gmail.com"
+          }
+        }
+      ]
+    },
+    "resource_pack2": {
+      "_id": "1",
+      "title": "resource pack 2",
+      "description": "my resource pack 2",
+      "coverUrl": "https://www.resource-pack.com",
+      "previewUrl": "https://www.resource-pack.com",
+      "author": "2",
+      "resources": [
+        {
+          "title": "resource 3",
+          "resourceFileName": "resource_3",
+          "author": {
+            "username": "yoni",
+            "email": "vagahbond@gmail.com"
+          }
+        }
+      ]
+    }
+  },
+  "playlists": {
+    "fav_1": {
+      "_id": "0",
+      "title": "my playlist 1",
+      "owner": "0",
+      "tracks": ["0", "1", "2"]
+    },
+    "fav_2": {
+      "_id": "1",
+      "title": "my playlist 2",
+      "owner": "0",
+      "tracks": ["3", "4", "5"]
+    }
+  },
+  "comments": {
+    "comment_1": {
+      "_id": "0",
+      "content": "cool track",
+      "contentId": "0",
+      "isPositive": true,
+      "modelType": "Track",
+      "owner": {
+        "email": "96abdou96@gmail.com",
+        "username": "al/ghom"
+      }
+    },
+    "comment_2": {
+      "_id": "1",
+      "content": "bad track",
+      "contentId": "1",
+      "isPositive": false,
+      "modelType": "Track",
+      "owner": {
+        "email": "96abdou96@gmail.com",
+        "username": "al/ghom"
+      }
+    },
+    "comment_3": {
+      "_id": "2",
+      "content": "cool resource",
+      "contentId": "1",
+      "isPositive": true,
+      "modelType": "Resource",
+      "owner": {
+        "email": "96abdou96@gmail.com",
+        "username": "al/ghom"
+      }
+    }
+  },
+  "tracks": {
+    "change_clothes": {
+      "_id": "0",
+      "title": "change clothes",
+      "trackFileUrl": "https://www.example.com",
+      "author": {
+        "_id": "2",
+        "username": "jay-z",
+        "email": "jay-z@gmail.com",
+        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+      },
+      "feats": [
+        {
+          "_id": "3",
+          "username": "pharrell williams",
+          "email": "pharrell.williams@gmail.com",
+          "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+        }
+      ]
+    },
+    "encore": {
+      "_id": "1",
+      "title": "encore",
+      "trackFileUrl": "https://www.example.com",
+      "author": {
+        "_id": "2",
+        "username": "jay-z",
+        "email": "jay-z@gmail.com",
+        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+      },
+      "feats": []
+    },
+    "threat": {
+      "_id": "2",
+      "title": "threat",
+      "trackFileUrl": "https://www.example.com",
+      "author": [
+        {
+          "_id": "2",
+          "username": "jay-z",
+          "email": "jay-z@gmail.com",
+          "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+        }
+      ]
+    },
+    "new_day": {
+      "_id": "3",
+      "title": "New Day",
+      "trackFileUrl": "https://www.example.com",
+      "author": {
+        "_id": "2",
+        "username": "jay-z",
+        "email": "jay-z@gmail.com",
+        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+      },
+      "feats": [
+        {
+          "_id": "4",
+          "username": "kanye west",
+          "email": "kanye.west@gmail.com",
+          "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+        }
+      ]
+    },
+    "mte": {
+      "_id": "4",
+      "title": "Murder to Excellence",
+      "trackFileUrl": "https://www.example.com",
+      "author": {
+        "_id": "2",
+        "username": "jay-z",
+        "email": "jay-z@gmail.com",
+        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+      },
+      "feats": [
+        {
+          "_id": "4",
+          "username": "kanye west",
+          "email": "kanye.west@gmail.com",
+          "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+        }
+      ]
+    },
+    "ghi": {
+      "_id": "5",
+      "title": "gotta have it",
+      "trackFileUrl": "https://www.example.com",
+      "author": {
+        "_id": "2",
+        "username": "jay-z",
+        "email": "jay-z@gmail.com",
+        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+      },
+      "feats": [
+        {
+          "_id": "4",
+          "username": "kanye west",
+          "email": "kanye.west@gmail.com",
+          "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+        }
+      ]
+    },
+    "young_girl": {
+      "_id": "6",
+      "title": "Young Girl",
+      "trackFileUrl": "https://www.example.com",
+      "author": {
+        "_id": "3",
+        "username": "pharrell williams",
+        "email": "pharrell.williams@gmail.com",
+        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+      },
+      "feats": [
+        {
+          "_id": "2",
+          "username": "jay-z",
+          "email": "jay-z@gmail.com",
+          "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+        }
+      ]
+    },
+    "angel": {
+      "_id": "7",
+      "title": "angel",
+      "trackFileUrl": "https://www.example.com",
+      "author": {
+        "_id": "3",
+        "username": "pharrell williams",
+        "email": "pharrell.williams@gmail.com",
+        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+      }
+    },
+    "number_one": {
+      "_id": "8",
+      "title": "Number One",
+      "trackFileUrl": "https://www.example.com",
+      "author": {
+        "_id": "3",
+        "username": "pharrell williams",
+        "email": "pharrell.williams@gmail.com",
+        "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+      },
+      "feats": [
+        {
+          "_id": "4",
+          "username": "kanye west",
+          "email": "kanye.west@gmail.com",
+          "password": "$2b$10$v5vECbZOx0ybssiOkrS/o.s7Q6ejf/bri2jwH8WW48trelGBdW3Mm"
+        }
+      ]
+    }
+  },
+  "resources": {
+    "resource_1": {
+      "_id": "0",
+      "title": "resource 1",
+      "trackFileUrl": "https://www.example.com",
+      "author": "0"
+    },
+    "resource_2": {
+      "_id": "1",
+      "title": "resource 2",
+      "trackFileUrl": "https://www.example.com",
+      "author": "0"
+    },
+    "resource_3": {
+      "_id": "2",
+      "title": "resource 3",
+      "trackFileUrl": "https://www.example.com",
+      "author": "2"
+    },
+    "resource_4": {
+      "_id": "3",
+      "title": "resource 3",
+      "trackFileUrl": "https://www.example.com",
+      "author": "2"
+    }
+  },
+  "create_users": {
+    "abdou": {
+      "username": "al/ghom",
+      "email": "96abdou96@gmail.com",
+      "password": "Super123+"
+    },
+    "yoni": {
+      "username": "Vagahbond",
+      "email": "vagahbond@gmail.com",
+      "password": "Super123+"
+    },
+    "jayz": {
+      "username": "jay-z",
+      "email": "jay-z@gmail.com",
+      "password": "Super123+"
+    },
+    "pharrell": {
+      "username": "pharrell williams",
+      "email": "pharrell.williams@gmail.com",
+      "password": "Super123+"
+    },
+    "kanye": {
+      "username": "kanye west",
+      "email": "kanye.west@gmail.com",
+      "password": "Super123+"
+    }
+  },
+  "create_tracks": {
+    "change_clothes": {
+      "title": "change clothes",
+      "trackFileName": "track_1",
+      "buffer": {
+        "type": "Buffer",
+        "data": [
+          99, 104, 97, 110, 103, 101, 32, 99, 108, 111, 116, 104, 101, 115
+        ]
+      },
+      "author": {
+        "email": "jay-z@gmail.com"
+      },
+      "feats": [
+        {
+          "username": "pharrell williams",
+          "email": "pharrell.williams@gmail.com"
+        }
+      ]
+    },
+    "encore": {
+      "title": "encore",
+      "trackFileName": "track_2",
+      "buffer": {
+        "type": "Buffer",
+        "data": [101, 110, 99, 111, 114, 101]
+      },
+      "author": {
+        "email": "jay-z@gmail.com"
+      },
+      "feats": []
+    },
+    "threat": {
+      "title": "threat",
+      "trackFileName": "track_3",
+      "buffer": {
+        "type": "Buffer",
+        "data": [116, 104, 114, 101, 97, 116]
+      },
+      "author": {
+        "username": "jay-z",
+        "email": "jay-z@gmail.com"
+      },
+      "feats": []
+    }
+  },
+  "create_resource_packs": {
+    "resource_pack1": {
+      "title": "resource pack 1",
+      "description": "my resource pack 1",
+      "coverUrl": "https://www.resource-pack.com",
+      "previewUrl": "https://www.resource-pack.com",
+      "resources": [
+        {
+          "title": "resource 1",
+          "resourceFileName": "resource_1",
+          "author": {
+            "username": "abdou",
+            "email": "96abdou96@gmail.com"
+          }
+        },
+        {
+          "title": "resource 2",
+          "resourceFileName": "resource_2",
+          "author": {
+            "username": "abdou",
+            "email": "96abdou96@gmail.com"
+          }
+        }
+      ]
+    },
+    "resource_pack2": {
+      "title": "resource pack 2",
+      "description": "my resource pack 2",
+      "coverUrl": "https://www.resource-pack.com",
+      "previewUrl": "https://www.resource-pack.com",
+      "resources": [
+        {
+          "title": "resource 3",
+          "resourceFileName": "resource_3",
+          "author": {
+            "username": "yoni",
+            "email": "vagahbond@gmail.com"
+          }
+        }
+      ]
+    }
+  },
+  "create_releases": {
+    "black_album": {
+      "title": "balck album",
+      "description": "one of the greatest",
+      "coverUrl": "https://www.release.com",
+      "feats": [],
+      "tracks": [
+        {
+          "title": "change clothes",
+          "trackFileName": "track_1",
+          "author": {
+            "username": "jay-z",
+            "email": "jay-z@gmail.com"
+          },
+          "feats": [
+            {
+              "username": "pharrell williams",
+              "email": "pharrell.williams@gmail.com"
+            }
+          ]
+        },
+        {
+          "title": "encore",
+          "trackFileName": "track_2",
+          "author": {
+            "username": "jay-z",
+            "email": "jay-z@gmail.com"
+          },
+          "feats": []
+        },
+        {
+          "title": "threat",
+          "trackFileName": "track_1",
+          "author": {
+            "username": "jay-z",
+            "email": "jay-z@gmail.com"
+          },
+          "feats": []
+        }
+      ]
+    },
+    "wtt": {
+      "title": "Watch the Throne",
+      "description": "just legendary",
+      "coverUrl": "https://www.release.com",
+      "feats": [
+        {
+          "username": "kanye west",
+          "email": "kanye.west@gmail.com"
+        }
+      ],
+      "tracks": [
+        {
+          "title": "New Day",
+          "trackFileName": "track_4",
+          "author": {
+            "username": "jay-z",
+            "email": "jay-z@gmail.com"
+          },
+          "feats": [
+            {
+              "username": "kanye west",
+              "email": "kanye.west@gmail.com"
+            }
+          ]
+        },
+        {
+          "title": "Murder to Excellence",
+          "trackFileName": "track_5",
+          "author": {
+            "username": "jay-z",
+            "email": "jay-z@gmail.com"
+          },
+          "feats": [
+            {
+              "username": "kanye west",
+              "email": "kanye.west@gmail.com"
+            }
+          ]
+        },
+        {
+          "title": "gotta have it",
+          "trackFileName": "track_6",
+          "author": {
+            "username": "jay-z",
+            "email": "jay-z@gmail.com"
+          },
+          "feats": [
+            {
+              "username": "kanye west",
+              "email": "kanye.west@gmail.com"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "create_files": {
+    "black_album": [
+      {
+        "fileName": "track_1",
+        "buffer": {
+          "type": "Buffer",
+          "data": [
+            99, 104, 97, 110, 103, 101, 32, 99, 108, 111, 116, 104, 101, 115
+          ]
+        }
+      },
+      {
+        "fileName": "track_2",
+        "buffer": {
+          "type": "Buffer",
+          "data": [101, 110, 99, 111, 114, 101]
+        }
+      },
+      {
+        "fileName": "track_3",
+        "buffer": {
+          "type": "Buffer",
+          "data": [116, 104, 114, 101, 97, 116]
+        }
+      }
+    ],
+    "wtt": [
+      {
+        "fileName": "track_4",
+        "buffer": {
+          "type": "Buffer",
+          "data": [
+            99, 104, 97, 110, 103, 101, 32, 99, 108, 111, 116, 104, 101, 115
+          ]
+        }
+      },
+      {
+        "fileName": "track_5",
+        "buffer": {
+          "type": "Buffer",
+          "data": [101, 110, 99, 111, 114, 101]
+        }
+      },
+      {
+        "fileName": "track_6",
+        "buffer": {
+          "type": "Buffer",
+          "data": [116, 104, 114, 101, 97, 116]
+        }
+      }
+    ],
+    "resources_pack_1": [
+      {
+        "fileName": "resource_1",
+        "buffer": {
+          "type": "Buffer",
+          "data": [
+            99, 104, 97, 110, 103, 101, 32, 99, 108, 111, 116, 104, 101, 115
+          ]
+        }
+      },
+      {
+        "fileName": "resource_2",
+        "buffer": {
+          "type": "Buffer",
+          "data": [101, 110, 99, 111, 114, 101]
+        }
+      }
+    ],
+    "resources_pack_2": [
+      {
+        "fileName": "resource_3",
+        "buffer": {
+          "type": "Buffer",
+          "data": [
+            99, 104, 97, 110, 103, 101, 32, 99, 108, 111, 116, 104, 101, 115
+          ]
+        }
+      }
+    ]
+  },
+  "create_playlists": {
+    "my_playlist1": {
+      "title": "my_playlist1"
+    },
+    "my_playlist2": {
+      "title": "my_playlist2"
+    }
+  },
+  "create_resources": {
+    "resource1": {
+      "title": "resource 1",
+      "resourceFileName": "resource_1",
+      "buffer": {
+        "type": "Buffer",
+        "data": [
+          99, 104, 97, 110, 103, 101, 32, 99, 108, 111, 116, 104, 101, 115
+        ]
+      },
+      "author": "0"
+    },
+    "resource2": {
+      "title": "resource 2",
+      "resourceFileName": "resource_2",
+      "buffer": {
+        "type": "Buffer",
+        "data": [101, 110, 99, 111, 114, 101]
+      },
+      "author": "0"
+    },
+    "resource3": {
+      "title": "resource 3",
+      "resourceFileName": "resource_3",
+      "buffer": {
+        "type": "Buffer",
+        "data": [116, 104, 114, 101, 97, 116]
+      }
+    }
+  },
+  "create_comments": {
+    "comment_1": {
+      "contentId": "0",
+      "isPositive": true,
+      "content": "cool track",
+      "typeOfContent": "Track"
+    },
+    "comment_2": {
+      "contentId": "1",
+      "isPositive": false,
+      "content": "bad track",
+      "typeOfContent": "Track"
+    },
+    "comment_3": {
+      "contentId": "2",
+      "isPositive": true,
+      "content": "cool resource",
+      "typeOfContent": "Resource"
+    }
+  }
 }

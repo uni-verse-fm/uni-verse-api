@@ -137,15 +137,14 @@ export class ResourcePacksService {
   async updateResourcePack(
     id: string,
     updateResourcePackDto: UpdateResourcePackDto,
+    owner: UserDocument,
   ) {
     return `This action updates a #${id} resource pack`;
   }
 
-  async removeResourcePack(id: string) {
-    const resourcePack = await this.findResourcePackById(id);
-    if (!resourcePack) {
-      throw new NotFoundException('Somthing wrong with the server');
-    }
+  async removeResourcePack(id: string, owner: UserDocument) {
+    const resourcePack = await this.isUserTheOwnerOfResourcePack(id, owner);
+
     await this.resourcePackModel.deleteOne({ id: resourcePack._id });
     return {
       id: resourcePack._id.toString(),
@@ -168,6 +167,20 @@ export class ResourcePacksService {
         email: resourcePack.author.email,
       },
     };
+  }
+
+  private async isUserTheOwnerOfResourcePack(id: string, owner: UserDocument) {
+    const resourcePack = await this.findResourcePackById(id);
+    if (!resourcePack) {
+      throw new NotFoundException('Somthing wrong with the server');
+    }
+    if (resourcePack.author._id.toString() !== owner._id.toString()) {
+      throw new BadRequestException(
+        'You are not the owner of this resource pack.',
+      );
+    }
+
+    return resourcePack;
   }
 
   private async isResourcePackUnique(title: string) {

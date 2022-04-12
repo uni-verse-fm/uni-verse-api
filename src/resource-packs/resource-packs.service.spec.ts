@@ -214,6 +214,7 @@ describe('ResourcePacksService', () => {
 
       const result = await resourcePacksService.removeResourcePack(
         resourcePackId,
+        abdou,
       );
       expect(result.id).toStrictEqual(resourcePackId);
       expect(result.title).toStrictEqual(title);

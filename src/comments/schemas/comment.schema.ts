@@ -5,30 +5,30 @@ import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
 import { User } from '../../users/schemas/user.schema';
 
-export type TrackDocument = Track & Document;
+export type CommentDocument = Comment & Document;
 
 @Schema()
-export class Track {
+export class Comment {
   @Transform(({ value }) => value.toString())
   _id: ObjectId;
 
   @Prop()
-  title: string;
+  isPositive: boolean;
 
   @Prop()
-  trackFileUrl: string;
+  content: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   @Type(() => User)
-  author: User;
+  owner: User;
 
-  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }])
-  @Type(() => User)
-  feats: User[];
+  @Prop({ type: mongoose.Schema.Types.ObjectId, refPath: 'modelType' })
+  modelId: ObjectId;
+
+  @Prop({ type: String, enum: ['Track', 'Resource'] })
+  modelType: string;
 }
 
-const TrackSchema = SchemaFactory.createForClass(Track);
+const CommentSchema = SchemaFactory.createForClass(Comment);
 
-TrackSchema.index({ title: 'text' });
-
-export { TrackSchema };
+export { CommentSchema };
