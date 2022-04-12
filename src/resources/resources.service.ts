@@ -10,7 +10,8 @@ import { CreateResourceDto } from './dto/create-resource.dto';
 import { UpdateResourceDto } from './dto/update-resource.dto';
 import { Resource, ResourceDocument } from './schemas/resource.schema';
 import IFileResponse from '../files/interfaces/file-response.interface';
-import { IResourceResponse } from './interfaces/resource-response.interface';
+import { ICreateResourceResponse } from './interfaces/resource-create-response.interface';
+import { IDeleteResourceResponse } from './interfaces/resource-delete-response.interface copy';
 
 @Injectable()
 export class ResourcesService {
@@ -23,7 +24,7 @@ export class ResourcesService {
   async createResource(
     createResourceDto: CreateResourceDto,
     session: ClientSession | null = null,
-  ): Promise<IResourceResponse> {
+  ): Promise<ICreateResourceResponse> {
     this.isResourceUnique(createResourceDto.title);
 
     const file = {
@@ -47,7 +48,7 @@ export class ResourcesService {
   async createManyResources(
     resources: CreateResourceDto[],
     session: ClientSession | null = null,
-  ): Promise<IResourceResponse[]> {
+  ): Promise<ICreateResourceResponse[]> {
     return await Promise.all(
       resources.map((resource) => this.createResource(resource, session)),
     );
@@ -79,12 +80,12 @@ export class ResourcesService {
     return `This action updates a #${id} resource`;
   }
 
-  async removeResource(id: string) {
+  async removeResource(id: string, session: ClientSession | null = null) {
     const resource = await this.findResourceById(id);
     if (!resource) {
       throw new NotFoundException('Somthing wrong with the server');
     }
-    await this.resourceModel.deleteOne({ id: resource._id });
+    await this.resourceModel.deleteOne({ id: resource._id }, session);
     return {
       id: resource._id,
       title: resource.title,
@@ -92,8 +93,19 @@ export class ResourcesService {
     };
   }
 
+  async removeManyResources(
+    resources: Resource[],
+    session: ClientSession | null = null,
+  ): Promise<IDeleteResourceResponse[]> {
+    return await Promise.all(
+      resources.map((resource) =>
+        this.removeResource(resource.toString(), session),
+      ),
+    );
+  }
+
   // for testing
-  private buildResourceInfo(resource: any): IResourceResponse {
+  private buildResourceInfo(resource: any): ICreateResourceResponse {
     return {
       _id: resource._id,
       title: resource.title,
