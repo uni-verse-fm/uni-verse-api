@@ -1,13 +1,13 @@
 import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IResourceResponse } from '../resources/interfaces/resource-response.interface';
+import { ICreateResourceResponse } from '../resources/interfaces/resource-create-response.interface';
 import { ResourcesService } from '../resources/resources.service';
 import { Resource, ResourceSchema } from '../resources/schemas/resource.schema';
 import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
-import { ITrackResponse } from '../tracks/interfaces/track-response.interface';
+import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response.interface';
 import { Track, TrackSchema } from '../tracks/schemas/track.schema';
 import { TracksService } from '../tracks/tracks.service';
 import { User, UserDocument, UserSchema } from '../users/schemas/user.schema';
@@ -32,9 +32,9 @@ const commentThreeResult = data.comments.comment_3;
 
 let user: UserDocument;
 let artist: UserDocument;
-let encore: ITrackResponse;
-let threat: ITrackResponse;
-let resourceOne: IResourceResponse;
+let encore: ICreateTrackResponse;
+let threat: ICreateTrackResponse;
+let resourceOne: ICreateResourceResponse;
 let commentId: string;
 describe('CommentsService', () => {
   let commentService: CommentsService;
@@ -128,8 +128,8 @@ describe('CommentsService', () => {
         buffer: threatBuffer,
         trackFileName: threatTrack.trackFileName,
       });
-      expect(encore._id).toBeDefined();
-      expect(threat._id).toBeDefined();
+      expect(encore.id).toBeDefined();
+      expect(threat.id).toBeDefined();
     });
 
     it('', async () => {
@@ -142,15 +142,15 @@ describe('CommentsService', () => {
         buffer: resourceBuffer,
         author: user,
       });
-      expect(encore._id).toBeDefined();
-      expect(threat._id).toBeDefined();
+      expect(encore.id).toBeDefined();
+      expect(threat.id).toBeDefined();
     });
 
     it('should return the first comment', async () => {
       const comment = await commentService.createComment(
         {
           ...commentOneComment,
-          contentId: encore._id.toString(),
+          contentId: encore.id.toString(),
           typeOfContent: ModelType[commentOneComment.typeOfContent],
         },
         user,
@@ -168,7 +168,7 @@ describe('CommentsService', () => {
       const comment = await commentService.createComment(
         {
           ...commentTwoComment,
-          contentId: threat._id.toString(),
+          contentId: threat.id.toString(),
           typeOfContent: ModelType[commentTwoComment.typeOfContent],
         },
         user,

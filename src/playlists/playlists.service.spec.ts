@@ -11,7 +11,7 @@ import { UsersService } from '../users/users.service';
 import { PlaylistsService } from './playlists.service';
 import { Playlist, PlaylistSchema } from './schemas/playlist.schema';
 import * as data from '../test-utils/data/mock_data.json';
-import { ITrackResponse } from '../tracks/interfaces/track-response.interface';
+import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response.interface';
 import { FilesService } from '../files/files.service';
 
 const abdou = data.users.abdou;
@@ -23,8 +23,8 @@ const my_playlist2 = data.create_playlists.my_playlist2;
 
 let user: UserDocument;
 let artist: UserDocument;
-let encore: ITrackResponse;
-let threat: ITrackResponse;
+let encore: ICreateTrackResponse;
+let threat: ICreateTrackResponse;
 let playlistId: string;
 
 describe('PlaylistsService', () => {
@@ -107,8 +107,8 @@ describe('PlaylistsService', () => {
         buffer: threatBuffer,
         trackFileName: threatTrack.trackFileName,
       });
-      expect(encore._id).toBeDefined();
-      expect(threat._id).toBeDefined();
+      expect(encore.id).toBeDefined();
+      expect(threat.id).toBeDefined();
     });
 
     it('should return the first playlist', async () => {

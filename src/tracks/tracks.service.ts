@@ -5,14 +5,14 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateTrackDto } from './dto/create-track.dto';
-import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track, TrackDocument } from './schemas/track.schema';
 import { Model, ClientSession } from 'mongoose';
-import { ITrackResponse } from './interfaces/track-response.interface';
+import { ICreateTrackResponse } from './interfaces/track-create-response.interface';
 import { FilesService } from '../files/files.service';
 import IFileResponse from '../files/interfaces/file-response.interface';
 import { UsersService } from '../users/users.service';
 import { UserDocument } from '../users/schemas/user.schema';
+import { IDeleteTrackResponse } from './interfaces/track-delete-response.interface copy';
 
 @Injectable()
 export class TracksService {
@@ -26,7 +26,7 @@ export class TracksService {
   async createTrack(
     createTrackDto: CreateTrackDto,
     session: ClientSession | null = null,
-  ): Promise<ITrackResponse> {
+  ): Promise<ICreateTrackResponse> {
     this.isTrackUnique(createTrackDto.title);
 
     const feats: UserDocument[] = [];
@@ -60,7 +60,7 @@ export class TracksService {
   async createManyTracks(
     tracks: CreateTrackDto[],
     session: ClientSession | null = null,
-  ): Promise<ITrackResponse[]> {
+  ): Promise<ICreateTrackResponse[]> {
     return await Promise.all(
       tracks.map((track) => this.createTrack(track, session)),
     );
@@ -88,16 +88,15 @@ export class TracksService {
     return track;
   }
 
-  updateTrack(id: string, updateTrackDto: UpdateTrackDto) {
-    return `This action updates a #${id} track`;
-  }
-
-  async removeTrack(id: string) {
+  async removeTrack(
+    id: string,
+    session: ClientSession | null = null,
+  ): Promise<IDeleteTrackResponse> {
     const track = await this.findTrackById(id);
     if (!track) {
       throw new NotFoundException('Somthing wrong with the server');
     }
-    await this.trackModel.deleteOne({ id: track._id });
+    await this.trackModel.deleteOne({ id: track._id }, session);
     return {
       id: track._id,
       title: track.title,
@@ -105,10 +104,19 @@ export class TracksService {
     };
   }
 
+  async removeManyTracks(
+    tracks: Track[],
+    session: ClientSession | null = null,
+  ): Promise<IDeleteTrackResponse[]> {
+    return await Promise.all(
+      tracks.map((track) => this.removeTrack(track.toString(), session)),
+    );
+  }
+
   // for testing
-  private buildTrackInfo(track: any): ITrackResponse {
+  private buildTrackInfo(track: any): ICreateTrackResponse {
     return {
-      _id: track._id,
+      id: track._id,
       title: track.title,
       trackFileUrl: track.trackFileUrl,
       feats: track.feats.map((feat) => ({

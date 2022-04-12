@@ -15,7 +15,7 @@ import {
   ResourcePackDocument,
 } from './schemas/resource-pack.schema';
 import { ResourcesService } from '../resources/resources.service';
-import { IResourceResponse } from '../resources/interfaces/resource-response.interface';
+import { ICreateResourceResponse } from '../resources/interfaces/resource-create-response.interface';
 import { IResourcePackResponse } from './interfaces/resource-pack-response.interface';
 
 @Injectable()
@@ -42,7 +42,7 @@ export class ResourcePacksService {
 
     session.startTransaction();
     try {
-      const resources: IResourceResponse[] =
+      const resources: ICreateResourceResponse[] =
         await this.resourcesService.createManyResources(
           createResourcePack.resources.map((resource) => ({
             ...resource,
@@ -145,12 +145,27 @@ export class ResourcePacksService {
   async removeResourcePack(id: string, owner: UserDocument) {
     const resourcePack = await this.isUserTheOwnerOfResourcePack(id, owner);
 
-    await this.resourcePackModel.deleteOne({ id: resourcePack._id });
-    return {
-      id: resourcePack._id.toString(),
-      title: resourcePack.title,
-      msg: 'ResourcePack deleted',
-    };
+    const session = await this.connection.startSession();
+
+    session.startTransaction();
+    try {
+      await this.resourcesService.removeManyResources(
+        resourcePack.resources,
+        session,
+      );
+
+      await this.resourcePackModel.deleteOne({ id: resourcePack._id });
+      return {
+        id: resourcePack._id.toString(),
+        title: resourcePack.title,
+        msg: 'ResourcePack deleted',
+      };
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
   }
 
   private buildResourcePackInfo(

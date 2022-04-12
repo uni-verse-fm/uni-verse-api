@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { CreateReleaseDto } from './dto/create-release.dto';
-import { UpdateReleaseDto } from './dto/update-release.dto';
 import { Release, ReleaseDocument } from './schemas/release.schema';
 import { Model, Connection } from 'mongoose';
 import { UserDocument } from '../users/schemas/user.schema';
@@ -13,7 +12,8 @@ import { IReleaseResponse } from './interfaces/release-response.interface';
 import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
 import { TracksService } from '../tracks/tracks.service';
 import { UsersService } from '../users/users.service';
-import { ITrackResponse } from '../tracks/interfaces/track-response.interface';
+import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response.interface';
+import { UpdateReleaseDto } from './dto/update-release.dto';
 
 @Injectable()
 export class ReleasesService {
@@ -44,7 +44,7 @@ export class ReleasesService {
 
     session.startTransaction();
     try {
-      const tracks: ITrackResponse[] =
+      const tracks: ICreateTrackResponse[] =
         await this.tracksService.createManyTracks(
           createRelease.tracks.map((track) => ({
             ...track,
@@ -56,7 +56,7 @@ export class ReleasesService {
         ...createRelease,
         author,
         feats: feats.map((feat) => feat._id),
-        tracks: tracks.map((track) => track._id),
+        tracks: tracks.map((track) => track.id),
       };
       const release = await this.releaseModel.create(createdRelease);
 
@@ -142,12 +142,23 @@ export class ReleasesService {
   async removeRelease(id: string, owner: UserDocument) {
     const release = await this.isUserTheOwnerOfRelease(id, owner);
 
-    await this.releaseModel.deleteOne({ id: release._id });
-    return {
-      id: release._id.toString(),
-      title: release.title,
-      msg: 'Release deleted',
-    };
+    const session = await this.connection.startSession();
+
+    session.startTransaction();
+    try {
+      await this.tracksService.removeManyTracks(release.tracks, session);
+      await this.releaseModel.deleteOne({ id: release._id });
+      return {
+        id: release._id.toString(),
+        title: release.title,
+        msg: 'Release deleted',
+      };
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
   }
 
   private buildReleaseInfo(
