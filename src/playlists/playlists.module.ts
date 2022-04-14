@@ -5,9 +5,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Playlist, PlaylistSchema } from './schemas/playlist.schema';
 import { TracksService } from '../tracks/tracks.service';
 import { Track, TrackSchema } from '../tracks/schemas/track.schema';
-import { FilesService } from '../files/files.service';
-import { UsersService } from '../users/users.service';
 import { User, UserSchema } from '../users/schemas/user.schema';
+import { TracksModule } from '../tracks/tracks.module';
+import { FilesService } from '../files/files.service';
+import { MinioClientService } from '../minio-client/minio-client.service';
+import { UsersService } from '../users/users.service';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -15,8 +17,16 @@ import { User, UserSchema } from '../users/schemas/user.schema';
       { name: Track.name, schema: TrackSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    TracksModule,    
   ],
   controllers: [PlaylistsController],
-  providers: [PlaylistsService, TracksService, FilesService, UsersService],
+  providers: [
+    PlaylistsService, 
+    TracksService,
+    MinioClientService, 
+    FilesService,
+    UsersService,
+    ],
+  exports: [PlaylistsService],
 })
 export class PlaylistsModule {}

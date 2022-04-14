@@ -14,7 +14,7 @@ import { UsersService } from '../users/users.service';
 import { UserDocument } from '../users/schemas/user.schema';
 import { IDeleteTrackResponse } from './interfaces/track-delete-response.interface copy';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
-import { BucketName } from '../files/minio.service';
+import { BucketName } from '../minio-client/minio-client.service';
 
 @Injectable()
 export class TracksService {
@@ -29,7 +29,7 @@ export class TracksService {
     createTrackDto: CreateTrackDto,
     session: ClientSession | null = null,
   ): Promise<ICreateTrackResponse> {
-    this.isTrackUnique(createTrackDto.title);
+    // this.isTrackUnique(createTrackDto.title);
 
     const feats: UserDocument[] = [];
 
@@ -37,9 +37,12 @@ export class TracksService {
       fileName: createTrackDto.trackFileName,
       buffer: createTrackDto.buffer,
       size: 4000,
-      mimetype: FileMimeType.MPEG
+      mimetype: FileMimeType.MPEG,
     };
-    const result: IFileResponse = this.filesService.create(file, BucketName.Resources);
+    const result: IFileResponse = await this.filesService.createFile(
+      file,
+      BucketName.Tracks,
+    );
 
     if (createTrackDto.feats) {
       for (const feat of createTrackDto.feats) {
@@ -51,7 +54,7 @@ export class TracksService {
     const createTrack = {
       ...createTrackDto,
       feats,
-      trackFileUrl: result.fileUrl,
+      trackFileUrl: result.url,
     };
 
     const newTrack = new this.trackModel(createTrack);
@@ -117,7 +120,6 @@ export class TracksService {
     );
   }
 
-  // for testing
   private buildTrackInfo(track: any): ICreateTrackResponse {
     return {
       id: track._id,

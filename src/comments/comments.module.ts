@@ -8,8 +8,9 @@ import { Resource, ResourceSchema } from '../resources/schemas/resource.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { TracksService } from '../tracks/tracks.service';
 import { ResourcesService } from '../resources/resources.service';
-import { UsersService } from '../users/users.service';
+import { MinioClientService } from '../minio-client/minio-client.service';
 import { FilesService } from '../files/files.service';
+import { UsersService } from '../users/users.service';
 
 @Module({
   imports: [
@@ -25,8 +26,10 @@ import { FilesService } from '../files/files.service';
     CommentsService,
     TracksService,
     ResourcesService,
-    UsersService,
+    MinioClientService, 
     FilesService,
+    UsersService
   ],
+  exports: [CommentsService],
 })
 export class CommentsModule {}

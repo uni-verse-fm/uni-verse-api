@@ -1,4 +1,3 @@
 export default interface IFileResponse {
-  fileName: string;
-  fileUrl: string;
+  url: string;
 }

@@ -16,7 +16,7 @@ export class Resource {
   title: string;
 
   @Prop()
-  resourceFileUrl: string;
+  fileName: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   @Type(() => User)

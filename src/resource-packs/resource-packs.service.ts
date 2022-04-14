@@ -24,7 +24,6 @@ export class ResourcePacksService {
     @InjectModel(ResourcePack.name)
     private resourcePackModel: Model<ResourcePackDocument>,
     private resourcesService: ResourcesService,
-    private usersService: UsersService,
     @InjectConnection()
     private connection: Connection,
   ) {}

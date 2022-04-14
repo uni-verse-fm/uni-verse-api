@@ -12,10 +12,11 @@ import { PlaylistsModule } from './playlists/playlists.module';
 import { ResourcesModule } from './resources/resources.module';
 import { ResourcePacksModule } from './resource-packs/resource-packs.module';
 import { CommentsModule } from './comments/comments.module';
-import { MinioModule } from 'nestjs-minio-client';
+import { MinioClientModule } from './minio-client/minio-client.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       validationSchema: Joi.object({
         MONGO_HOSTNAME: Joi.string().required(),
         MONGO_USERNAME: Joi.string().required(),
@@ -49,17 +50,6 @@ import { MinioModule } from 'nestjs-minio-client';
       },
       inject: [ConfigService],
     }),
-    MinioModule.registerAsync({
-        imports: [ConfigModule],
-        useFactory: async (configService: ConfigService) => ({
-            endPoint: configService.get('MINIO_ENDPOINT'),
-            port: configService.get('MINIO_PORT'),
-            useSSL: false,
-            accessKey: configService.get('MINIO_ACCESSKEY'),
-            secretKey: configService.get('MINIO_SECRETKEY')
-        }),
-        inject: [ConfigService],
-    }),
     AuthModule,
     UsersModule,
     ReleasesModule,
@@ -69,6 +59,7 @@ import { MinioModule } from 'nestjs-minio-client';
     ResourcesModule,
     ResourcePacksModule,
     CommentsModule,
+    MinioClientModule,
   ],
   controllers: [WelcomeController],
   providers: [],

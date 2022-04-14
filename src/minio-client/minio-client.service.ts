@@ -1,11 +1,8 @@
-import {
-  Injectable,
-  Logger,
-  BadRequestException,
-} from '@nestjs/common';
-import { MinioService } from 'nestjs-minio-client';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
 import * as crypto from 'crypto';
-import { SimpleCreateFileDto } from './dto/simple-create-file.dto';
+import * as Minio from 'minio';
+import { ConfigService } from '@nestjs/config';
 
 export enum BucketName {
   Resources = 'resources',
@@ -14,14 +11,23 @@ export enum BucketName {
 
 @Injectable()
 export class MinioClientService {
-  constructor(private readonly minio: MinioService) {
+  constructor(private readonly configService: ConfigService) {
     this.logger = new Logger('MinioService');
+    this.minioClient = new Minio.Client({
+      endPoint: this.configService.get('MINIO_ENDPOINT'),
+      port: this.configService.get('MINIO_PORT'),
+      useSSL: false,
+      accessKey: this.configService.get('MINIO_ROOT_USER'),
+      secretKey: this.configService.get('MINIO_ROOT_PASSWORD'),
+    });
   }
 
   private readonly logger: Logger;
 
+  private readonly minioClient: Minio.Client;
+
   public get client() {
-    return this.minio.client;
+    return this.minioClient;
   }
 
   public async upload(file: SimpleCreateFileDto, bucketName: BucketName) {
@@ -48,14 +54,12 @@ export class MinioClientService {
       file.size,
       metaData,
       (err: any) => {
-        if (err) {
-          throw new BadRequestException('Error uploading file');
-        }
+        if (err) throw new BadRequestException('Error uploading file', err);
       },
     );
 
     return {
-      url: `${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT}/${bucketName}/${fileName}`,
+      url: fileName,
     };
   }
 

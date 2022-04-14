@@ -18,7 +18,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "nest-dep-graph": "node node_modules/nestjs-dependency-graph/dist/index.js dist/app.module.js"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
@@ -35,7 +36,6 @@
     "@nestjs/swagger": "^5.2.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/hapi__joi": "^17.1.8",
-    "@types/minio": "^7.0.12",
     "@types/mongodb": "^4.0.7",
     "@types/validator": "^13.7.1",
     "apollo-server-express": "^3.6.3",
@@ -63,6 +63,7 @@
     "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.13",
     "@types/jest": "27.4.0",
+    "@types/minio": "^7.0.13",
     "@types/multer": "^1.4.7",
     "@types/node": "^16.0.0",
     "@types/passport-jwt": "^3.0.6",

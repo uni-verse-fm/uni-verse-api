@@ -8,6 +8,9 @@ import { Track, TrackSchema } from '../tracks/schemas/track.schema';
 import { FilesService } from '../files/files.service';
 import { UsersService } from '../users/users.service';
 import { User, UserSchema } from '../users/schemas/user.schema';
+import { TracksModule } from '../tracks/tracks.module';
+import UsersModule from '../users/users.module';
+import { MinioClientService } from '../minio-client/minio-client.service';
 
 @Module({
   imports: [
@@ -16,9 +19,17 @@ import { User, UserSchema } from '../users/schemas/user.schema';
       { name: Track.name, schema: TrackSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    TracksModule,
+    UsersModule,
   ],
   controllers: [ReleasesController],
-  providers: [ReleasesService, UsersService, TracksService, FilesService],
+  providers: [
+    ReleasesService,
+    UsersService,
+    TracksService,
+    FilesService,
+    MinioClientService,
+  ],
   exports: [ReleasesService],
 })
 class ReleasesModule {}
