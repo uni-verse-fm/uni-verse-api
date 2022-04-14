@@ -47,10 +47,10 @@ export class ResourcePacksService {
             ...resource,
             author,
             file: {
-                fileName: resource.resourceFileName,
-                buffer: orderedTracks.get(resource.resourceFileName).buffer,
-                size: orderedTracks.get(resource.resourceFileName).size,
-                mimetype: orderedTracks.get(resource.resourceFileName).mimetype,
+                originalFileName: resource.originalFileName,
+                buffer: orderedTracks.get(resource.originalFileName).buffer,
+                size: orderedTracks.get(resource.originalFileName).size,
+                mimetype: orderedTracks.get(resource.originalFileName).mimetype,
             },
           })),
         );
@@ -79,11 +79,11 @@ export class ResourcePacksService {
     createResourcePack: CreateResourcePackDto,
   ): Map<string, SimpleCreateFileDto> {
     const resourcePackFilesNames: string[] = createResourcePack.resources.map(
-      (resource) => resource.resourceFileName,
+      (resource) => resource.originalFileName,
     );
-    const filesFilesNames: string[] = files.map((file) => file.fileName);
+    const filesFilesNames: string[] = files.map((file) => file.originalFileName);
     const fileNamesToFiles: Map<string, SimpleCreateFileDto> = new Map(
-      files.map((file) => [file.fileName, file]),
+      files.map((file) => [file.originalFileName, file]),
     );
 
     const nameToFile: Map<string, SimpleCreateFileDto> = new Map<string, SimpleCreateFileDto>();

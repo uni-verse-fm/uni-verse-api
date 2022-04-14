@@ -16,6 +16,7 @@ import {
   ResourcePack,
   ResourcePackSchema,
 } from './schemas/resource-pack.schema';
+import { MinioClientService } from '../minio-client/minio-client.service';
 
 const resource_packs = data2list(data.resource_packs);
 
@@ -61,6 +62,14 @@ describe('ResourcePacksService', () => {
         ResourcesService,
         FilesService,
         UsersService,
+        {
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
+            }),
+          },
+        },
       ],
     }).compile();
 

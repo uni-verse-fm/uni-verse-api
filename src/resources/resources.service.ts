@@ -28,11 +28,11 @@ export class ResourcesService {
   ): Promise<ICreateResourceResponse> {
     // this.isResourceUnique(createResourceDto.title);
 
-    const result: IFileResponse = await this.filesService.createFile(createResourceDto.file, BucketName.Resources);
+    const result: string = await this.filesService.createFile(createResourceDto.file, BucketName.Resources);
 
     const createResource = {
       ...createResourceDto,
-      resourceFileUrl: result.url,
+      fileName: result,
     };
 
     const newResource = new this.resourceModel(createResource);
@@ -106,7 +106,7 @@ export class ResourcesService {
     return {
       _id: resource._id,
       title: resource.title,
-      resourceFileUrl: resource.resourceFileUrl,
+      fileName: resource.fileName,
       author: resource.author,
     };
   }

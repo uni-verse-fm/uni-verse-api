@@ -15,6 +15,7 @@ import {
   ResourceSchema,
 } from './schemas/resource.schema';
 import * as data from '../test-utils/data/mock_data.json';
+import { MinioClientService } from '../minio-client/minio-client.service';
 
 const create_user = data.create_users.abdou;
 
@@ -41,7 +42,19 @@ describe('ResourcesService', () => {
           },
         ]),
       ],
-      providers: [ResourcesService, FilesService, UsersService],
+      providers: [
+          ResourcesService, 
+          FilesService, 
+          UsersService,
+          {
+            provide: MinioClientService,
+            useValue: {
+              upload: jest.fn(() => {
+                return "https://www.example.com"
+              }),
+            },
+        },
+        ],
     }).compile();
 
     resourcesService = module.get<ResourcesService>(ResourcesService);
@@ -68,7 +81,7 @@ describe('ResourcesService', () => {
 
     resources.forEach((resource) => {
       it(`should return resource ${resource.title} infos`, async () => {
-        const resourceFileUrl = 'https://www.example.com';
+        const fileName = 'https://www.example.com';
 
         const body = {
           ...resource,
@@ -79,7 +92,7 @@ describe('ResourcesService', () => {
         const result = await resourcesService.createResource(body);
         expect(result.author).toBe(user._id);
         expect(result.title).toBe(resource.title);
-        expect(result.resourceFileUrl).toBe(resourceFileUrl);
+        expect(result.fileName).toBe(fileName);
       });
     });
   });
@@ -88,13 +101,13 @@ describe('ResourcesService', () => {
     it('should return a list of resources', async () => {
       const expected = resources.map((resource) => ({
         title: resource.title,
-        resourceFileUrl: 'https://www.example.com',
+        fileName: 'https://www.example.com',
       }));
 
       const result = await resourcesService.findAllResources();
       const cleanedResult = result.map((resource) => ({
         title: resource.title,
-        resourceFileUrl: resource.resourceFileUrl,
+        fileName: resource.fileName,
       }));
 
       expect(cleanedResult).toStrictEqual(expected);
@@ -108,7 +121,7 @@ describe('ResourcesService', () => {
 
   describe('When ask one resource by title', () => {
     const title = 'resource 1';
-    const resourceFileUrl = 'https://www.example.com';
+    const fileName = 'https://www.example.com';
 
     it('should return one resource', async () => {
       first_resource = await resourcesService.findResourceByTitle(
@@ -117,7 +130,7 @@ describe('ResourcesService', () => {
       expect(first_resource._id).toBeDefined();
       expect(first_resource.title).toBe(title);
       expect(first_resource.author).toBeDefined();
-      expect(first_resource.resourceFileUrl).toBe(resourceFileUrl);
+      expect(first_resource.fileName).toBe(fileName);
     });
   });
 

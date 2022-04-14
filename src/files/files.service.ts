@@ -14,7 +14,7 @@ export class FilesService {
   async createFile(
     createFileDto: SimpleCreateFileDto,
     bucketName: BucketName,
-  ): Promise<IFileResponse> {
+  ): Promise<string> {
     return await this.minioClient.upload(createFileDto, bucketName);
   }
 

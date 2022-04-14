@@ -16,7 +16,7 @@ export class SimpleCreateFileDto {
   @IsString()
   @MinLength(5)
   @MaxLength(255)
-  readonly fileName: string;
+  readonly originalFileName: string;
 
   @IsNotEmpty()
   @MinLength(1)

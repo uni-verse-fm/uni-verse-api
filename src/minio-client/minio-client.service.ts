@@ -36,9 +36,9 @@ export class MinioClientService {
       .createHash('md5')
       .update(timestamp)
       .digest('hex');
-    const extension = file.fileName.substring(
-      file.fileName.lastIndexOf('.'),
-      file.fileName.length,
+    const extension = file.originalFileName.substring(
+      file.originalFileName.lastIndexOf('.'),
+      file.originalFileName.length,
     );
     const metaData = {
       'Content-Type': file.mimetype,
@@ -58,13 +58,11 @@ export class MinioClientService {
       },
     );
 
-    return {
-      url: fileName,
-    };
+    return fileName;
   }
 
-  async getFile(fileName: string, bucketName: BucketName) {
-    return this.client.getObject(bucketName, fileName, (err, data) => {
+  async getFile(originalFileName: string, bucketName: BucketName) {
+    return this.client.getObject(bucketName, originalFileName, (err, data) => {
       if (err)
         throw new BadRequestException('An error occured when getting file!');
       data;

@@ -5,7 +5,7 @@ import { IUserResponse } from '../../users/interfaces/user-response.interface';
 export interface ICreateTrackResponse {
   id: ObjectId;
   title: string;
-  trackFileUrl: string;
+  fileName: string;
   author: IUserResponse;
   feats: AuthorDto[];
 }

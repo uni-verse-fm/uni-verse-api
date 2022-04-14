@@ -16,7 +16,7 @@ export class Track {
   title: string;
 
   @Prop()
-  trackFileUrl: string;
+  fileName: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   @Type(() => User)

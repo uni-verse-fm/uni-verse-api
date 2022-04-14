@@ -18,6 +18,7 @@ import { ModelType } from './dto/create-comment.dto';
 import { Comment, CommentSchema } from './schemas/comment.schema';
 import { FilesService } from '../files/files.service';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
+import { MinioClientService } from '../minio-client/minio-client.service';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -73,6 +74,14 @@ describe('CommentsService', () => {
         UsersService,
         ResourcesService,
         FilesService,
+        {
+            provide: MinioClientService,
+            useValue: {
+              upload: jest.fn(() => {
+                return "https://www.example.com"
+              }),
+            },
+        },
       ],
     }).compile();
 
@@ -113,7 +122,7 @@ describe('CommentsService', () => {
         JSON.parse(JSON.stringify(threatTrack.buffer)),
       );
       const commonTrackInfos = {
-        trackFileUrl: 'https://www.example.com',
+        fileName: 'https://www.example.com',
         feats: [],
         author: artist,
       };
@@ -121,13 +130,13 @@ describe('CommentsService', () => {
         ...commonTrackInfos,
         title: encoreTrack.title,
         buffer: encoreBuffer,
-        trackFileName: encoreTrack.trackFileName,
+        originalFileName: encoreTrack.originalFileName,
       });
       threat = await tracksService.createTrack({
         ...commonTrackInfos,
         title: threatTrack.title,
         buffer: threatBuffer,
-        trackFileName: threatTrack.trackFileName,
+        originalFileName: threatTrack.originalFileName,
       });
       expect(encore.id).toBeDefined();
       expect(threat.id).toBeDefined();
@@ -143,7 +152,7 @@ describe('CommentsService', () => {
         file: {
             buffer: resourceBuffer,
             size: 400,
-            fileName: resourceOnResource.resourceFileName,
+            originalFileName: resourceOnResource.originalFileName,
             mimetype: FileMimeType.MPEG,
         },
         author: user,

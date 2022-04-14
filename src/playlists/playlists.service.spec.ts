@@ -13,6 +13,7 @@ import { Playlist, PlaylistSchema } from './schemas/playlist.schema';
 import * as data from '../test-utils/data/mock_data.json';
 import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response.interface';
 import { FilesService } from '../files/files.service';
+import { MinioClientService } from '../minio-client/minio-client.service';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -52,7 +53,20 @@ describe('PlaylistsService', () => {
           },
         ]),
       ],
-      providers: [PlaylistsService, TracksService, UsersService, FilesService],
+      providers: [
+          PlaylistsService, 
+          TracksService, 
+          UsersService, 
+          FilesService,
+          {
+            provide: MinioClientService,
+            useValue: {
+              upload: jest.fn(() => {
+                return "https://www.example.com"
+              }),
+            },
+        },
+        ],
     }).compile();
 
     playlistService = module.get<PlaylistsService>(PlaylistsService);
@@ -91,7 +105,7 @@ describe('PlaylistsService', () => {
         JSON.parse(JSON.stringify(threatTrack.buffer)),
       );
       const commonTrackInfos = {
-        trackFileUrl: 'https://www.example.com',
+        fileName: 'https://www.example.com',
         feats: [],
         author: artist,
       };
@@ -99,13 +113,13 @@ describe('PlaylistsService', () => {
         ...commonTrackInfos,
         title: encoreTrack.title,
         buffer: encoreBuffer,
-        trackFileName: encoreTrack.trackFileName,
+        originalFileName: encoreTrack.originalFileName,
       });
       threat = await tracksService.createTrack({
         ...commonTrackInfos,
         title: threatTrack.title,
         buffer: threatBuffer,
-        trackFileName: threatTrack.trackFileName,
+        originalFileName: threatTrack.originalFileName,
       });
       expect(encore.id).toBeDefined();
       expect(threat.id).toBeDefined();

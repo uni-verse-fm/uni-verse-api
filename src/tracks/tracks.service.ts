@@ -34,12 +34,12 @@ export class TracksService {
     const feats: UserDocument[] = [];
 
     const file = {
-      fileName: createTrackDto.trackFileName,
+      originalFileName: createTrackDto.originalFileName,
       buffer: createTrackDto.buffer,
       size: 4000,
       mimetype: FileMimeType.MPEG,
     };
-    const result: IFileResponse = await this.filesService.createFile(
+    const result: string = await this.filesService.createFile(
       file,
       BucketName.Tracks,
     );
@@ -54,7 +54,7 @@ export class TracksService {
     const createTrack = {
       ...createTrackDto,
       feats,
-      trackFileUrl: result.url,
+      fileName: result,
     };
 
     const newTrack = new this.trackModel(createTrack);
@@ -124,7 +124,7 @@ export class TracksService {
     return {
       id: track._id,
       title: track.title,
-      trackFileUrl: track.trackFileUrl,
+      fileName: track.fileName,
       feats: track.feats.map((feat) => ({
         _id: feat._id,
         username: feat.username,

@@ -24,6 +24,7 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
+import { MinioClientService } from '../minio-client/minio-client.service';
 
 const release = data.releases.black_album;
 const releases = data2list(data.releases);
@@ -95,6 +96,14 @@ describe('ReleasesController', () => {
               return releases;
             }),
           },
+        },
+        {
+            provide: MinioClientService,
+            useValue: {
+              upload: jest.fn(() => {
+                return "https://www.example.com"
+              }),
+            },
         },
         {
           provide: getModelToken(User.name),

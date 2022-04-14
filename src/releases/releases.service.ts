@@ -49,7 +49,7 @@ export class ReleasesService {
           createRelease.tracks.map((track) => ({
             ...track,
             author,
-            buffer: orderedTracks.get(track.trackFileName),
+            buffer: orderedTracks.get(track.originalFileName),
           })),
         );
       const createdRelease = {
@@ -76,11 +76,11 @@ export class ReleasesService {
     createRelease: CreateReleaseDto,
   ): Map<string, Buffer> {
     const releaseFilesNames: string[] = createRelease.tracks.map(
-      (track) => track.trackFileName,
+      (track) => track.originalFileName,
     );
-    const filesFilesNames: string[] = files.map((file) => file.fileName);
+    const filesFilesNames: string[] = files.map((file) => file.originalFileName);
     const fileNamesToFiles: Map<string, Buffer> = new Map(
-      files.map((file) => [file.fileName, file.buffer]),
+      files.map((file) => [file.originalFileName, file.buffer]),
     );
 
     const nameToBuffer: Map<string, Buffer> = new Map<string, Buffer>();

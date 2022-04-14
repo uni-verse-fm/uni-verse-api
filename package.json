@@ -18,8 +18,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "nest-dep-graph": "node node_modules/nestjs-dependency-graph/dist/index.js dist/app.module.js"
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
@@ -100,6 +99,11 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/.*\\.dto\\.ts",
+      "<rootDir>/.*\\.module\\.ts",
+      "<rootDir>/.*\\.test\\.ts"
+    ]
   }
 }

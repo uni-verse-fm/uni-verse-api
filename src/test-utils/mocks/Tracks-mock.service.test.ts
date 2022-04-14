@@ -2,9 +2,9 @@ import { Track } from '../../tracks/schemas/track.schema';
 import { data2list } from './standard-mock.service.test';
 
 export interface TrackInformation {
-  trackFileUrl: string;
+  fileName: string;
   title: string;
-  trackFileName: string;
+  originalFileName: string;
   buffer: Buffer;
 }
 

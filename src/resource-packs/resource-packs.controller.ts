@@ -49,7 +49,7 @@ export class ResourcePacksController {
     @Request() request: IRequestWithUser,
   ) {
     const filesBuffers: SimpleCreateFileDto[] = files.map((file) => ({
-      fileName: file.originalname,
+      originalFileName: file.originalname,
       buffer: file.buffer,
       size: file.size,
       mimetype: FileMimeType[file.mimetype],
