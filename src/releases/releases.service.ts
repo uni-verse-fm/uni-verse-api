@@ -78,7 +78,9 @@ export class ReleasesService {
     const releaseFilesNames: string[] = createRelease.tracks.map(
       (track) => track.originalFileName,
     );
-    const filesFilesNames: string[] = files.map((file) => file.originalFileName);
+    const filesFilesNames: string[] = files.map(
+      (file) => file.originalFileName,
+    );
     const fileNamesToFiles: Map<string, Buffer> = new Map(
       files.map((file) => [file.originalFileName, file.buffer]),
     );

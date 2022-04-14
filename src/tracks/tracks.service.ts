@@ -9,7 +9,6 @@ import { Track, TrackDocument } from './schemas/track.schema';
 import { Model, ClientSession } from 'mongoose';
 import { ICreateTrackResponse } from './interfaces/track-create-response.interface';
 import { FilesService } from '../files/files.service';
-import IFileResponse from '../files/interfaces/file-response.interface';
 import { UsersService } from '../users/users.service';
 import { UserDocument } from '../users/schemas/user.schema';
 import { IDeleteTrackResponse } from './interfaces/track-delete-response.interface copy';
@@ -29,7 +28,6 @@ export class TracksService {
     createTrackDto: CreateTrackDto,
     session: ClientSession | null = null,
   ): Promise<ICreateTrackResponse> {
-
     const feats: UserDocument[] = [];
 
     const file = {

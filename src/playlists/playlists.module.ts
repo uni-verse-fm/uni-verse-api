@@ -17,16 +17,16 @@ import { UsersService } from '../users/users.service';
       { name: Track.name, schema: TrackSchema },
       { name: User.name, schema: UserSchema },
     ]),
-    TracksModule,    
+    TracksModule,
   ],
   controllers: [PlaylistsController],
   providers: [
-    PlaylistsService, 
+    PlaylistsService,
     TracksService,
-    MinioClientService, 
+    MinioClientService,
     FilesService,
     UsersService,
-    ],
+  ],
   exports: [PlaylistsService],
 })
 export class PlaylistsModule {}

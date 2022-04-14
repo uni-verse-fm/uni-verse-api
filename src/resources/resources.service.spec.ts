@@ -43,18 +43,18 @@ describe('ResourcesService', () => {
         ]),
       ],
       providers: [
-          ResourcesService, 
-          FilesService, 
-          UsersService,
-          {
-            provide: MinioClientService,
-            useValue: {
-              upload: jest.fn(() => {
-                return "https://www.example.com"
-              }),
-            },
+        ResourcesService,
+        FilesService,
+        UsersService,
+        {
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
+            }),
+          },
         },
-        ],
+      ],
     }).compile();
 
     resourcesService = module.get<ResourcesService>(ResourcesService);

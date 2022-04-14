@@ -94,12 +94,12 @@ describe('CommentsController', () => {
           },
         },
         {
-            provide: MinioClientService,
-            useValue: {
-              upload: jest.fn(() => {
-                return "https://www.example.com"
-              }),
-            },
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
+            }),
+          },
         },
         {
           provide: getModelToken(User.name),

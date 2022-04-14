@@ -26,9 +26,9 @@ import { UsersService } from '../users/users.service';
     CommentsService,
     TracksService,
     ResourcesService,
-    MinioClientService, 
+    MinioClientService,
     FilesService,
-    UsersService
+    UsersService,
   ],
   exports: [CommentsService],
 })

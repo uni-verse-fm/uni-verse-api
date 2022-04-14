@@ -75,12 +75,12 @@ describe('CommentsService', () => {
         ResourcesService,
         FilesService,
         {
-            provide: MinioClientService,
-            useValue: {
-              upload: jest.fn(() => {
-                return "https://www.example.com"
-              }),
-            },
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
+            }),
+          },
         },
       ],
     }).compile();
@@ -150,10 +150,10 @@ describe('CommentsService', () => {
       resourceOne = await resourcesService.createResource({
         ...resourceOnResource,
         file: {
-            buffer: resourceBuffer,
-            size: 400,
-            originalFileName: resourceOnResource.originalFileName,
-            mimetype: FileMimeType.MPEG,
+          buffer: resourceBuffer,
+          size: 400,
+          originalFileName: resourceOnResource.originalFileName,
+          mimetype: FileMimeType.MPEG,
         },
         author: user,
       });

@@ -28,7 +28,7 @@ import { MinioClientService } from '../minio-client/minio-client.service';
     ResourcePacksService,
     ResourcesService,
     FilesService,
-    MinioClientService
+    MinioClientService,
   ],
   exports: [ResourcePacksService],
 })

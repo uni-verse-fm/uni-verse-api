@@ -54,19 +54,19 @@ describe('PlaylistsService', () => {
         ]),
       ],
       providers: [
-          PlaylistsService, 
-          TracksService, 
-          UsersService, 
-          FilesService,
-          {
-            provide: MinioClientService,
-            useValue: {
-              upload: jest.fn(() => {
-                return "https://www.example.com"
-              }),
-            },
+        PlaylistsService,
+        TracksService,
+        UsersService,
+        FilesService,
+        {
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
+            }),
+          },
         },
-        ],
+      ],
     }).compile();
 
     playlistService = module.get<PlaylistsService>(PlaylistsService);

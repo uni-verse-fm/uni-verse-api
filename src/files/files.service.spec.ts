@@ -8,16 +8,16 @@ describe('FilesService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-          FilesService,
-          {
-            provide: MinioClientService,
-            useValue: {
-              upload: jest.fn(() => {
-                return "https://www.example.com"
-              }),
-            },
+        FilesService,
+        {
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
+            }),
+          },
         },
-        ],
+      ],
     }).compile();
 
     service = module.get<FilesService>(FilesService);

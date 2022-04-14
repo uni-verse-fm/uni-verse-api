@@ -5,7 +5,6 @@ import {
 } from '../minio-client/minio-client.service';
 import { SimpleCreateFileDto } from './dto/simple-create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
-import IFileResponse from './interfaces/file-response.interface';
 
 @Injectable()
 export class FilesService {

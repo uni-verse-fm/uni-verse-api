@@ -26,8 +26,10 @@ export class ResourcesService {
     createResourceDto: CreateResourceDto,
     session: ClientSession | null = null,
   ): Promise<ICreateResourceResponse> {
-
-    const result: string = await this.filesService.createFile(createResourceDto.file, BucketName.Resources);
+    const result: string = await this.filesService.createFile(
+      createResourceDto.file,
+      BucketName.Resources,
+    );
 
     const createResource = {
       ...createResourceDto,

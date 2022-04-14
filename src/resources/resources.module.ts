@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { FilesModule } from '../files/files.module';
 import { FilesService } from '../files/files.service';
 import { MinioClientService } from '../minio-client/minio-client.service';
 import { User, UserSchema } from '../users/schemas/user.schema';

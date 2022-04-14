@@ -7,7 +7,6 @@ import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Model, Connection } from 'mongoose';
 import { UserDocument } from '../users/schemas/user.schema';
 import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
-import { UsersService } from '../users/users.service';
 import { CreateResourcePackDto } from './dto/create-resource-pack.dto';
 import { UpdateResourcePackDto } from './dto/update-resource-pack.dto';
 import {
@@ -47,10 +46,10 @@ export class ResourcePacksService {
             ...resource,
             author,
             file: {
-                originalFileName: resource.originalFileName,
-                buffer: orderedTracks.get(resource.originalFileName).buffer,
-                size: orderedTracks.get(resource.originalFileName).size,
-                mimetype: orderedTracks.get(resource.originalFileName).mimetype,
+              originalFileName: resource.originalFileName,
+              buffer: orderedTracks.get(resource.originalFileName).buffer,
+              size: orderedTracks.get(resource.originalFileName).size,
+              mimetype: orderedTracks.get(resource.originalFileName).mimetype,
             },
           })),
         );
@@ -81,17 +80,22 @@ export class ResourcePacksService {
     const resourcePackFilesNames: string[] = createResourcePack.resources.map(
       (resource) => resource.originalFileName,
     );
-    const filesFilesNames: string[] = files.map((file) => file.originalFileName);
+    const filesFilesNames: string[] = files.map(
+      (file) => file.originalFileName,
+    );
     const fileNamesToFiles: Map<string, SimpleCreateFileDto> = new Map(
       files.map((file) => [file.originalFileName, file]),
     );
 
-    const nameToFile: Map<string, SimpleCreateFileDto> = new Map<string, SimpleCreateFileDto>();
+    const nameToFile: Map<string, SimpleCreateFileDto> = new Map<
+      string,
+      SimpleCreateFileDto
+    >();
 
     if (resourcePackFilesNames.length === filesFilesNames.length) {
       resourcePackFilesNames.every((resourcePackFileName) => {
         if (filesFilesNames.includes(resourcePackFileName)) {
-            nameToFile.set(
+          nameToFile.set(
             resourcePackFileName,
             fileNamesToFiles.get(resourcePackFileName),
           );
