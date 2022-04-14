@@ -29,7 +29,6 @@ export class TracksService {
     createTrackDto: CreateTrackDto,
     session: ClientSession | null = null,
   ): Promise<ICreateTrackResponse> {
-    // this.isTrackUnique(createTrackDto.title);
 
     const feats: UserDocument[] = [];
 

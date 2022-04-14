@@ -112,7 +112,6 @@ describe('ResourcePacksService', () => {
       }));
 
       it('should return one resource pack infos', async () => {
-        // the author made the two albums
         const resources = data2list(resourcePack.resources);
 
         const create_resource_pack = {
@@ -144,8 +143,6 @@ describe('ResourcePacksService', () => {
 
   describe('When find all resource packs', () => {
     it('should return a list of resource packs', async () => {
-      // the author made the two albums
-
       const expected1 = {
         title: resource_packs[0].title,
         description: resource_packs[0].description,

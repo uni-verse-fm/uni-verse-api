@@ -103,7 +103,6 @@ describe('ReleasesService', () => {
       }));
 
       it('should return one release infos', async () => {
-        // the author made the two albums
         const tracks = data2list(release.tracks);
 
         const feat_list_from_data = data2list(release.feats);

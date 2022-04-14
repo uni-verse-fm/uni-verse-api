@@ -44,7 +44,6 @@ export class MinioClientService {
       'Content-Type': file.mimetype,
     };
 
-    // We need to append the extension at the end otherwise Minio will save it as a generic file
     const fileName = hashedFileName + extension;
 
     this.client.putObject(
