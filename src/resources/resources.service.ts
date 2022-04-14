@@ -26,7 +26,6 @@ export class ResourcesService {
     createResourceDto: CreateResourceDto,
     session: ClientSession | null = null,
   ): Promise<ICreateResourceResponse> {
-    // this.isResourceUnique(createResourceDto.title);
 
     const result: string = await this.filesService.createFile(createResourceDto.file, BucketName.Resources);
 
@@ -101,7 +100,6 @@ export class ResourcesService {
     );
   }
 
-  // for testing
   private buildResourceInfo(resource: any): ICreateResourceResponse {
     return {
       _id: resource._id,
