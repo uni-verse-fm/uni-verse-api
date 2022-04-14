@@ -9,10 +9,11 @@ import { Track, TrackDocument } from './schemas/track.schema';
 import { Model, ClientSession } from 'mongoose';
 import { ICreateTrackResponse } from './interfaces/track-create-response.interface';
 import { FilesService } from '../files/files.service';
-import IFileResponse from '../files/interfaces/file-response.interface';
 import { UsersService } from '../users/users.service';
 import { UserDocument } from '../users/schemas/user.schema';
 import { IDeleteTrackResponse } from './interfaces/track-delete-response.interface copy';
+import { FileMimeType } from '../files/dto/simple-create-file.dto';
+import { BucketName } from '../minio-client/minio-client.service';
 
 @Injectable()
 export class TracksService {
@@ -27,15 +28,18 @@ export class TracksService {
     createTrackDto: CreateTrackDto,
     session: ClientSession | null = null,
   ): Promise<ICreateTrackResponse> {
-    this.isTrackUnique(createTrackDto.title);
-
     const feats: UserDocument[] = [];
 
     const file = {
-      fileName: createTrackDto.trackFileName,
+      originalFileName: createTrackDto.originalFileName,
       buffer: createTrackDto.buffer,
+      size: 4000,
+      mimetype: FileMimeType.MPEG,
     };
-    const result: IFileResponse = this.filesService.create(file);
+    const result: string = await this.filesService.createFile(
+      file,
+      BucketName.Tracks,
+    );
 
     if (createTrackDto.feats) {
       for (const feat of createTrackDto.feats) {
@@ -47,7 +51,7 @@ export class TracksService {
     const createTrack = {
       ...createTrackDto,
       feats,
-      trackFileUrl: result.fileUrl,
+      fileName: result,
     };
 
     const newTrack = new this.trackModel(createTrack);
@@ -113,12 +117,11 @@ export class TracksService {
     );
   }
 
-  // for testing
   private buildTrackInfo(track: any): ICreateTrackResponse {
     return {
       id: track._id,
       title: track.title,
-      trackFileUrl: track.trackFileUrl,
+      fileName: track.fileName,
       feats: track.feats.map((feat) => ({
         _id: feat._id,
         username: feat.username,

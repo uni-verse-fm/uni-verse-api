@@ -43,7 +43,9 @@
     "class-validator": "^0.13.2",
     "cookie-parser": "^1.4.6",
     "graphql": "^16.3.0",
+    "minio": "^7.0.27",
     "mongoose": "^6.2.2",
+    "nestjs-minio-client": "^1.1.1",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
@@ -60,6 +62,7 @@
     "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.13",
     "@types/jest": "27.4.0",
+    "@types/minio": "^7.0.13",
     "@types/multer": "^1.4.7",
     "@types/node": "^16.0.0",
     "@types/passport-jwt": "^3.0.6",
@@ -100,6 +103,11 @@
       "json-summary"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/.*\\.dto\\.ts",
+      "<rootDir>/.*\\.module\\.ts",
+      "<rootDir>/.*\\.test\\.ts"
+    ]
   }
 }

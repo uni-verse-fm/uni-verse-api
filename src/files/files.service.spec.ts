@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { MinioClientService } from '../minio-client/minio-client.service';
 import { FilesService } from './files.service';
 
 describe('FilesService', () => {
@@ -6,7 +7,17 @@ describe('FilesService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [FilesService],
+      providers: [
+        FilesService,
+        {
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
+            }),
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<FilesService>(FilesService);

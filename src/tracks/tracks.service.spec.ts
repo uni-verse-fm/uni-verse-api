@@ -11,6 +11,7 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
+import { MinioClientService } from '../minio-client/minio-client.service';
 
 const users = data.users;
 const tracks = data.tracks;
@@ -56,7 +57,19 @@ describe('TracksService', () => {
           },
         ]),
       ],
-      providers: [TracksService, FilesService, UsersService],
+      providers: [
+        TracksService,
+        FilesService,
+        UsersService,
+        {
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
+            }),
+          },
+        },
+      ],
     }).compile();
 
     tracksService = module.get<TracksService>(TracksService);
@@ -82,7 +95,7 @@ describe('TracksService', () => {
     create_tracks.forEach((track) => {
       it(`should return track ${track.title} infos`, async () => {
         const author = await usersService.findUserByEmail(track.author.email);
-        const trackFileUrl = 'https://www.example.com';
+        const fileName = 'https://www.example.com';
         const feats = await Promise.all(
           track.feats.map((feat: { email: string }) =>
             usersService.findUserByEmail(feat.email),
@@ -105,7 +118,7 @@ describe('TracksService', () => {
           })),
         );
         expect(result.title).toBe(track.title);
-        expect(result.trackFileUrl).toBe(trackFileUrl);
+        expect(result.fileName).toBe(fileName);
       });
     });
   });
@@ -114,13 +127,13 @@ describe('TracksService', () => {
     it('should return a list of tracks', async () => {
       const expected = black_album_tracks.map((track) => ({
         title: track.title,
-        trackFileUrl: track.trackFileUrl,
+        fileName: track.fileName,
       }));
 
       const result = await tracksService.findAllTracks();
       const cleanedResult = result.map((track) => ({
         title: track.title,
-        trackFileUrl: track.trackFileUrl,
+        fileName: track.fileName,
       }));
 
       expect(cleanedResult).toStrictEqual(expected);
@@ -146,7 +159,7 @@ describe('TracksService', () => {
 
   describe('When ask one track by title', () => {
     const title = 'change clothes';
-    const trackFileUrl = 'https://www.example.com';
+    const fileName = 'https://www.example.com';
 
     it('should return one track', async () => {
       const result = await tracksService.findTrackByTitle(
@@ -156,7 +169,7 @@ describe('TracksService', () => {
       expect(result.title).toBe(title);
       expect(result.author).toBeDefined();
       expect(result.feats).toBeDefined();
-      expect(result.trackFileUrl).toBe(trackFileUrl);
+      expect(result.fileName).toBe(fileName);
     });
   });
 

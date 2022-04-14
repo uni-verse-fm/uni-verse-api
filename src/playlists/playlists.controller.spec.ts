@@ -21,6 +21,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { User } from '../users/schemas/user.schema';
 import TracksRepoMockModel from '../test-utils/mocks/Tracks-mock.service.test';
 import { Track } from '../tracks/schemas/track.schema';
+import { MinioClientService } from '../minio-client/minio-client.service';
 
 const playlists = data2list(data.playlists);
 
@@ -88,6 +89,14 @@ describe('PlaylistsController', () => {
             }),
             find: jest.fn(() => {
               return playlists;
+            }),
+          },
+        },
+        {
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
             }),
           },
         },

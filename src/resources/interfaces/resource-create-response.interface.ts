@@ -4,6 +4,6 @@ import { IUserResponse } from '../../users/interfaces/user-response.interface';
 export interface ICreateResourceResponse {
   _id: ObjectId;
   title: string;
-  resourceFileUrl: string;
+  fileName: string;
   author: IUserResponse;
 }

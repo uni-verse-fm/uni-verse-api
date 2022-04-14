@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { SimpleCreateFileDto } from '../../files/dto/simple-create-file.dto';
 import { UserDocument } from '../../users/schemas/user.schema';
 
 export class CreateResourceDto {
@@ -9,15 +10,7 @@ export class CreateResourceDto {
   readonly title: string;
 
   @IsNotEmpty()
-  @IsString()
-  @MinLength(1)
-  @MaxLength(1024)
-  readonly resourceFileName: string;
-
-  @IsNotEmpty()
-  @MinLength(1)
-  @MaxLength(1024)
-  readonly buffer: Buffer;
+  readonly file: SimpleCreateFileDto;
 
   @IsNotEmpty()
   readonly author: UserDocument;

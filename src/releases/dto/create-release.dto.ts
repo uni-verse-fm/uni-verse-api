@@ -46,7 +46,7 @@ export class CreateReleaseTrackDto {
   @IsString()
   @MinLength(1)
   @MaxLength(1024)
-  readonly trackFileName: string;
+  readonly originalFileName: string;
 
   @IsNotEmpty()
   readonly author: AuthorDto;

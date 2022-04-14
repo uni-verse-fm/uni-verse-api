@@ -11,6 +11,7 @@ services:
       - 3001:9229
     depends_on:
       - mongodb
+      - minio
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
@@ -32,8 +33,6 @@ services:
   mongo-express:
     image: mongo-express
     container_name: server-mongo-express
-    # volumes:
-    #   - ./mongodb-data:/data/db
     depends_on:
       - mongodb
     ports:
@@ -41,6 +40,20 @@ services:
     restart: always
     env_file:
       - docker.env
+
+  minio:
+    image: minio/minio
+    container_name: minio
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - ./minio-data:/data
+    command: minio server --console-address ":9001" /data
+    restart: always
+    env_file:
+      - docker.env
+
 
 volumes:
   mongodb-data:

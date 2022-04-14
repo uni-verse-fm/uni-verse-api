@@ -13,6 +13,7 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
+import { MinioClientService } from '../minio-client/minio-client.service';
 
 const release = data.releases.black_album;
 
@@ -56,7 +57,20 @@ describe('ReleasesService', () => {
           },
         ]),
       ],
-      providers: [ReleasesService, TracksService, FilesService, UsersService],
+      providers: [
+        ReleasesService,
+        TracksService,
+        FilesService,
+        UsersService,
+        {
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
+            }),
+          },
+        },
+      ],
     }).compile();
 
     releasesService = module.get<ReleasesService>(ReleasesService);
@@ -89,7 +103,6 @@ describe('ReleasesService', () => {
       }));
 
       it('should return one release infos', async () => {
-        // the author made the two albums
         const tracks = data2list(release.tracks);
 
         const feat_list_from_data = data2list(release.feats);

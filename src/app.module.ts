@@ -12,15 +12,22 @@ import { PlaylistsModule } from './playlists/playlists.module';
 import { ResourcesModule } from './resources/resources.module';
 import { ResourcePacksModule } from './resource-packs/resource-packs.module';
 import { CommentsModule } from './comments/comments.module';
+import { MinioClientModule } from './minio-client/minio-client.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       validationSchema: Joi.object({
         MONGO_HOSTNAME: Joi.string().required(),
         MONGO_USERNAME: Joi.string().required(),
         MONGO_PASSWORD: Joi.string().required(),
         MONGO_DATABASE: Joi.string().required(),
         MONGO_PORT: Joi.number().required(),
+        MINIO_ROOT: Joi.string().required(),
+        MINIO_ROOT_USER: Joi.string().required(),
+        MINIO_ROOT_PASSWORD: Joi.string().required(),
+        MINIO_PORT: Joi.number().required(),
+        MINIO_ENDPOINT: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
         JWT_EXPIRATION_TIME: Joi.string().required(),
         JWT_ACCESS_TOKEN_EXPIRATION_TIME: Joi.string().required(),
@@ -52,6 +59,7 @@ import { CommentsModule } from './comments/comments.module';
     ResourcesModule,
     ResourcePacksModule,
     CommentsModule,
+    MinioClientModule,
   ],
   controllers: [WelcomeController],
   providers: [],

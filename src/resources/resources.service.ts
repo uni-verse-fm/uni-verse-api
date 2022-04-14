@@ -12,6 +12,7 @@ import { Resource, ResourceDocument } from './schemas/resource.schema';
 import IFileResponse from '../files/interfaces/file-response.interface';
 import { ICreateResourceResponse } from './interfaces/resource-create-response.interface';
 import { IDeleteResourceResponse } from './interfaces/resource-delete-response.interface copy';
+import { BucketName } from '../minio-client/minio-client.service';
 
 @Injectable()
 export class ResourcesService {
@@ -25,17 +26,14 @@ export class ResourcesService {
     createResourceDto: CreateResourceDto,
     session: ClientSession | null = null,
   ): Promise<ICreateResourceResponse> {
-    this.isResourceUnique(createResourceDto.title);
-
-    const file = {
-      fileName: createResourceDto.resourceFileName,
-      buffer: createResourceDto.buffer,
-    };
-    const result: IFileResponse = this.filesService.create(file);
+    const result: string = await this.filesService.createFile(
+      createResourceDto.file,
+      BucketName.Resources,
+    );
 
     const createResource = {
       ...createResourceDto,
-      resourceFileUrl: result.fileUrl,
+      fileName: result,
     };
 
     const newResource = new this.resourceModel(createResource);
@@ -104,12 +102,11 @@ export class ResourcesService {
     );
   }
 
-  // for testing
   private buildResourceInfo(resource: any): ICreateResourceResponse {
     return {
       _id: resource._id,
       title: resource.title,
-      resourceFileUrl: resource.resourceFileUrl,
+      fileName: resource.fileName,
       author: resource.author,
     };
   }

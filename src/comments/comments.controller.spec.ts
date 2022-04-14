@@ -23,6 +23,7 @@ import { Track } from '../tracks/schemas/track.schema';
 import { User } from '../users/schemas/user.schema';
 import TracksRepoMockModel from '../test-utils/mocks/Tracks-mock.service.test';
 import { Resource } from '../resources/schemas/resource.schema';
+import { MinioClientService } from '../minio-client/minio-client.service';
 
 const owner = data.users.abdou;
 
@@ -89,6 +90,14 @@ describe('CommentsController', () => {
             }),
             find: jest.fn(() => {
               return comments;
+            }),
+          },
+        },
+        {
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
             }),
           },
         },

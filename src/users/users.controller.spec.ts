@@ -19,6 +19,7 @@ import { AuthController } from '../auth/auth.controller';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import * as data from '../test-utils/data/mock_data.json';
 import { FilesService } from '../files/files.service';
+import { MinioClientService } from '../minio-client/minio-client.service';
 
 const author = data.users.jayz;
 const user = data.users.kanye;
@@ -49,6 +50,14 @@ describe('UsersController', () => {
           provide: ConfigService,
           useValue: {
             get: jest.fn().mockReturnValue('60s'),
+          },
+        },
+        {
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
+            }),
           },
         },
         {

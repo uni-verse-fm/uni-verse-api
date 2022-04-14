@@ -16,6 +16,7 @@ import {
   ResourcePack,
   ResourcePackSchema,
 } from './schemas/resource-pack.schema';
+import { MinioClientService } from '../minio-client/minio-client.service';
 
 const resource_packs = data2list(data.resource_packs);
 
@@ -61,6 +62,14 @@ describe('ResourcePacksService', () => {
         ResourcesService,
         FilesService,
         UsersService,
+        {
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
+            }),
+          },
+        },
       ],
     }).compile();
 
@@ -103,7 +112,6 @@ describe('ResourcePacksService', () => {
       }));
 
       it('should return one resource pack infos', async () => {
-        // the author made the two albums
         const resources = data2list(resourcePack.resources);
 
         const create_resource_pack = {
@@ -135,8 +143,6 @@ describe('ResourcePacksService', () => {
 
   describe('When find all resource packs', () => {
     it('should return a list of resource packs', async () => {
-      // the author made the two albums
-
       const expected1 = {
         title: resource_packs[0].title,
         description: resource_packs[0].description,

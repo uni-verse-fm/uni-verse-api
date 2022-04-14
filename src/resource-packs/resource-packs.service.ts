@@ -7,7 +7,6 @@ import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Model, Connection } from 'mongoose';
 import { UserDocument } from '../users/schemas/user.schema';
 import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
-import { UsersService } from '../users/users.service';
 import { CreateResourcePackDto } from './dto/create-resource-pack.dto';
 import { UpdateResourcePackDto } from './dto/update-resource-pack.dto';
 import {
@@ -24,7 +23,6 @@ export class ResourcePacksService {
     @InjectModel(ResourcePack.name)
     private resourcePackModel: Model<ResourcePackDocument>,
     private resourcesService: ResourcesService,
-    private usersService: UsersService,
     @InjectConnection()
     private connection: Connection,
   ) {}
@@ -47,7 +45,12 @@ export class ResourcePacksService {
           createResourcePack.resources.map((resource) => ({
             ...resource,
             author,
-            buffer: orderedTracks.get(resource.resourceFileName),
+            file: {
+              originalFileName: resource.originalFileName,
+              buffer: orderedTracks.get(resource.originalFileName).buffer,
+              size: orderedTracks.get(resource.originalFileName).size,
+              mimetype: orderedTracks.get(resource.originalFileName).mimetype,
+            },
           })),
         );
       const createdResourcePack = {
@@ -73,21 +76,26 @@ export class ResourcePacksService {
   private orderedResources(
     files: SimpleCreateFileDto[],
     createResourcePack: CreateResourcePackDto,
-  ): Map<string, Buffer> {
+  ): Map<string, SimpleCreateFileDto> {
     const resourcePackFilesNames: string[] = createResourcePack.resources.map(
-      (resource) => resource.resourceFileName,
+      (resource) => resource.originalFileName,
     );
-    const filesFilesNames: string[] = files.map((file) => file.fileName);
-    const fileNamesToFiles: Map<string, Buffer> = new Map(
-      files.map((file) => [file.fileName, file.buffer]),
+    const filesFilesNames: string[] = files.map(
+      (file) => file.originalFileName,
+    );
+    const fileNamesToFiles: Map<string, SimpleCreateFileDto> = new Map(
+      files.map((file) => [file.originalFileName, file]),
     );
 
-    const nameToBuffer: Map<string, Buffer> = new Map<string, Buffer>();
+    const nameToFile: Map<string, SimpleCreateFileDto> = new Map<
+      string,
+      SimpleCreateFileDto
+    >();
 
     if (resourcePackFilesNames.length === filesFilesNames.length) {
       resourcePackFilesNames.every((resourcePackFileName) => {
         if (filesFilesNames.includes(resourcePackFileName)) {
-          nameToBuffer.set(
+          nameToFile.set(
             resourcePackFileName,
             fileNamesToFiles.get(resourcePackFileName),
           );
@@ -98,7 +106,7 @@ export class ResourcePacksService {
         );
       });
 
-      return nameToBuffer;
+      return nameToFile;
     }
     throw new BadRequestException(
       'The number of resources the number of files should be the same.',

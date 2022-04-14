@@ -47,7 +47,7 @@ export class CreateReleaseResourceDto {
   @IsString()
   @MinLength(1)
   @MaxLength(1024)
-  readonly resourceFileName: string;
+  readonly originalFileName: string;
 
   @IsNotEmpty()
   readonly author: AuthorDto;

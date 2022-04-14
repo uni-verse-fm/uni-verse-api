@@ -17,6 +17,8 @@ import * as data from '../test-utils/data/mock_data.json';
 import { ModelType } from './dto/create-comment.dto';
 import { Comment, CommentSchema } from './schemas/comment.schema';
 import { FilesService } from '../files/files.service';
+import { FileMimeType } from '../files/dto/simple-create-file.dto';
+import { MinioClientService } from '../minio-client/minio-client.service';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -72,6 +74,14 @@ describe('CommentsService', () => {
         UsersService,
         ResourcesService,
         FilesService,
+        {
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
+            }),
+          },
+        },
       ],
     }).compile();
 
@@ -112,7 +122,7 @@ describe('CommentsService', () => {
         JSON.parse(JSON.stringify(threatTrack.buffer)),
       );
       const commonTrackInfos = {
-        trackFileUrl: 'https://www.example.com',
+        fileName: 'https://www.example.com',
         feats: [],
         author: artist,
       };
@@ -120,13 +130,13 @@ describe('CommentsService', () => {
         ...commonTrackInfos,
         title: encoreTrack.title,
         buffer: encoreBuffer,
-        trackFileName: encoreTrack.trackFileName,
+        originalFileName: encoreTrack.originalFileName,
       });
       threat = await tracksService.createTrack({
         ...commonTrackInfos,
         title: threatTrack.title,
         buffer: threatBuffer,
-        trackFileName: threatTrack.trackFileName,
+        originalFileName: threatTrack.originalFileName,
       });
       expect(encore.id).toBeDefined();
       expect(threat.id).toBeDefined();
@@ -139,7 +149,12 @@ describe('CommentsService', () => {
 
       resourceOne = await resourcesService.createResource({
         ...resourceOnResource,
-        buffer: resourceBuffer,
+        file: {
+          buffer: resourceBuffer,
+          size: 400,
+          originalFileName: resourceOnResource.originalFileName,
+          mimetype: FileMimeType.MPEG,
+        },
         author: user,
       });
       expect(encore.id).toBeDefined();
@@ -235,7 +250,6 @@ describe('CommentsService', () => {
   describe('When remove one comment', () => {
     it('should return one comment message', async () => {
       const msg = `Comment ${commentId} deleted`;
-
       const comment = await commentService.removeComment(commentId, user);
       expect(comment.msg).toBe(msg);
     });

@@ -10,7 +10,9 @@ import { Resource, ResourceSchema } from '../resources/schemas/resource.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { ResourcesService } from '../resources/resources.service';
 import { UsersService } from '../users/users.service';
+import { ResourcesModule } from '../resources/resources.module';
 import { FilesService } from '../files/files.service';
+import { MinioClientService } from '../minio-client/minio-client.service';
 
 @Module({
   imports: [
@@ -19,13 +21,15 @@ import { FilesService } from '../files/files.service';
       { name: Resource.name, schema: ResourceSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    ResourcesModule,
   ],
   controllers: [ResourcePacksController],
   providers: [
     ResourcePacksService,
     ResourcesService,
-    UsersService,
     FilesService,
+    MinioClientService,
   ],
+  exports: [ResourcePacksService],
 })
 export class ResourcePacksModule {}
