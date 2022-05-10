@@ -31,6 +31,29 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(`api/v${API_VERSION}/docs`, app, document);
 
+  const corsConfig = {
+    origin: ['http://localhost:3005', 'http://localhost:3000'],
+    optionsSuccessStatus: 200,
+    allowedHeaders: [
+        'X-CSRF-Token',
+        'X-Requested-With',
+        'Accept',
+        'Accept-Version',
+        'Content-Length',
+        'Content-MD5',
+        'Content-Type',
+        'Date',
+        'X-Api-Version',
+        'Set-Cookie',
+        'Access-Control-Allow-Origin',
+        'Access-Control-Allow-Methods',
+        'Access-Control-Allow-Headers',
+        'Access-Control-Allow-Credentials'
+      ],
+    credentials: true,
+  };
+
+  app.enableCors(corsConfig);
   await app.listen(configService.get('PORT') || 3000);
 
   console.log(`Turnnig 💫 on port ${configService.get('PORT') || 3000}`);
