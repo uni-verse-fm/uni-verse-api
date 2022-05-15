@@ -12,6 +12,7 @@ import {
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
 import { MinioClientService } from '../minio-client/minio-client.service';
+import { PaymentsService } from '../payments/payments.service';
 
 const users = data.users;
 const tracks = data.tracks;
@@ -66,6 +67,14 @@ describe('TracksService', () => {
           useValue: {
             upload: jest.fn(() => {
               return 'https://www.example.com';
+            }),
+          },
+        },
+        {
+          provide: PaymentsService,
+          useValue: {
+            createCustomer: jest.fn(() => {
+              return { id: 1 };
             }),
           },
         },

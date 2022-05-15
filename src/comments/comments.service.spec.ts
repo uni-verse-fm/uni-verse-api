@@ -19,6 +19,7 @@ import { Comment, CommentSchema } from './schemas/comment.schema';
 import { FilesService } from '../files/files.service';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
 import { MinioClientService } from '../minio-client/minio-client.service';
+import { PaymentsService } from '../payments/payments.service';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -79,6 +80,14 @@ describe('CommentsService', () => {
           useValue: {
             upload: jest.fn(() => {
               return 'https://www.example.com';
+            }),
+          },
+        },
+        {
+          provide: PaymentsService,
+          useValue: {
+            createCustomer: jest.fn(() => {
+              return { id: 1 };
             }),
           },
         },

@@ -32,24 +32,24 @@ async function bootstrap() {
   SwaggerModule.setup(`api/v${API_VERSION}/docs`, app, document);
 
   const corsConfig = {
-    origin: ['http://localhost:3005', 'http://localhost:3000'],
+    origin: [configService.get('FRONTEND_URL'), 'http://localhost:3000'],
     optionsSuccessStatus: 200,
     allowedHeaders: [
-        'X-CSRF-Token',
-        'X-Requested-With',
-        'Accept',
-        'Accept-Version',
-        'Content-Length',
-        'Content-MD5',
-        'Content-Type',
-        'Date',
-        'X-Api-Version',
-        'Set-Cookie',
-        'Access-Control-Allow-Origin',
-        'Access-Control-Allow-Methods',
-        'Access-Control-Allow-Headers',
-        'Access-Control-Allow-Credentials'
-      ],
+      'X-CSRF-Token',
+      'X-Requested-With',
+      'Accept',
+      'Accept-Version',
+      'Content-Length',
+      'Content-MD5',
+      'Content-Type',
+      'Date',
+      'X-Api-Version',
+      'Set-Cookie',
+      'Access-Control-Allow-Origin',
+      'Access-Control-Allow-Methods',
+      'Access-Control-Allow-Headers',
+      'Access-Control-Allow-Credentials',
+    ],
     credentials: true,
   };
 

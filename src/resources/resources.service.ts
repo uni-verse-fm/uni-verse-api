@@ -9,7 +9,6 @@ import { Model, ClientSession } from 'mongoose';
 import { CreateResourceDto } from './dto/create-resource.dto';
 import { UpdateResourceDto } from './dto/update-resource.dto';
 import { Resource, ResourceDocument } from './schemas/resource.schema';
-import IFileResponse from '../files/interfaces/file-response.interface';
 import { ICreateResourceResponse } from './interfaces/resource-create-response.interface';
 import { IDeleteResourceResponse } from './interfaces/resource-delete-response.interface copy';
 import { BucketName } from '../minio-client/minio-client.service';

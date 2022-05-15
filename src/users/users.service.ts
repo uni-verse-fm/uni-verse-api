@@ -9,20 +9,27 @@ import { InjectModel } from '@nestjs/mongoose';
 import { IRemoveResponse } from './interfaces/remove-response.interface';
 import { IUserResponse } from './interfaces/user-response.interface';
 import { User, UserDocument } from './schemas/user.schema';
+import { PaymentsService } from '../payments/payments.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
+    private stripeService: PaymentsService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UserDocument> {
     await this.isEmailUnique(createUserDto.email);
     await this.isUsernameUnique(createUserDto.username);
+    const stripeCustomer = await this.stripeService.createCustomer(
+      createUserDto.username,
+      createUserDto.email,
+    );
     const userWithEmptyReleases = {
       ...createUserDto,
       releases: [],
+      stripeCustomerId: stripeCustomer.id,
     };
     const user = await this.userModel.create(userWithEmptyReleases);
     return this.buildRegistrationInfo(user);

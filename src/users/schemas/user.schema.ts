@@ -27,6 +27,9 @@ export class User {
 
   @Type(() => Release)
   releases: Release[];
+
+  @Prop()
+  public stripeCustomerId: string;
 }
 
 const UserSchema = SchemaFactory.createForClass(User);

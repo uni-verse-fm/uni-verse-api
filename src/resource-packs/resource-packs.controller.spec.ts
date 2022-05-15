@@ -25,6 +25,7 @@ import { ResourcesService } from '../resources/resources.service';
 import { ResourcePack } from './schemas/resource-pack.schema';
 import { Resource } from '../resources/schemas/resource.schema';
 import { MinioClientService } from '../minio-client/minio-client.service';
+import { PaymentsService } from '../payments/payments.service';
 
 const resource_pack = data.resource_packs.resource_pack1;
 const resource_packs = data2list(data.resource_packs);
@@ -94,6 +95,14 @@ describe('ResourcePacksController', () => {
           useValue: {
             upload: jest.fn(() => {
               return 'https://www.example.com';
+            }),
+          },
+        },
+        {
+          provide: PaymentsService,
+          useValue: {
+            createCustomer: jest.fn(() => {
+              return { id: 1 };
             }),
           },
         },

@@ -16,6 +16,7 @@ import {
 } from './schemas/resource.schema';
 import * as data from '../test-utils/data/mock_data.json';
 import { MinioClientService } from '../minio-client/minio-client.service';
+import { PaymentsService } from '../payments/payments.service';
 
 const create_user = data.create_users.abdou;
 
@@ -51,6 +52,14 @@ describe('ResourcesService', () => {
           useValue: {
             upload: jest.fn(() => {
               return 'https://www.example.com';
+            }),
+          },
+        },
+        {
+          provide: PaymentsService,
+          useValue: {
+            createCustomer: jest.fn(() => {
+              return { id: 1 };
             }),
           },
         },

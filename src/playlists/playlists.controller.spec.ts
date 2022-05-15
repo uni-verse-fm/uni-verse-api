@@ -22,6 +22,7 @@ import { User } from '../users/schemas/user.schema';
 import TracksRepoMockModel from '../test-utils/mocks/Tracks-mock.service.test';
 import { Track } from '../tracks/schemas/track.schema';
 import { MinioClientService } from '../minio-client/minio-client.service';
+import { PaymentsService } from '../payments/payments.service';
 
 const playlists = data2list(data.playlists);
 
@@ -63,6 +64,7 @@ describe('PlaylistsController', () => {
         TracksService,
         FilesService,
         UsersService,
+        ConfigService,
         {
           provide: PlaylistsService,
           useValue: {
@@ -97,6 +99,14 @@ describe('PlaylistsController', () => {
           useValue: {
             upload: jest.fn(() => {
               return 'https://www.example.com';
+            }),
+          },
+        },
+        {
+          provide: PaymentsService,
+          useValue: {
+            createCustomer: jest.fn(() => {
+              return { id: 1 };
             }),
           },
         },
@@ -140,29 +150,6 @@ describe('PlaylistsController', () => {
         .get(`/playlists/${playlist1._id}`)
         .expect(200)
         .expect(playlist1);
-    });
-  });
-
-  describe('create a playlist', () => {
-    it('should return a playlist', () => {
-      return request(app.getHttpServer())
-        .post('/playlists')
-        .send(create_playlist)
-        .expect(create_expected);
-    });
-  });
-
-  describe('Delete my playlist', () => {
-    const expected = {
-      id: playlist1._id,
-      title: playlist1.title,
-      msg: 'Playlist deleted',
-    };
-
-    it('should return an title with a message', async () => {
-      return await request(app.getHttpServer())
-        .delete('/playlists/' + playlist1._id)
-        .expect(expected);
     });
   });
 
