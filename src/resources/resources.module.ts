@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { FilesService } from '../files/files.service';
 import { MinioClientService } from '../minio-client/minio-client.service';
+import { PaymentsService } from '../payments/payments.service';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import UsersModule from '../users/users.module';
 import { UsersService } from '../users/users.service';
@@ -17,7 +18,13 @@ import { Resource, ResourceSchema } from './schemas/resource.schema';
     UsersModule,
   ],
   controllers: [],
-  providers: [ResourcesService, FilesService, UsersService, MinioClientService],
+  providers: [
+    ResourcesService,
+    FilesService,
+    UsersService,
+    MinioClientService,
+    PaymentsService,
+  ],
   exports: [ResourcesService],
 })
 export class ResourcesModule {}

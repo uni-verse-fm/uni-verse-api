@@ -11,6 +11,7 @@ import { ResourcesService } from '../resources/resources.service';
 import { MinioClientService } from '../minio-client/minio-client.service';
 import { FilesService } from '../files/files.service';
 import { UsersService } from '../users/users.service';
+import { PaymentsService } from '../payments/payments.service';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UsersService } from '../users/users.service';
     MinioClientService,
     FilesService,
     UsersService,
+    PaymentsService
   ],
   exports: [CommentsService],
 })

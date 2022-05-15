@@ -5,8 +5,8 @@ import { Track, TrackSchema } from './schemas/track.schema';
 import { FilesService } from '../files/files.service';
 import { UsersService } from '../users/users.service';
 import { User, UserSchema } from '../users/schemas/user.schema';
-import { FilesModule } from '../files/files.module';
 import { MinioClientService } from '../minio-client/minio-client.service';
+import { PaymentsService } from '../payments/payments.service';
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { MinioClientService } from '../minio-client/minio-client.service';
     ]),
   ],
   controllers: [],
-  providers: [TracksService, UsersService, MinioClientService, FilesService],
+  providers: [TracksService, UsersService, MinioClientService, FilesService, PaymentsService],
   exports: [TracksService],
 })
 export class TracksModule {}

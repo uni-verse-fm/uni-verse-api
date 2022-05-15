@@ -13,6 +13,7 @@ import { ResourcesModule } from './resources/resources.module';
 import { ResourcePacksModule } from './resource-packs/resource-packs.module';
 import { CommentsModule } from './comments/comments.module';
 import { MinioClientModule } from './minio-client/minio-client.module';
+import { PaymentsModule } from './payments/payments.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,6 +32,9 @@ import { MinioClientModule } from './minio-client/minio-client.module';
         JWT_SECRET: Joi.string().required(),
         JWT_EXPIRATION_TIME: Joi.string().required(),
         JWT_ACCESS_TOKEN_EXPIRATION_TIME: Joi.string().required(),
+        STRIPE_SECRET_KEY: Joi.string(),
+        STRIPE_CURRENCY: Joi.string(),
+        FRONTEND_URL: Joi.string(),
         PORT: Joi.number(),
       }),
     }),
@@ -60,6 +64,7 @@ import { MinioClientModule } from './minio-client/minio-client.module';
     ResourcePacksModule,
     CommentsModule,
     MinioClientModule,
+    PaymentsModule,
   ],
   controllers: [WelcomeController],
   providers: [],

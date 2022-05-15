@@ -1,5 +1,7 @@
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { PaymentsService } from '../payments/payments.service';
 import * as data from '../test-utils/data/mock_data.json';
 import {
   closeInMongodConnection,
@@ -25,9 +27,19 @@ describe('UsersService', () => {
           },
         ]),
       ],
-      providers: [UsersService],
+      providers: [
+        UsersService,
+        ConfigModule,
+        {
+          provide: PaymentsService,
+          useValue: {
+            createCustomer: jest.fn(() => {
+              return { id: 1 };
+            }),
+          },
+        },
+      ],
     }).compile();
-
     userService = module.get<UsersService>(UsersService);
   });
 
