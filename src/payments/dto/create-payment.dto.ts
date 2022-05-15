@@ -1,4 +1,11 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 
 export class CreatePaymentDto {
   @IsString()

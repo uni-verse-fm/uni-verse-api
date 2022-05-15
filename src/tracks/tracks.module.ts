@@ -16,7 +16,13 @@ import { PaymentsService } from '../payments/payments.service';
     ]),
   ],
   controllers: [],
-  providers: [TracksService, UsersService, MinioClientService, FilesService, PaymentsService],
+  providers: [
+    TracksService,
+    UsersService,
+    MinioClientService,
+    FilesService,
+    PaymentsService,
+  ],
   exports: [TracksService],
 })
 export class TracksModule {}

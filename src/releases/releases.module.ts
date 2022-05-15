@@ -30,7 +30,7 @@ import { PaymentsService } from '../payments/payments.service';
     TracksService,
     FilesService,
     MinioClientService,
-    PaymentsService
+    PaymentsService,
   ],
   exports: [ReleasesService],
 })
