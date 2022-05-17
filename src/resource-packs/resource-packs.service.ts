@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
@@ -16,10 +17,12 @@ import {
 import { ResourcesService } from '../resources/resources.service';
 import { ICreateResourceResponse } from '../resources/interfaces/resource-create-response.interface';
 import { IResourcePackResponse } from './interfaces/resource-pack-response.interface';
-import { isValidId } from '../utils/isValidId';
+import { isValidId } from '../utils/is-valid-id';
 
 @Injectable()
 export class ResourcePacksService {
+  private readonly logger: Logger = new Logger(ResourcePacksService.name);
+
   constructor(
     @InjectModel(ResourcePack.name)
     private resourcePackModel: Model<ResourcePackDocument>,
@@ -33,6 +36,7 @@ export class ResourcePacksService {
     createResourcePack: CreateResourcePackDto,
     author: UserDocument,
   ) {
+    this.logger.log('Creating resource pack');
     await this.isResourcePackUnique(createResourcePack.title);
 
     const session = await this.connection.startSession();
@@ -68,6 +72,7 @@ export class ResourcePacksService {
       return this.buildResourcePackInfo(resourcePack);
     } catch (error) {
       await session.abortTransaction();
+      this.logger.error(`can not create resource pack due to: ${error}`);
       throw error;
     } finally {
       session.endSession();
@@ -78,6 +83,8 @@ export class ResourcePacksService {
     files: SimpleCreateFileDto[],
     createResourcePack: CreateResourcePackDto,
   ): Map<string, SimpleCreateFileDto> {
+    this.logger.log('ordering resources');
+
     const resourcePackFilesNames: string[] = createResourcePack.resources.map(
       (resource) => resource.originalFileName,
     );
@@ -102,6 +109,9 @@ export class ResourcePacksService {
           );
           return true;
         }
+        this.logger.error(
+          `resource pack file ${resourcePackFileName} not found`,
+        );
         throw new BadRequestException(
           `File with resource name "${resourcePackFileName}" doesn't exist`,
         );
@@ -109,6 +119,7 @@ export class ResourcePacksService {
 
       return nameToFile;
     }
+    this.logger.error(`resource pack files count doesn't match`);
     throw new BadRequestException(
       'The number of resources the number of files should be the same.',
     );
@@ -117,6 +128,7 @@ export class ResourcePacksService {
   async findResourcePacks(
     title: string,
   ): Promise<ResourcePackDocument[] | ResourcePackDocument> {
+    this.logger.log('finding resource packs');
     if (title) return await this.findResourcePackByTitle(title);
     return await this.findAllResourcePacks();
   }
@@ -126,17 +138,21 @@ export class ResourcePacksService {
   }
 
   async findResourcePackById(id: string): Promise<ResourcePackDocument> {
+    this.logger.log('finding resource pack by id');
     isValidId(id);
     const resourcePack = await this.resourcePackModel.findById(id);
     if (!resourcePack) {
+      this.logger.error(`resource pack with id ${id} not found`);
       throw new BadRequestException(`Resource pack with ID "${id}" not found.`);
     }
     return resourcePack;
   }
 
   async findResourcePackByTitle(title: string): Promise<ResourcePackDocument> {
+    this.logger.log('finding resource pack by title');
     const resourcePack = await this.resourcePackModel.findOne({ title });
     if (!resourcePack) {
+      this.logger.error(`resource pack with title ${title} not found`);
       throw new NotFoundException(
         `Resource pack with title ${title} not found.`,
       );
@@ -149,11 +165,13 @@ export class ResourcePacksService {
     updateResourcePackDto: UpdateResourcePackDto,
     owner: UserDocument,
   ) {
+    this.logger.log('updating resource pack');
     isValidId(id);
     return `This action updates a #${id} resource pack`;
   }
 
   async removeResourcePack(id: string, owner: UserDocument) {
+    this.logger.log('removing resource pack');
     isValidId(id);
     const resourcePack = await this.isUserTheOwnerOfResourcePack(id, owner);
 
@@ -174,6 +192,7 @@ export class ResourcePacksService {
       };
     } catch (error) {
       await session.abortTransaction();
+      this.logger.error(`can not remove resource pack due to: ${error}`);
       throw error;
     } finally {
       session.endSession();
@@ -183,6 +202,7 @@ export class ResourcePacksService {
   private buildResourcePackInfo(
     resourcePack: ResourcePack,
   ): IResourcePackResponse {
+    this.logger.log('building resource pack info');
     return {
       title: resourcePack.title,
       description: resourcePack.description,
@@ -197,6 +217,7 @@ export class ResourcePacksService {
   }
 
   private async isUserTheOwnerOfResourcePack(id: string, owner: UserDocument) {
+    this.logger.log('checking if user is the owner of resource pack');
     const resourcePack = await this.findResourcePackById(id);
     if (!resourcePack) {
       throw new NotFoundException('Somthing wrong with the server');
@@ -211,6 +232,7 @@ export class ResourcePacksService {
   }
 
   private async isResourcePackUnique(title: string) {
+    this.logger.log('checking if resource pack is unique');
     let resourcePack: ResourcePackDocument;
     try {
       resourcePack = await this.resourcePackModel.findOne({ title });

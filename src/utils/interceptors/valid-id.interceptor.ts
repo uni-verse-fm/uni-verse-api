@@ -5,7 +5,7 @@ import {
   CallHandler,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { isValidId } from '../isValidId';
+import { isValidId } from '../is-valid-id';
 
 @Injectable()
 export class ValidIdInterceptor implements NestInterceptor {

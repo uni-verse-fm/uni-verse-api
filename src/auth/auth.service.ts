@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -7,6 +7,8 @@ import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
@@ -14,6 +16,7 @@ export class AuthService {
   ) {}
 
   public getCookieWithJwtToken(userId: string): string {
+    this.logger.log(`Generating JWT token for user ${userId}`);
     const payload = { userId };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_SECRET'),
@@ -28,6 +31,7 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<UserDocument> {
+    this.logger.log(`Local authenticating user ${email}`);
     const user = await this.usersService.findUserByEmail(email);
     if (!user) {
       throw new UnauthorizedException("User doesn't exist");
@@ -37,6 +41,7 @@ export class AuthService {
   }
 
   public async getAuthenticatedUserById(id: string): Promise<User> {
+    this.logger.log(`Get authenticated user ${id}`);
     const user = await this.usersService.findById(id);
     if (!user) {
       throw new UnauthorizedException("User doesn't exist");
@@ -45,6 +50,7 @@ export class AuthService {
   }
 
   public getCookieForLogOut() {
+    this.logger.log(`Generating empty JWT for logout`);
     return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
   }
 

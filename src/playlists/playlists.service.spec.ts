@@ -15,7 +15,7 @@ import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response
 import { FilesService } from '../files/files.service';
 import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
-import { NonValidIdException } from '../utils/isValidId';
+import { NonValidIdException } from '../utils/is-valid-id';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;

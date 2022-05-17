@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -14,10 +15,12 @@ import { UserDocument } from '../users/schemas/user.schema';
 import { IDeleteTrackResponse } from './interfaces/track-delete-response.interface copy';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
 import { BucketName } from '../minio-client/minio-client.service';
-import { isValidId } from '../utils/isValidId';
+import { isValidId } from '../utils/is-valid-id';
 
 @Injectable()
 export class TracksService {
+  private readonly logger: Logger = new Logger(TracksService.name);
+
   constructor(
     @InjectModel(Track.name)
     private trackModel: Model<TrackDocument>,
@@ -29,6 +32,7 @@ export class TracksService {
     createTrackDto: CreateTrackDto,
     session: ClientSession | null = null,
   ): Promise<ICreateTrackResponse> {
+    this.logger.log(`creating track ${createTrackDto.title}`);
     const feats: UserDocument[] = [];
 
     const file = {
@@ -66,16 +70,19 @@ export class TracksService {
     tracks: CreateTrackDto[],
     session: ClientSession | null = null,
   ): Promise<ICreateTrackResponse[]> {
+    this.logger.log(`creating ${tracks.length} tracks`);
     return await Promise.all(
       tracks.map((track) => this.createTrack(track, session)),
     );
   }
 
   async findAllTracks() {
+    this.logger.log('finding all tracks');
     return await this.trackModel.find();
   }
 
   async findTrackById(id: string): Promise<TrackDocument> {
+    this.logger.log(`finding track by id ${id}`);
     isValidId(id);
     const track = await this.trackModel.findById(id);
     if (!track) {
@@ -85,6 +92,7 @@ export class TracksService {
   }
 
   async findTrackByTitle(title: string): Promise<TrackDocument> {
+    this.logger.log(`finding track by title ${title}`);
     const track = await this.trackModel.findOne({ title });
     if (!track) {
       throw new BadRequestException(
@@ -98,8 +106,10 @@ export class TracksService {
     id: string,
     session: ClientSession | null = null,
   ): Promise<IDeleteTrackResponse> {
+    this.logger.log(`removing track ${id}`);
     const track = await this.findTrackById(id);
     if (!track) {
+      this.logger.error(`track ${id} not found`);
       throw new NotFoundException('Somthing wrong with the server');
     }
     await track.remove(session);
@@ -114,12 +124,14 @@ export class TracksService {
     tracks: Track[],
     session: ClientSession | null = null,
   ): Promise<IDeleteTrackResponse[]> {
+    this.logger.log(`removing ${tracks.length} tracks`);
     return await Promise.all(
       tracks.map((track) => this.removeTrack(track.toString(), session)),
     );
   }
 
   private buildTrackInfo(track: any): ICreateTrackResponse {
+    this.logger.log(`building track info ${track.title}`);
     return {
       id: track._id,
       title: track.title,
@@ -134,6 +146,7 @@ export class TracksService {
   }
 
   private async isTrackUnique(title: string) {
+    this.logger.log(`checking if track ${title} is unique`);
     const release = await this.trackModel.findOne({ title });
     if (release?.title === title) {
       throw new BadRequestException('Title must be unique.');

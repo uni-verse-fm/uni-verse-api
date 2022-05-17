@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -12,10 +13,12 @@ import { Resource, ResourceDocument } from './schemas/resource.schema';
 import { ICreateResourceResponse } from './interfaces/resource-create-response.interface';
 import { IDeleteResourceResponse } from './interfaces/resource-delete-response.interface copy';
 import { BucketName } from '../minio-client/minio-client.service';
-import { isValidId } from '../utils/isValidId';
+import { isValidId } from '../utils/is-valid-id';
 
 @Injectable()
 export class ResourcesService {
+  private readonly logger: Logger = new Logger(ResourcesService.name);
+
   constructor(
     @InjectModel(Resource.name)
     private resourceModel: Model<ResourceDocument>,
@@ -26,6 +29,7 @@ export class ResourcesService {
     createResourceDto: CreateResourceDto,
     session: ClientSession | null = null,
   ): Promise<ICreateResourceResponse> {
+    this.logger.log(`creating resource ${createResourceDto.title}`);
     const result: string = await this.filesService.createFile(
       createResourceDto.file,
       BucketName.Resources,
@@ -47,27 +51,33 @@ export class ResourcesService {
     resources: CreateResourceDto[],
     session: ClientSession | null = null,
   ): Promise<ICreateResourceResponse[]> {
+    this.logger.log(`creating ${resources.length} resources`);
     return await Promise.all(
       resources.map((resource) => this.createResource(resource, session)),
     );
   }
 
   async findAllResources() {
+    this.logger.log('finding all resources');
     return await this.resourceModel.find();
   }
 
   async findResourceById(id: string): Promise<ResourceDocument> {
+    this.logger.log(`finding resource ${id}`);
     isValidId(id);
     const resource = await this.resourceModel.findById(id);
     if (!resource) {
+      this.logger.error(`resource ${id} not found`);
       throw new BadRequestException(`Resource with ID "${id}" doesn't exist`);
     }
     return resource;
   }
 
   async findResourceByTitle(title: string): Promise<ResourceDocument> {
+    this.logger.log(`finding resource ${title}`);
     const resource = await this.resourceModel.findOne({ title });
     if (!resource) {
+      this.logger.error(`resource ${title} not found`);
       throw new BadRequestException(
         `Resource with title "${title}" doesn't exist`,
       );
@@ -76,10 +86,12 @@ export class ResourcesService {
   }
 
   updateResource(id: string, updateResourceDto: UpdateResourceDto) {
+    this.logger.log(`updating resource ${id}`);
     return `This action updates a #${id} resource`;
   }
 
   async removeResource(id: string, session: ClientSession | null = null) {
+    this.logger.log(`removing resource ${id}`);
     const resource = await this.findResourceById(id);
     if (!resource) {
       throw new NotFoundException('Somthing wrong with the server');
@@ -96,6 +108,7 @@ export class ResourcesService {
     resources: Resource[],
     session: ClientSession | null = null,
   ): Promise<IDeleteResourceResponse[]> {
+    this.logger.log(`removing ${resources.length} resources`);
     return await Promise.all(
       resources.map((resource) =>
         this.removeResource(resource.toString(), session),
@@ -104,6 +117,7 @@ export class ResourcesService {
   }
 
   private buildResourceInfo(resource: any): ICreateResourceResponse {
+    this.logger.log(`building resource info ${resource.title}`);
     return {
       _id: resource._id,
       title: resource.title,
@@ -113,6 +127,7 @@ export class ResourcesService {
   }
 
   private async isResourceUnique(title: string) {
+    this.logger.log(`checking if resource ${title} is unique`);
     const resource = await this.resourceModel.findOne({ title });
     if (resource?.title === title) {
       throw new BadRequestException('Title must be unique.');

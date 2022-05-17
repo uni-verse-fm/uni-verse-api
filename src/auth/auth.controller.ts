@@ -59,7 +59,6 @@ export class AuthController {
   @Get('me')
   @ApiOperation({ summary: 'Me' })
   me(@Request() request: IRequestWithUser, @Res() response: Response) {
-    console.log(request.user);
     return response.send(request.user);
   }
 }

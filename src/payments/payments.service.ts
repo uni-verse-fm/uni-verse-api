@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { IDonate } from './interfaces/donate.interface';
@@ -22,6 +22,7 @@ interface IPurchaseMetadata {
 @Injectable()
 export class PaymentsService {
   private stripe: Stripe;
+  private readonly logger: Logger = new Logger(PaymentsService.name);
 
   constructor(private configService: ConfigService) {
     this.stripe = new Stripe(configService.get('STRIPE_SECRET_KEY'), {
@@ -30,21 +31,30 @@ export class PaymentsService {
   }
 
   public async findCustomer(customerId: string) {
+    this.logger.log(`Find customer ${customerId}`);
     const response = await this.stripe.customers.retrieve(customerId);
-    if (!response) throw new Error('Somthing wrong with payment server');
+    if (!response) {
+      this.logger.error(`can not find customer ${customerId}`);
+      throw new Error('Somthing wrong with payment server');
+    }
     return response;
   }
 
   public async createCustomer(name: string, email: string) {
+    this.logger.log(`creating customer ${name} ${email}`);
     const response = await this.stripe.customers.create({
       name,
       email,
     });
-    if (!response) throw new Error('Somthing wrong with the payment server');
+    if (!response) {
+      this.logger.error(`can not create customer ${name} ${email}`);
+      throw new Error('Somthing wrong with the payment server');
+    }
     return response;
   }
 
   public async deleteCustomer(customerId: string) {
+    this.logger.log(`deleting customer ${customerId}`);
     const response = await this.stripe.customers.del(customerId);
     if (!response) throw new Error('Somthing wrong with payment server');
     return response;
@@ -54,6 +64,7 @@ export class PaymentsService {
     paymentPayload: IPurchase | IDonate,
     metadata: IDonationMetadata | IPurchaseMetadata,
   ) {
+    this.logger.log(`creating payment with new source`);
     const currency = this.configService.get('STRIPE_CURRENCY');
 
     const data = {
@@ -80,7 +91,10 @@ export class PaymentsService {
       });
     }
 
-    if (!response) throw new Error("Can't charge you");
+    if (!response) {
+      this.logger.error(`can not create payment with new source`);
+      throw new Error("Can't charge you");
+    }
     return response;
   }
 
@@ -89,6 +103,7 @@ export class PaymentsService {
     customerId: string,
     metadata: IDonationMetadata | IPurchaseMetadata,
   ) {
+    this.logger.log(`creating payment with existing source`);
     const currency = this.configService.get('STRIPE_CURRENCY');
     const response = await this.stripe.charges.create({
       amount,
@@ -96,11 +111,15 @@ export class PaymentsService {
       customer: customerId,
       metadata: { ...metadata },
     });
-    if (!response) throw new Error("Can't charge you");
+    if (!response) {
+      this.logger.error(`can not create payment with existing source`);
+      throw new Error("Can't charge you");
+    }
     return response;
   }
 
   public async donate(donatePayload: IDonate) {
+    this.logger.log(`creating donation`);
     const metadata: IDonationMetadata = { paymentType: PaymentType.Donation };
     if (donatePayload.paymentMethodId)
       return await this.payWithNewSource(donatePayload, metadata);
@@ -112,6 +131,7 @@ export class PaymentsService {
   }
 
   public async buyResourcePack(purchasePayload: IPurchase) {
+    this.logger.log(`creating purchase`);
     const metadata: IPurchaseMetadata = {
       paymentType: PaymentType.Purchase,
       targetCustomerId: purchasePayload.targetCustomerId,
@@ -127,10 +147,12 @@ export class PaymentsService {
   }
 
   public async findAllPayments(customerId: string) {
+    this.logger.log(`Find all payments for customer ${customerId}`);
     return 'This action adds a new payement';
   }
 
   public async findOnePayementById(customerId, payementId) {
+    this.logger.log(`Find one payment ${payementId} for customer ${customerId}`);
     return `This action returns all payments`;
   }
 }
