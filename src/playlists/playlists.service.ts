@@ -47,18 +47,18 @@ export class PlaylistsService {
   }
 
   async find(title: string): Promise<PlaylistDocument[] | PlaylistDocument> {
-    this.logger.log(`finding for playlist ${title}`);
+    this.logger.log(`Finding for playlist ${title}`);
     if (title) return await this.findPlaylsitByTitle(title);
     return await this.findAllPlaylists();
   }
 
   async findAllPlaylists(): Promise<PlaylistDocument[]> {
-    this.logger.log('finding all playlists');
+    this.logger.log('Finding all playlists');
     return await this.playlistModel.find();
   }
 
   async findPlaylistById(id: string): Promise<PlaylistDocument> {
-    this.logger.log(`finding playlist by id ${id}`);
+    this.logger.log(`Finding playlist by id ${id}`);
     isValidId(id);
     const playlist = await this.playlistModel.findById(id);
     if (!playlist) {
@@ -81,7 +81,7 @@ export class PlaylistsService {
     updatePlaylistDto: UpdatePlaylistDto,
     owner: UserDocument,
   ) {
-    this.logger.log(`updating playlist ${id}`);
+    this.logger.log(`Updating playlist ${id}`);
     isValidId(id);
     const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
 
@@ -93,7 +93,7 @@ export class PlaylistsService {
     );
     if (!trackToUpdate) {
       throw new NotFoundException(
-        this.logger.error(`track with ID "${trackId}" not found.`),
+        this.logger.error(`Track with ID "${trackId}" not found.`),
         `Track with ID "${trackToUpdate}" not found.`,
       );
     }
@@ -101,11 +101,11 @@ export class PlaylistsService {
     let newTracks: Track[];
     switch (updatePlaylistDto.action) {
       case PlaylistUpdateTaskAction.Add:
-        this.logger.log(`adding track ${trackId} to playlist ${id}`);
+        this.logger.log(`Adding track ${trackId} to playlist ${id}`);
         newTracks = [...playlistTracks, trackToUpdate];
         break;
       case PlaylistUpdateTaskAction.Remove:
-        this.logger.log(`removing track ${trackId} from playlist ${id}`);
+        this.logger.log(`Removing track ${trackId} from playlist ${id}`);
         newTracks = playlistTracks.filter(
           (track) => track._id.toString() !== trackId,
         );
@@ -128,14 +128,14 @@ export class PlaylistsService {
   }
 
   async removePlaylist(id: string, owner: UserDocument) {
-    this.logger.log(`removing playlist ${id}`);
+    this.logger.log(`Cemoving playlist ${id}`);
     isValidId(id);
     const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
 
     try {
       await playlist.remove();
     } catch (error) {
-      this.logger.error(`can not remove playlist ${id} due to: ${error}`);
+      this.logger.error(`Can not remove playlist ${id} due to: ${error}`);
       throw new Error("Can't delete playlist");
     }
 
@@ -148,22 +148,22 @@ export class PlaylistsService {
 
   private async isUserTheOwnerOfPlaylist(id: string, owner: UserDocument) {
     this.logger.log(
-      `checking if user ${owner.id} is the owner of playlist ${id}`,
+      `Checking if user ${owner.id} is the owner of playlist ${id}`,
     );
     const playlist = await this.findPlaylistById(id);
     if (!playlist) {
-      this.logger.error(`playlist with ID "${id}" not found.`);
+      this.logger.error(`Playlist with ID "${id}" not found.`);
       throw new NotFoundException('Somthing wrong with the server');
     }
     if (playlist.owner._id.toString() !== owner._id.toString()) {
-      this.logger.error(`user ${owner.id} is not the owner of playlist ${id}`);
+      this.logger.error(`User ${owner.id} is not the owner of playlist ${id}`);
       throw new BadRequestException('You are not the owner of this playlist.');
     }
     return playlist;
   }
 
   private async isPlaylistUnique(title: string) {
-    this.logger.log(`checking if playlist ${title} is unique`);
+    this.logger.log(`Checking if playlist ${title} is unique`);
     let playlist: PlaylistDocument;
     try {
       playlist = await this.playlistModel.findOne({ title });

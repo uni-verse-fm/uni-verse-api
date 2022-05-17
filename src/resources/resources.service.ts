@@ -29,7 +29,7 @@ export class ResourcesService {
     createResourceDto: CreateResourceDto,
     session: ClientSession | null = null,
   ): Promise<ICreateResourceResponse> {
-    this.logger.log(`creating resource ${createResourceDto.title}`);
+    this.logger.log(`Creating resource ${createResourceDto.title}`);
     const result: string = await this.filesService.createFile(
       createResourceDto.file,
       BucketName.Resources,
@@ -51,33 +51,33 @@ export class ResourcesService {
     resources: CreateResourceDto[],
     session: ClientSession | null = null,
   ): Promise<ICreateResourceResponse[]> {
-    this.logger.log(`creating ${resources.length} resources`);
+    this.logger.log(`Creating ${resources.length} resources`);
     return await Promise.all(
       resources.map((resource) => this.createResource(resource, session)),
     );
   }
 
   async findAllResources() {
-    this.logger.log('finding all resources');
+    this.logger.log('Finding all resources');
     return await this.resourceModel.find();
   }
 
   async findResourceById(id: string): Promise<ResourceDocument> {
-    this.logger.log(`finding resource ${id}`);
+    this.logger.log(`Finding resource ${id}`);
     isValidId(id);
     const resource = await this.resourceModel.findById(id);
     if (!resource) {
-      this.logger.error(`resource ${id} not found`);
+      this.logger.error(`Resource ${id} not found`);
       throw new BadRequestException(`Resource with ID "${id}" doesn't exist`);
     }
     return resource;
   }
 
   async findResourceByTitle(title: string): Promise<ResourceDocument> {
-    this.logger.log(`finding resource ${title}`);
+    this.logger.log(`Finding resource ${title}`);
     const resource = await this.resourceModel.findOne({ title });
     if (!resource) {
-      this.logger.error(`resource ${title} not found`);
+      this.logger.error(`Resource ${title} not found`);
       throw new BadRequestException(
         `Resource with title "${title}" doesn't exist`,
       );
@@ -86,14 +86,15 @@ export class ResourcesService {
   }
 
   updateResource(id: string, updateResourceDto: UpdateResourceDto) {
-    this.logger.log(`updating resource ${id}`);
+    this.logger.log(`Updating resource ${id}`);
     return `This action updates a #${id} resource`;
   }
 
   async removeResource(id: string, session: ClientSession | null = null) {
-    this.logger.log(`removing resource ${id}`);
+    this.logger.log(`Removing resource ${id}`);
     const resource = await this.findResourceById(id);
     if (!resource) {
+      this.logger.error(`Resource ${id} not found`);
       throw new NotFoundException('Somthing wrong with the server');
     }
     await resource.remove(session);
@@ -108,7 +109,7 @@ export class ResourcesService {
     resources: Resource[],
     session: ClientSession | null = null,
   ): Promise<IDeleteResourceResponse[]> {
-    this.logger.log(`removing ${resources.length} resources`);
+    this.logger.log(`Removing ${resources.length} resources`);
     return await Promise.all(
       resources.map((resource) =>
         this.removeResource(resource.toString(), session),
@@ -117,7 +118,7 @@ export class ResourcesService {
   }
 
   private buildResourceInfo(resource: any): ICreateResourceResponse {
-    this.logger.log(`building resource info ${resource.title}`);
+    this.logger.log(`Building resource info ${resource.title}`);
     return {
       _id: resource._id,
       title: resource.title,
@@ -127,7 +128,7 @@ export class ResourcesService {
   }
 
   private async isResourceUnique(title: string) {
-    this.logger.log(`checking if resource ${title} is unique`);
+    this.logger.log(`Checking if resource ${title} is unique`);
     const resource = await this.resourceModel.findOne({ title });
     if (resource?.title === title) {
       throw new BadRequestException('Title must be unique.');

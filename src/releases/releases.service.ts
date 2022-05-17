@@ -35,7 +35,7 @@ export class ReleasesService {
     createRelease: CreateReleaseDto,
     author: UserDocument,
   ) {
-    this.logger.log(`creating release "${createRelease.title}"`);
+    this.logger.log(`Creating release "${createRelease.title}"`);
     await this.isReleaseUnique(createRelease.title);
 
     const feats: UserDocument[] =
@@ -71,7 +71,7 @@ export class ReleasesService {
     } catch (error) {
       await session.abortTransaction();
       this.logger.error(
-        `can't create release "${createRelease.title}" due to: ${error}`,
+        `Can't create release "${createRelease.title}" due to: ${error}`,
       );
       throw error;
     } finally {
@@ -83,7 +83,7 @@ export class ReleasesService {
     files: SimpleCreateFileDto[],
     createRelease: CreateReleaseDto,
   ): Map<string, Buffer> {
-    this.logger.log(`orderedering tracks`);
+    this.logger.log(`Orderedering tracks`);
     const releaseFilesNames: string[] = createRelease.tracks.map(
       (track) => track.originalFileName,
     );
@@ -106,7 +106,7 @@ export class ReleasesService {
           return true;
         }
         throw new BadRequestException(
-          this.logger.error(`release file "${releaseFileName}" not found`),
+          this.logger.error(`Release file "${releaseFileName}" not found`),
           `File with track name "${releaseFileName}" doesn't exist`,
         );
       });
@@ -114,24 +114,24 @@ export class ReleasesService {
       return nameToBuffer;
     }
     throw new BadRequestException(
-      this.logger.error(`release files count doesn't match`),
+      this.logger.error(`Release files count doesn't match`),
       'The number of tracks the number of files should be the same.',
     );
   }
 
   async find(title: string): Promise<ReleaseDocument[] | ReleaseDocument> {
-    this.logger.log(`finding release "${title}"`);
+    this.logger.log(`Finding release "${title}"`);
     if (title) return await this.findReleaseByTitle(title);
     return await this.findAllReleases();
   }
 
   async findAllReleases(): Promise<ReleaseDocument[]> {
-    this.logger.log(`finding all releases`);
+    this.logger.log(`Finding all releases`);
     return await this.releaseModel.find();
   }
 
   async findReleaseById(id: string): Promise<ReleaseDocument> {
-    this.logger.log(`finding release by id "${id}"`);
+    this.logger.log(`Finding release by id "${id}"`);
     isValidId(id);
     const release = await this.releaseModel.findById(id);
     if (!release) {
@@ -141,7 +141,7 @@ export class ReleasesService {
   }
 
   async findReleaseByTitle(title: string): Promise<ReleaseDocument> {
-    this.logger.log(`finding release by title "${title}"`);
+    this.logger.log(`Finding release by title "${title}"`);
     const release = await this.releaseModel.findOne({ title });
     if (!release) {
       throw new NotFoundException(`Release with title ${title} not found.`);
@@ -154,13 +154,13 @@ export class ReleasesService {
     updateReleaseDto: UpdateReleaseDto,
     owner: UserDocument,
   ) {
-    this.logger.log(`updating release "${id}"`);
+    this.logger.log(`Updating release "${id}"`);
     isValidId(id);
     return `This action updates a #${id} release`;
   }
 
   async removeRelease(id: string, owner: UserDocument) {
-    this.logger.log(`removing release "${id}"`);
+    this.logger.log(`Removing release "${id}"`);
     isValidId(id);
     const release = await this.isUserTheOwnerOfRelease(id, owner);
 
@@ -177,7 +177,7 @@ export class ReleasesService {
       };
     } catch (error) {
       await session.abortTransaction();
-      this.logger.error(`can't remove release "${id}" due to: ${error}`);
+      this.logger.error(`Can't remove release "${id}" due to: ${error}`);
       throw error;
     } finally {
       session.endSession();
@@ -188,7 +188,7 @@ export class ReleasesService {
     release: Release,
     feats: UserDocument[],
   ): IReleaseResponse {
-    this.logger.log(`building release info`);
+    this.logger.log(`Building release info`);
     return {
       title: release.title,
       description: release.description,
@@ -207,16 +207,16 @@ export class ReleasesService {
   }
 
   private async isUserTheOwnerOfRelease(id: string, owner: UserDocument) {
-    this.logger.log(`checking if user is the owner of release "${id}"`);
+    this.logger.log(`Checking if user is the owner of release "${id}"`);
     isValidId(id);
     const release = await this.findReleaseById(id);
     if (!release) {
-      this.logger.error(`release "${id}" not found`);
+      this.logger.error(`Release "${id}" not found`);
       throw new NotFoundException('Somthing wrong with the server');
     }
     if (release.author._id.toString() !== owner._id.toString()) {
       this.logger.error(
-        `user "${owner.username}" is not the owner of release "${id}"`,
+        `User "${owner.username}" is not the owner of release "${id}"`,
       );
       throw new BadRequestException('You are not the owner of this release.');
     }
@@ -224,7 +224,7 @@ export class ReleasesService {
   }
 
   private async isReleaseUnique(title: string) {
-    this.logger.log(`checking if release "${title}" is unique`);
+    this.logger.log(`Checking if release "${title}" is unique`);
     let release: ReleaseDocument;
     try {
       release = await this.releaseModel.findOne({ title });

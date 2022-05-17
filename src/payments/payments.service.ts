@@ -34,27 +34,27 @@ export class PaymentsService {
     this.logger.log(`Find customer ${customerId}`);
     const response = await this.stripe.customers.retrieve(customerId);
     if (!response) {
-      this.logger.error(`can not find customer ${customerId}`);
+      this.logger.error(`Can not find customer ${customerId}`);
       throw new Error('Somthing wrong with payment server');
     }
     return response;
   }
 
   public async createCustomer(name: string, email: string) {
-    this.logger.log(`creating customer ${name} ${email}`);
+    this.logger.log(`Creating customer ${name} ${email}`);
     const response = await this.stripe.customers.create({
       name,
       email,
     });
     if (!response) {
-      this.logger.error(`can not create customer ${name} ${email}`);
+      this.logger.error(`Can not create customer ${name} ${email}`);
       throw new Error('Somthing wrong with the payment server');
     }
     return response;
   }
 
   public async deleteCustomer(customerId: string) {
-    this.logger.log(`deleting customer ${customerId}`);
+    this.logger.log(`Deleting customer ${customerId}`);
     const response = await this.stripe.customers.del(customerId);
     if (!response) throw new Error('Somthing wrong with payment server');
     return response;
@@ -64,7 +64,7 @@ export class PaymentsService {
     paymentPayload: IPurchase | IDonate,
     metadata: IDonationMetadata | IPurchaseMetadata,
   ) {
-    this.logger.log(`creating payment with new source`);
+    this.logger.log(`Creating payment with new source`);
     const currency = this.configService.get('STRIPE_CURRENCY');
 
     const data = {
@@ -92,7 +92,7 @@ export class PaymentsService {
     }
 
     if (!response) {
-      this.logger.error(`can not create payment with new source`);
+      this.logger.error(`Can not create payment with new source`);
       throw new Error("Can't charge you");
     }
     return response;
@@ -103,7 +103,7 @@ export class PaymentsService {
     customerId: string,
     metadata: IDonationMetadata | IPurchaseMetadata,
   ) {
-    this.logger.log(`creating payment with existing source`);
+    this.logger.log(`Creating payment with existing source`);
     const currency = this.configService.get('STRIPE_CURRENCY');
     const response = await this.stripe.charges.create({
       amount,
@@ -112,14 +112,14 @@ export class PaymentsService {
       metadata: { ...metadata },
     });
     if (!response) {
-      this.logger.error(`can not create payment with existing source`);
+      this.logger.error(`Can not create payment with existing source`);
       throw new Error("Can't charge you");
     }
     return response;
   }
 
   public async donate(donatePayload: IDonate) {
-    this.logger.log(`creating donation`);
+    this.logger.log(`Creating donation`);
     const metadata: IDonationMetadata = { paymentType: PaymentType.Donation };
     if (donatePayload.paymentMethodId)
       return await this.payWithNewSource(donatePayload, metadata);
@@ -131,7 +131,7 @@ export class PaymentsService {
   }
 
   public async buyResourcePack(purchasePayload: IPurchase) {
-    this.logger.log(`creating purchase`);
+    this.logger.log(`Creating purchase`);
     const metadata: IPurchaseMetadata = {
       paymentType: PaymentType.Purchase,
       targetCustomerId: purchasePayload.targetCustomerId,

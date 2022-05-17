@@ -21,22 +21,22 @@ export class FilesService {
   }
 
   findAllFiles() {
-    this.logger.log('finding all files');
+    this.logger.log('Finding all files');
     return `This action returns all files`;
   }
 
   findFileById(id: string) {
-    this.logger.log(`finding file ${id}`);
+    this.logger.log(`Finding file ${id}`);
     return `This action returns a #${id} file`;
   }
 
   updateFile(id: string, updateFileDto: UpdateFileDto) {
-    this.logger.log(`updating file ${id}`);
+    this.logger.log(`Updating file ${id}`);
     return `This action updates a #${id} file`;
   }
 
   removeFile(id: number) {
-    this.logger.log(`removing file ${id}`);
+    this.logger.log(`Removing file ${id}`);
     return `This action removes a #${id} file`;
   }
 }

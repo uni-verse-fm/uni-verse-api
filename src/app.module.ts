@@ -14,6 +14,8 @@ import { ResourcePacksModule } from './resource-packs/resource-packs.module';
 import { CommentsModule } from './comments/comments.module';
 import { MinioClientModule } from './minio-client/minio-client.module';
 import { PaymentsModule } from './payments/payments.module';
+import { HealthService } from './health/health.service';
+import { HealthModule } from './health/health.module';
 import LogsMiddleware from './utils/middlewares/logs.middleware';
 @Module({
   imports: [
@@ -66,9 +68,10 @@ import LogsMiddleware from './utils/middlewares/logs.middleware';
     CommentsModule,
     MinioClientModule,
     PaymentsModule,
+    HealthModule,
   ],
   controllers: [WelcomeController],
-  providers: [],
+  providers: [HealthService],
 })
 export class AppModule {
     configure(consumer: MiddlewareConsumer) {
