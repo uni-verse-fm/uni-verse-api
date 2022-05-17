@@ -15,6 +15,7 @@ import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response
 import { FilesService } from '../files/files.service';
 import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
+import { NonValidIdException } from '../utils/isValidId';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -27,7 +28,8 @@ let user: UserDocument;
 let artist: UserDocument;
 let encore: ICreateTrackResponse;
 let threat: ICreateTrackResponse;
-let playlistId: string;
+let playlist1_id: string;
+let playlist2_id: string;
 
 describe('PlaylistsService', () => {
   let playlistService: PlaylistsService;
@@ -136,13 +138,14 @@ describe('PlaylistsService', () => {
 
     it('should return the first playlist', async () => {
       const playlist = await playlistService.createPlaylist(my_playlist1, user);
-      playlistId = playlist._id;
+      playlist1_id = playlist._id;
       expect(playlist._id).toBeDefined();
       expect(playlist.title).toBe(my_playlist1.title);
     });
 
     it('should return the second playlist', async () => {
       const playlist = await playlistService.createPlaylist(my_playlist2, user);
+      playlist2_id = playlist._id;
       expect(playlist._id).toBeDefined();
       expect(playlist.title).toBe(my_playlist2.title);
     });
@@ -175,7 +178,7 @@ describe('PlaylistsService', () => {
 
   describe('When find one playlist by id', () => {
     it('should return one release', async () => {
-      const result = await playlistService.findPlaylistById(playlistId);
+      const result = await playlistService.findPlaylistById(playlist1_id);
 
       expect(result.title).toBe(my_playlist1.title);
       expect(result.owner).toStrictEqual(user._id);
@@ -183,13 +186,29 @@ describe('PlaylistsService', () => {
     });
   });
 
-  describe('When remove one playlist', () => {
-    it('should return one playlist infos', async () => {
-      const msg = 'Playlist deleted';
+  describe('When find one playlist by id', () => {
+    it('should return an exception of id invalidity', async () => {
+      await expect(() => playlistService.findPlaylistById("1")).rejects.toThrow(NonValidIdException);
+    });
+  });
 
-      const result = await playlistService.removePlaylist(playlistId, user);
-      expect(result.id).toBeDefined();
+  describe('When remove one playlist', () => {
+    const msg = 'Playlist deleted';
+
+    it('should return one playlist infos', async () => {
+      const result = await playlistService.removePlaylist(playlist1_id, user);
+      expect(result.id).not.toBe("");
+      expect(result.id).not.toBe(playlist2_id);
       expect(result.title).toBe(my_playlist1.title);
+      expect(result.msg).toBe(msg);
+    });
+
+    it('should return the second playlist infos', async () => {
+      const result = await playlistService.removePlaylist(playlist2_id, user);
+
+      expect(result.id).not.toBe("");
+      expect(result.id).not.toBe(playlist1_id);
+      expect(result.title).toBe(my_playlist2.title);
       expect(result.msg).toBe(msg);
     });
   });

@@ -153,7 +153,7 @@ describe('ReleasesController', () => {
   });
 
   describe('find one release by id', () => {
-    it('shoul return one release', () => {
+    it('should return one release', () => {
       return request(app.getHttpServer())
         .get(`/releases/${release._id}`)
         .expect(200)

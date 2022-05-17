@@ -32,6 +32,7 @@ import {
 import { ApiMultiFileWithMetadata } from '../utils/swagger/multiple-file.decorator';
 import { CreateReleaseWraperDto } from './dto/create-release-wraper.dto';
 import { CreateReleaseDto } from './dto/create-release.dto';
+import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
 
 @ApiTags('releases')
 @Controller('releases')
@@ -77,6 +78,7 @@ export class ReleasesController {
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find one release by id' })
+  @UseInterceptors(ValidIdInterceptor)
   findOne(@Param('id') id: string) {
     return this.releasesService.findReleaseById(id);
   }
@@ -92,6 +94,7 @@ export class ReleasesController {
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Update a release' })
+  @UseInterceptors(ValidIdInterceptor)
   updateRelease(
     @Param('id') id: string,
     @Body() updateReleaseDto: UpdateReleaseDto,
@@ -109,6 +112,7 @@ export class ReleasesController {
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Delete a release' })
   @ApiCookieAuth('Set-Cookie')
+  @UseInterceptors(ValidIdInterceptor)
   removeRelease(@Param('id') id: string, @Request() request: IRequestWithUser) {
     return this.releasesService.removeRelease(id, request.user);
   }

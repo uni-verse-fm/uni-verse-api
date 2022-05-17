@@ -16,6 +16,7 @@ import {
 import { ResourcesService } from '../resources/resources.service';
 import { ICreateResourceResponse } from '../resources/interfaces/resource-create-response.interface';
 import { IResourcePackResponse } from './interfaces/resource-pack-response.interface';
+import { isValidId } from '../utils/isValidId';
 
 @Injectable()
 export class ResourcePacksService {
@@ -125,6 +126,7 @@ export class ResourcePacksService {
   }
 
   async findResourcePackById(id: string): Promise<ResourcePackDocument> {
+    isValidId(id);
     const resourcePack = await this.resourcePackModel.findById(id);
     if (!resourcePack) {
       throw new BadRequestException(`Resource pack with ID "${id}" not found.`);
@@ -147,10 +149,12 @@ export class ResourcePacksService {
     updateResourcePackDto: UpdateResourcePackDto,
     owner: UserDocument,
   ) {
+    isValidId(id);
     return `This action updates a #${id} resource pack`;
   }
 
   async removeResourcePack(id: string, owner: UserDocument) {
+    isValidId(id);
     const resourcePack = await this.isUserTheOwnerOfResourcePack(id, owner);
 
     const session = await this.connection.startSession();
@@ -162,7 +166,7 @@ export class ResourcePacksService {
         session,
       );
 
-      await this.resourcePackModel.deleteOne({ id: resourcePack._id });
+      await resourcePack.remove();
       return {
         id: resourcePack._id.toString(),
         title: resourcePack.title,

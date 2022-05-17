@@ -10,6 +10,7 @@ import { ResourceDocument } from '../resources/schemas/resource.schema';
 import { TrackDocument } from '../tracks/schemas/track.schema';
 import { TracksService } from '../tracks/tracks.service';
 import { UserDocument } from '../users/schemas/user.schema';
+import { isValidId } from '../utils/isValidId';
 import { CreateCommentDto, ModelType } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment, CommentDocument } from './schemas/comment.schema';
@@ -71,19 +72,22 @@ export class CommentsService {
     updateCommentDto: UpdateCommentDto,
     owner: UserDocument,
   ) {
+    isValidId(id);
     return `This action updates a #${id} comment`;
   }
 
   async removeComment(id: string, owner: UserDocument) {
+    isValidId(id);
     const comment = await this.isUserTheOwnerOfComment(id, owner);
 
-    await this.commentModel.deleteOne({ id: comment._id });
+    await comment.remove();
     return {
       msg: `Comment ${comment._id.toString()} deleted`,
     };
   }
 
   private async isUserTheOwnerOfComment(id: string, owner: UserDocument) {
+    isValidId(id);
     const comment = await this.findCommentById(id);
     if (!comment) {
       throw new NotFoundException('Somthing wrong with the server');

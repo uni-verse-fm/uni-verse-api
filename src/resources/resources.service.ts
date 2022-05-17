@@ -12,6 +12,7 @@ import { Resource, ResourceDocument } from './schemas/resource.schema';
 import { ICreateResourceResponse } from './interfaces/resource-create-response.interface';
 import { IDeleteResourceResponse } from './interfaces/resource-delete-response.interface copy';
 import { BucketName } from '../minio-client/minio-client.service';
+import { isValidId } from '../utils/isValidId';
 
 @Injectable()
 export class ResourcesService {
@@ -56,6 +57,7 @@ export class ResourcesService {
   }
 
   async findResourceById(id: string): Promise<ResourceDocument> {
+    isValidId(id);
     const resource = await this.resourceModel.findById(id);
     if (!resource) {
       throw new BadRequestException(`Resource with ID "${id}" doesn't exist`);
@@ -82,7 +84,7 @@ export class ResourcesService {
     if (!resource) {
       throw new NotFoundException('Somthing wrong with the server');
     }
-    await this.resourceModel.deleteOne({ id: resource._id }, session);
+    await resource.remove(session);
     return {
       id: resource._id,
       title: resource.title,

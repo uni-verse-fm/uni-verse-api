@@ -9,6 +9,7 @@ import {
   UseGuards,
   Request,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PlaylistsService } from './playlists.service';
 import { CreatePlaylistDto } from './dto/create-playlist.dto';
@@ -21,6 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
+import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
 
 @ApiTags('playlists')
 @Controller('playlists')
@@ -54,6 +56,7 @@ export class PlaylistsController {
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find one playlist by id' })
+  @UseInterceptors(ValidIdInterceptor)
   findOne(@Param('id') id: string) {
     return this.playlistsService.findPlaylistById(id);
   }
@@ -62,6 +65,7 @@ export class PlaylistsController {
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Update title and add or delete tracks' })
+  @UseInterceptors(ValidIdInterceptor)
   update(
     @Param('id') id: string,
     @Body() updatePlaylistDto: UpdatePlaylistDto,
@@ -78,6 +82,7 @@ export class PlaylistsController {
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Delete a playlist' })
+  @UseInterceptors(ValidIdInterceptor)
   remove(@Param('id') id: string, @Request() request: IRequestWithUser) {
     return this.playlistsService.removePlaylist(id, request.user);
   }
