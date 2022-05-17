@@ -4,14 +4,12 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import RepoMockModel from '../test-utils/mocks/standard-mock.service.test';
+import { data2list } from '../test-utils/mocks/standard-mock.service.test';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import * as request from 'supertest';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from '../auth/auth.service';
-import { getModelToken } from '@nestjs/mongoose';
-import { User } from './schemas/user.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { LocalStrategy } from '../auth/strategies/local.strategy';
@@ -24,6 +22,20 @@ import { PaymentsService } from '../payments/payments.service';
 
 const author = data.users.jayz;
 const user = data.users.kanye;
+const users = data2list(data.users).map((user) => ({
+  id: user._id,
+  username: user.username,
+  email: user.email,
+}));
+const findByUsernameExpected = {
+  id: user._id,
+  username: user.username,
+  email: user.email,
+};
+const delete_expected = {
+  email: user.email,
+  msg: 'user deleted',
+};
 
 describe('UsersController', () => {
   let app: INestApplication;
@@ -42,7 +54,6 @@ describe('UsersController', () => {
       ],
       controllers: [UsersController, AuthController],
       providers: [
-        UsersService,
         AuthService,
         JwtStrategy,
         FilesService,
@@ -70,8 +81,33 @@ describe('UsersController', () => {
           },
         },
         {
-          provide: getModelToken(User.name),
-          useValue: new RepoMockModel(data.users, 4, 2),
+          provide: UsersService,
+          useValue: {
+            findUserByUsername: jest.fn(() => {
+              return {
+                ...user,
+              };
+            }),
+            findUsers: jest.fn((username: string) => {
+              return username ? findByUsernameExpected : users;
+            }),
+            findUserById: jest.fn(() => {
+              return {
+                ...user,
+              };
+            }),
+            updateUser: jest.fn(() => {
+              return {};
+            }),
+            removeUser: jest.fn(() => {
+              return {
+                ...delete_expected,
+              };
+            }),
+            find: jest.fn(() => {
+              return users;
+            }),
+          },
         },
       ],
     })

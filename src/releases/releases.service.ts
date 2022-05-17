@@ -14,6 +14,7 @@ import { TracksService } from '../tracks/tracks.service';
 import { UsersService } from '../users/users.service';
 import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response.interface';
 import { UpdateReleaseDto } from './dto/update-release.dto';
+import { isValidId } from '../utils/isValidId';
 
 @Injectable()
 export class ReleasesService {
@@ -118,6 +119,7 @@ export class ReleasesService {
   }
 
   async findReleaseById(id: string): Promise<ReleaseDocument> {
+    isValidId(id);
     const release = await this.releaseModel.findById(id);
     if (!release) {
       throw new BadRequestException(`Release with ID "${id}" not found.`);
@@ -138,10 +140,12 @@ export class ReleasesService {
     updateReleaseDto: UpdateReleaseDto,
     owner: UserDocument,
   ) {
+    isValidId(id);
     return `This action updates a #${id} release`;
   }
 
   async removeRelease(id: string, owner: UserDocument) {
+    isValidId(id);
     const release = await this.isUserTheOwnerOfRelease(id, owner);
 
     const session = await this.connection.startSession();
@@ -149,7 +153,7 @@ export class ReleasesService {
     session.startTransaction();
     try {
       await this.tracksService.removeManyTracks(release.tracks, session);
-      await this.releaseModel.deleteOne({ id: release._id });
+      await release.remove();
       return {
         id: release._id.toString(),
         title: release.title,
@@ -185,6 +189,7 @@ export class ReleasesService {
   }
 
   private async isUserTheOwnerOfRelease(id: string, owner: UserDocument) {
+    isValidId(id);
     const release = await this.findReleaseById(id);
     if (!release) {
       throw new NotFoundException('Somthing wrong with the server');

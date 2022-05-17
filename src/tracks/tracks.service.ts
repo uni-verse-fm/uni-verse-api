@@ -14,6 +14,7 @@ import { UserDocument } from '../users/schemas/user.schema';
 import { IDeleteTrackResponse } from './interfaces/track-delete-response.interface copy';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
 import { BucketName } from '../minio-client/minio-client.service';
+import { isValidId } from '../utils/isValidId';
 
 @Injectable()
 export class TracksService {
@@ -75,6 +76,7 @@ export class TracksService {
   }
 
   async findTrackById(id: string): Promise<TrackDocument> {
+    isValidId(id);
     const track = await this.trackModel.findById(id);
     if (!track) {
       throw new BadRequestException(`Track with ID "${id}" doesn't exist`);
@@ -100,7 +102,7 @@ export class TracksService {
     if (!track) {
       throw new NotFoundException('Somthing wrong with the server');
     }
-    await this.trackModel.deleteOne({ id: track._id }, session);
+    await track.remove(session);
     return {
       id: track._id,
       title: track.title,

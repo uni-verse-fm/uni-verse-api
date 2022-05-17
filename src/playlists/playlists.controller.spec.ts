@@ -145,7 +145,7 @@ describe('PlaylistsController', () => {
   });
 
   describe('find one playlist by id', () => {
-    it('shoul return one comment', () => {
+    it('shoul return one playlist', () => {
       return request(app.getHttpServer())
         .get(`/playlists/${playlist1._id}`)
         .expect(200)

@@ -10,6 +10,7 @@ import { IRemoveResponse } from './interfaces/remove-response.interface';
 import { IUserResponse } from './interfaces/user-response.interface';
 import { User, UserDocument } from './schemas/user.schema';
 import { PaymentsService } from '../payments/payments.service';
+import { isValidId } from '../utils/isValidId';
 
 @Injectable()
 export class UsersService {
@@ -47,11 +48,12 @@ export class UsersService {
   }
 
   async removeUser(userId: string): Promise<IRemoveResponse> {
+    isValidId(userId);
     const user = await this.userModel.findById(userId);
     if (!user) {
       throw new NotFoundException('Somthing wrong with the server');
     }
-    await this.userModel.deleteOne({ id: user._id });
+    await user.remove();
     return {
       email: user.email,
       msg: 'user deleted',
@@ -88,6 +90,7 @@ export class UsersService {
   }
 
   async findById(userId: string): Promise<User | undefined> {
+    isValidId(userId);
     const user = await this.userModel.findById(userId);
     if (!user) {
       throw new BadRequestException("This user doesn't exist");

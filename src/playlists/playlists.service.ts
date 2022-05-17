@@ -8,6 +8,7 @@ import { Model } from 'mongoose';
 import { Track } from '../tracks/schemas/track.schema';
 import { TracksService } from '../tracks/tracks.service';
 import { UserDocument } from '../users/schemas/user.schema';
+import { isValidId } from '../utils/isValidId';
 import { CreatePlaylistDto } from './dto/create-playlist.dto';
 import {
   PlaylistUpdateTaskAction,
@@ -51,6 +52,7 @@ export class PlaylistsService {
   }
 
   async findPlaylistById(id: string): Promise<PlaylistDocument> {
+    isValidId(id);
     const playlist = await this.playlistModel.findById(id);
     if (!playlist) {
       throw new NotFoundException(`Playlist with ID "${id}" not found.`);
@@ -71,6 +73,7 @@ export class PlaylistsService {
     updatePlaylistDto: UpdatePlaylistDto,
     owner: UserDocument,
   ) {
+    isValidId(id);
     const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
 
     const trackId = updatePlaylistDto.trackId;
@@ -103,7 +106,6 @@ export class PlaylistsService {
       title: updatePlaylistDto.title || playlist.title,
       tracks: newTracks,
     };
-
     await this.playlistModel.updateOne({ id: playlist._id }, updatePlaylist);
 
     return {
@@ -114,9 +116,15 @@ export class PlaylistsService {
   }
 
   async removePlaylist(id: string, owner: UserDocument) {
+    isValidId(id);
     const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
 
-    await this.playlistModel.deleteOne({ id: playlist._id });
+    try {
+      await playlist.remove();
+    } catch (error) {
+      throw new Error("Can't delete playlist");
+    }
+
     return {
       id: playlist._id.toString(),
       title: playlist.title,

@@ -30,6 +30,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ResourcePackFormDataParserInterceptor } from '../utils/interceptors/create-resource-pack.interceptor copy';
 import { ApiMultiFileWithMetadata } from '../utils/swagger/multiple-file.decorator';
+import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
 
 @ApiTags('resource-packs')
 @Controller('resource-packs')
@@ -80,6 +81,7 @@ export class ResourcePacksController {
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find one resource pack by id' })
+  @UseInterceptors(ValidIdInterceptor)
   findOne(@Param('id') id: string) {
     return this.resourcePacksService.findResourcePackById(id);
   }
@@ -88,6 +90,7 @@ export class ResourcePacksController {
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Update a resource pack' })
+  @UseInterceptors(ValidIdInterceptor)
   update(
     @Param('id') id: string,
     @Body() updateResourcePackDto: UpdateResourcePackDto,
@@ -105,6 +108,7 @@ export class ResourcePacksController {
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Delete a resource pack' })
   @ApiCookieAuth('Set-Cookie')
+  @UseInterceptors(ValidIdInterceptor)
   remove(@Param('id') id: string, @Request() request: IRequestWithUser) {
     return this.resourcePacksService.removeResourcePack(id, request.user);
   }
