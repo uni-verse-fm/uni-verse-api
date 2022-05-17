@@ -14,6 +14,8 @@ import { TracksService } from '../tracks/tracks.service';
 import { UsersService } from '../users/users.service';
 import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response.interface';
 import { UpdateReleaseDto } from './dto/update-release.dto';
+import { FilesService } from '../files/files.service';
+import { BucketName } from '../minio-client/minio-client.service';
 
 @Injectable()
 export class ReleasesService {
@@ -24,10 +26,12 @@ export class ReleasesService {
     private usersService: UsersService,
     @InjectConnection()
     private connection: Connection,
+    private filesService: FilesService,
   ) {}
 
   async createRelease(
     files: SimpleCreateFileDto[],
+    cover: SimpleCreateFileDto,
     createRelease: CreateReleaseDto,
     author: UserDocument,
   ) {
@@ -52,12 +56,20 @@ export class ReleasesService {
             buffer: orderedTracks.get(track.originalFileName),
           })),
         );
+
+      const coverName: string = await this.filesService.createFile(
+        cover,
+        BucketName.Images,
+      );
+
       const createdRelease = {
         ...createRelease,
         author,
         feats: feats.map((feat) => feat._id),
         tracks: tracks.map((track) => track.id),
+        coverName
       };
+
       const release = await this.releaseModel.create(createdRelease);
 
       await session.commitTransaction();
@@ -170,7 +182,7 @@ export class ReleasesService {
     return {
       title: release.title,
       description: release.description,
-      coverUrl: release.coverUrl,
+      coverName: release.coverName,
       feats: feats.map((feat) => ({
         id: feat._id.toString(),
         username: feat.username,

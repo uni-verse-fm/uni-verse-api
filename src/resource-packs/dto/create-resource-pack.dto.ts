@@ -23,12 +23,6 @@ export class CreateResourcePackDto {
   @IsString()
   @MinLength(1)
   @MaxLength(1024)
-  readonly coverUrl: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(1)
-  @MaxLength(1024)
   readonly previewUrl: string;
 
   @IsArray()

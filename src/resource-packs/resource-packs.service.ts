@@ -16,6 +16,8 @@ import {
 import { ResourcesService } from '../resources/resources.service';
 import { ICreateResourceResponse } from '../resources/interfaces/resource-create-response.interface';
 import { IResourcePackResponse } from './interfaces/resource-pack-response.interface';
+import { BucketName } from '../minio-client/minio-client.service';
+import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class ResourcePacksService {
@@ -25,10 +27,12 @@ export class ResourcePacksService {
     private resourcesService: ResourcesService,
     @InjectConnection()
     private connection: Connection,
+    private filesService: FilesService,
   ) {}
 
   async createResourcePack(
     files: SimpleCreateFileDto[],
+    cover: SimpleCreateFileDto,
     createResourcePack: CreateResourcePackDto,
     author: UserDocument,
   ) {
@@ -53,10 +57,17 @@ export class ResourcePacksService {
             },
           })),
         );
+
+      const coverName: string = await this.filesService.createFile(
+        cover,
+        BucketName.Images,
+      );
+
       const createdResourcePack = {
         ...createResourcePack,
         author,
         resources: resources.map((resource) => resource._id),
+        coverName
       };
       const resourcePack = await this.resourcePackModel.create(
         createdResourcePack,
@@ -182,7 +193,7 @@ export class ResourcePacksService {
     return {
       title: resourcePack.title,
       description: resourcePack.description,
-      coverUrl: resourcePack.coverUrl,
+      coverName: resourcePack.coverName,
       previewUrl: resourcePack.previewUrl,
       author: {
         id: resourcePack.author._id.toString(),

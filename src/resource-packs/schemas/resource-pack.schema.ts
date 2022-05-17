@@ -24,7 +24,7 @@ export class ResourcePack {
   description: string;
 
   @Prop()
-  coverUrl: string;
+  coverName: string;
 
   @Prop()
   previewUrl: string;

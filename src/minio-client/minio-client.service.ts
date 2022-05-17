@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 export enum BucketName {
   Resources = 'resources',
   Tracks = 'tracks',
+  Images = 'images',
 }
 
 @Injectable()
