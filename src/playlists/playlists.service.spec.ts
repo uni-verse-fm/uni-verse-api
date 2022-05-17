@@ -188,7 +188,9 @@ describe('PlaylistsService', () => {
 
   describe('When find one playlist by id', () => {
     it('should return an exception of id invalidity', async () => {
-      await expect(() => playlistService.findPlaylistById("1")).rejects.toThrow(NonValidIdException);
+      await expect(() => playlistService.findPlaylistById('1')).rejects.toThrow(
+        NonValidIdException,
+      );
     });
   });
 
@@ -197,7 +199,7 @@ describe('PlaylistsService', () => {
 
     it('should return one playlist infos', async () => {
       const result = await playlistService.removePlaylist(playlist1_id, user);
-      expect(result.id).not.toBe("");
+      expect(result.id).not.toBe('');
       expect(result.id).not.toBe(playlist2_id);
       expect(result.title).toBe(my_playlist1.title);
       expect(result.msg).toBe(msg);
@@ -206,7 +208,7 @@ describe('PlaylistsService', () => {
     it('should return the second playlist infos', async () => {
       const result = await playlistService.removePlaylist(playlist2_id, user);
 
-      expect(result.id).not.toBe("");
+      expect(result.id).not.toBe('');
       expect(result.id).not.toBe(playlist1_id);
       expect(result.title).toBe(my_playlist2.title);
       expect(result.msg).toBe(msg);

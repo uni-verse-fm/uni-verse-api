@@ -76,7 +76,7 @@ export class TracksService {
   }
 
   async findTrackById(id: string): Promise<TrackDocument> {
-      isValidId(id);
+    isValidId(id);
     const track = await this.trackModel.findById(id);
     if (!track) {
       throw new BadRequestException(`Track with ID "${id}" doesn't exist`);
