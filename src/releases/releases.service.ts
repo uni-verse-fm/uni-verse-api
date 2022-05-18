@@ -54,7 +54,12 @@ export class ReleasesService {
           createRelease.tracks.map((track) => ({
             ...track,
             author,
-            buffer: orderedTracks.get(track.originalFileName),
+            file: {
+              originalFileName: track.originalFileName,
+              buffer: orderedTracks.get(track.originalFileName).buffer,
+              size: orderedTracks.get(track.originalFileName).size,
+              mimetype: orderedTracks.get(track.originalFileName).mimetype,
+            },
           })),
         );
       const createdRelease = {
@@ -82,7 +87,7 @@ export class ReleasesService {
   private orderedTracks(
     files: SimpleCreateFileDto[],
     createRelease: CreateReleaseDto,
-  ): Map<string, Buffer> {
+  ): Map<string, SimpleCreateFileDto> {
     this.logger.log(`Orderedering tracks`);
     const releaseFilesNames: string[] = createRelease.tracks.map(
       (track) => track.originalFileName,
@@ -90,11 +95,14 @@ export class ReleasesService {
     const filesFilesNames: string[] = files.map(
       (file) => file.originalFileName,
     );
-    const fileNamesToFiles: Map<string, Buffer> = new Map(
-      files.map((file) => [file.originalFileName, file.buffer]),
+    const fileNamesToFiles: Map<string, SimpleCreateFileDto> = new Map(
+      files.map((file) => [file.originalFileName, file]),
     );
 
-    const nameToBuffer: Map<string, Buffer> = new Map<string, Buffer>();
+    const nameToBuffer: Map<string, SimpleCreateFileDto> = new Map<
+      string,
+      SimpleCreateFileDto
+    >();
 
     if (releaseFilesNames.length === filesFilesNames.length) {
       releaseFilesNames.every((releaseFileName) => {

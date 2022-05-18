@@ -152,7 +152,9 @@ export class PaymentsService {
   }
 
   public async findOnePayementById(customerId, payementId) {
-    this.logger.log(`Find one payment ${payementId} for customer ${customerId}`);
+    this.logger.log(
+      `Find one payment ${payementId} for customer ${customerId}`,
+    );
     return `This action returns all payments`;
   }
 }

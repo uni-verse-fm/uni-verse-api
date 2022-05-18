@@ -16,6 +16,8 @@ import { MinioClientModule } from './minio-client/minio-client.module';
 import { PaymentsModule } from './payments/payments.module';
 import { HealthService } from './health/health.service';
 import { HealthModule } from './health/health.module';
+import { PrometheusModule } from './prometheus/prometheus.module';
+import { MetricsModule } from './metrics/metrics.module';
 import LogsMiddleware from './utils/middlewares/logs.middleware';
 @Module({
   imports: [
@@ -69,14 +71,14 @@ import LogsMiddleware from './utils/middlewares/logs.middleware';
     MinioClientModule,
     PaymentsModule,
     HealthModule,
+    PrometheusModule,
+    MetricsModule,
   ],
   controllers: [WelcomeController],
-  providers: [HealthService],
+  providers: [],
 })
 export class AppModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer
-          .apply(LogsMiddleware)
-          .forRoutes('*');
-      }
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LogsMiddleware).forRoutes('*');
+  }
 }

@@ -135,16 +135,28 @@ describe('CommentsService', () => {
         feats: [],
         author: artist,
       };
+
       encore = await tracksService.createTrack({
         ...commonTrackInfos,
         title: encoreTrack.title,
-        buffer: encoreBuffer,
+        file: {
+          originalFileName: encoreTrack.originalFileName,
+          buffer: Buffer.from(JSON.parse(JSON.stringify(encoreTrack.buffer))),
+          size: 4000,
+          mimetype: FileMimeType.MPEG,
+        },
         originalFileName: encoreTrack.originalFileName,
       });
+
       threat = await tracksService.createTrack({
         ...commonTrackInfos,
         title: threatTrack.title,
-        buffer: threatBuffer,
+        file: {
+          originalFileName: threatTrack.originalFileName,
+          buffer: Buffer.from(JSON.parse(JSON.stringify(threatTrack.buffer))),
+          size: 4000,
+          mimetype: FileMimeType.MPEG,
+        },
         originalFileName: threatTrack.originalFileName,
       });
       expect(encore.id).toBeDefined();

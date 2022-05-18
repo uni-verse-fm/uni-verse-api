@@ -35,14 +35,8 @@ export class TracksService {
     this.logger.log(`Creating track ${createTrackDto.title}`);
     const feats: UserDocument[] = [];
 
-    const file = {
-      originalFileName: createTrackDto.originalFileName,
-      buffer: createTrackDto.buffer,
-      size: 4000,
-      mimetype: FileMimeType.MPEG,
-    };
     const result: string = await this.filesService.createFile(
-      file,
+      createTrackDto.file,
       BucketName.Tracks,
     );
 

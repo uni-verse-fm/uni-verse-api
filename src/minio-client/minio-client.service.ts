@@ -75,7 +75,7 @@ export class MinioClientService {
   }
 
   async delete(objetName: string, bucketName: BucketName) {
-      this.logger.log(`Deleting file ${objetName}`);
+    this.logger.log(`Deleting file ${objetName}`);
     this.client.removeObject(bucketName, objetName, (err) => {
       if (err) {
         this.logger.error(`Can not delete file ${objetName} due to ${err}`);

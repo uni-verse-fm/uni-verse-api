@@ -13,6 +13,7 @@ import {
 } from '../test-utils/in-memory/mongoose.helper.test';
 import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
+import { FileMimeType } from '../files/dto/simple-create-file.dto';
 
 const users = data.users;
 const tracks = data.tracks;
@@ -113,7 +114,12 @@ describe('TracksService', () => {
 
         const body = {
           ...track,
-          buffer: Buffer.from(JSON.parse(JSON.stringify(track.buffer))),
+          file: {
+            originalFileName: track.originalFileName,
+            buffer: Buffer.from(JSON.parse(JSON.stringify(track.buffer))),
+            size: 4000,
+            mimetype: FileMimeType.MPEG,
+          },
           author,
         };
 

@@ -16,6 +16,7 @@ import { FilesService } from '../files/files.service';
 import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
 import { NonValidIdException } from '../utils/is-valid-id';
+import { FileMimeType } from '../files/dto/simple-create-file.dto';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -123,13 +124,23 @@ describe('PlaylistsService', () => {
       encore = await tracksService.createTrack({
         ...commonTrackInfos,
         title: encoreTrack.title,
-        buffer: encoreBuffer,
+        file: {
+          originalFileName: encoreTrack.originalFileName,
+          buffer: Buffer.from(JSON.parse(JSON.stringify(encoreTrack.buffer))),
+          size: 4000,
+          mimetype: FileMimeType.MPEG,
+        },
         originalFileName: encoreTrack.originalFileName,
       });
       threat = await tracksService.createTrack({
         ...commonTrackInfos,
         title: threatTrack.title,
-        buffer: threatBuffer,
+        file: {
+          originalFileName: threatTrack.originalFileName,
+          buffer: Buffer.from(JSON.parse(JSON.stringify(threatTrack.buffer))),
+          size: 4000,
+          mimetype: FileMimeType.MPEG,
+        },
         originalFileName: threatTrack.originalFileName,
       });
       expect(encore.id).toBeDefined();
