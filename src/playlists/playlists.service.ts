@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,7 +9,7 @@ import { Model } from 'mongoose';
 import { Track } from '../tracks/schemas/track.schema';
 import { TracksService } from '../tracks/tracks.service';
 import { UserDocument } from '../users/schemas/user.schema';
-import { isValidId } from '../utils/isValidId';
+import { isValidId } from '../utils/is-valid-id';
 import { CreatePlaylistDto } from './dto/create-playlist.dto';
 import {
   PlaylistUpdateTaskAction,
@@ -18,6 +19,8 @@ import { Playlist, PlaylistDocument } from './schemas/playlist.schema';
 
 @Injectable()
 export class PlaylistsService {
+  private readonly logger: Logger = new Logger(PlaylistsService.name);
+
   constructor(
     @InjectModel(Playlist.name)
     private playlistModel: Model<PlaylistDocument>,
@@ -28,6 +31,7 @@ export class PlaylistsService {
     createPlaylistDto: CreatePlaylistDto,
     owner: UserDocument,
   ): Promise<PlaylistDocument> {
+    this.logger.log(`Creating playlist ${createPlaylistDto.title}`);
     this.isPlaylistUnique(createPlaylistDto.title);
 
     const createPlaylist = {
@@ -43,15 +47,18 @@ export class PlaylistsService {
   }
 
   async find(title: string): Promise<PlaylistDocument[] | PlaylistDocument> {
+    this.logger.log(`Finding for playlist ${title}`);
     if (title) return await this.findPlaylsitByTitle(title);
     return await this.findAllPlaylists();
   }
 
   async findAllPlaylists(): Promise<PlaylistDocument[]> {
+    this.logger.log('Finding all playlists');
     return await this.playlistModel.find();
   }
 
   async findPlaylistById(id: string): Promise<PlaylistDocument> {
+    this.logger.log(`Finding playlist by id ${id}`);
     isValidId(id);
     const playlist = await this.playlistModel.findById(id);
     if (!playlist) {
@@ -61,6 +68,7 @@ export class PlaylistsService {
   }
 
   async findPlaylsitByTitle(title: string): Promise<PlaylistDocument> {
+    this.logger.log(`finding playlist by title ${title}`);
     const playlist = await this.playlistModel.findOne({ title });
     if (!playlist) {
       throw new NotFoundException(`Playlist with title ${title} not found.`);
@@ -73,6 +81,7 @@ export class PlaylistsService {
     updatePlaylistDto: UpdatePlaylistDto,
     owner: UserDocument,
   ) {
+    this.logger.log(`Updating playlist ${id}`);
     isValidId(id);
     const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
 
@@ -84,6 +93,7 @@ export class PlaylistsService {
     );
     if (!trackToUpdate) {
       throw new NotFoundException(
+        this.logger.error(`Track with ID "${trackId}" not found.`),
         `Track with ID "${trackToUpdate}" not found.`,
       );
     }
@@ -91,9 +101,11 @@ export class PlaylistsService {
     let newTracks: Track[];
     switch (updatePlaylistDto.action) {
       case PlaylistUpdateTaskAction.Add:
+        this.logger.log(`Adding track ${trackId} to playlist ${id}`);
         newTracks = [...playlistTracks, trackToUpdate];
         break;
       case PlaylistUpdateTaskAction.Remove:
+        this.logger.log(`Removing track ${trackId} from playlist ${id}`);
         newTracks = playlistTracks.filter(
           (track) => track._id.toString() !== trackId,
         );
@@ -116,12 +128,14 @@ export class PlaylistsService {
   }
 
   async removePlaylist(id: string, owner: UserDocument) {
+    this.logger.log(`Cemoving playlist ${id}`);
     isValidId(id);
     const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
 
     try {
       await playlist.remove();
     } catch (error) {
+      this.logger.error(`Can not remove playlist ${id} due to: ${error}`);
       throw new Error("Can't delete playlist");
     }
 
@@ -133,17 +147,23 @@ export class PlaylistsService {
   }
 
   private async isUserTheOwnerOfPlaylist(id: string, owner: UserDocument) {
+    this.logger.log(
+      `Checking if user ${owner.id} is the owner of playlist ${id}`,
+    );
     const playlist = await this.findPlaylistById(id);
     if (!playlist) {
+      this.logger.error(`Playlist with ID "${id}" not found.`);
       throw new NotFoundException('Somthing wrong with the server');
     }
     if (playlist.owner._id.toString() !== owner._id.toString()) {
+      this.logger.error(`User ${owner.id} is not the owner of playlist ${id}`);
       throw new BadRequestException('You are not the owner of this playlist.');
     }
     return playlist;
   }
 
   private async isPlaylistUnique(title: string) {
+    this.logger.log(`Checking if playlist ${title} is unique`);
     let playlist: PlaylistDocument;
     try {
       playlist = await this.playlistModel.findOne({ title });

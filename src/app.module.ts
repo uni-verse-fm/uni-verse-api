@@ -1,5 +1,5 @@
 import * as Joi from '@hapi/joi';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
@@ -14,6 +14,11 @@ import { ResourcePacksModule } from './resource-packs/resource-packs.module';
 import { CommentsModule } from './comments/comments.module';
 import { MinioClientModule } from './minio-client/minio-client.module';
 import { PaymentsModule } from './payments/payments.module';
+import { HealthService } from './health/health.service';
+import { HealthModule } from './health/health.module';
+import { PrometheusModule } from './prometheus/prometheus.module';
+import { MetricsModule } from './metrics/metrics.module';
+import LogsMiddleware from './utils/middlewares/logs.middleware';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -65,8 +70,15 @@ import { PaymentsModule } from './payments/payments.module';
     CommentsModule,
     MinioClientModule,
     PaymentsModule,
+    HealthModule,
+    PrometheusModule,
+    MetricsModule,
   ],
   controllers: [WelcomeController],
   providers: [],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LogsMiddleware).forRoutes('*');
+  }
+}

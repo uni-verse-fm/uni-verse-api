@@ -6,6 +6,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { SimpleCreateFileDto } from '../../files/dto/simple-create-file.dto';
 import AuthorDto from '../../users/dto/author.dto';
 import { UserDocument } from '../../users/schemas/user.schema';
 
@@ -23,9 +24,7 @@ export class CreateTrackDto {
   readonly originalFileName: string;
 
   @IsNotEmpty()
-  @MinLength(1)
-  @MaxLength(1024)
-  readonly buffer: Buffer;
+  readonly file: SimpleCreateFileDto;
 
   @IsNotEmpty()
   readonly author: UserDocument;

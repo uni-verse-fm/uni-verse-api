@@ -17,10 +17,13 @@ import {
 import * as data from '../test-utils/data/mock_data.json';
 import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
+import { FileMimeType } from '../files/dto/simple-create-file.dto';
 
 const create_user = data.create_users.abdou;
 
 const resources = data2list(data.create_resources);
+const files = data2list(data.create_files);
+
 describe('ResourcesService', () => {
   let resourcesService: ResourcesService;
   let usersService: UsersService;
@@ -94,7 +97,12 @@ describe('ResourcesService', () => {
 
         const body = {
           ...resource,
-          buffer: Buffer.from(JSON.parse(JSON.stringify(resource.buffer))),
+          file: {
+            originalFileName: resource.originalFileName,
+            buffer: Buffer.from(JSON.parse(JSON.stringify(resource.buffer))),
+            size: 4000,
+            mimetype: FileMimeType.MPEG,
+          },
           author: user._id,
         };
 

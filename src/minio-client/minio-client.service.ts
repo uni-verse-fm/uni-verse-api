@@ -11,8 +11,9 @@ export enum BucketName {
 
 @Injectable()
 export class MinioClientService {
+  private readonly logger: Logger = new Logger(MinioClientService.name);
+
   constructor(private readonly configService: ConfigService) {
-    this.logger = new Logger('MinioService');
     this.minioClient = new Minio.Client({
       endPoint: this.configService.get('MINIO_ENDPOINT'),
       port: this.configService.get('MINIO_PORT'),
@@ -22,8 +23,6 @@ export class MinioClientService {
     });
   }
 
-  private readonly logger: Logger;
-
   private readonly minioClient: Minio.Client;
 
   public get client() {
@@ -31,6 +30,7 @@ export class MinioClientService {
   }
 
   public async upload(file: SimpleCreateFileDto, bucketName: BucketName) {
+    this.logger.log(`Uploading file ${file.originalFileName}`);
     const timestamp = Date.now().toString();
     const hashedFileName = crypto
       .createHash('md5')
@@ -53,7 +53,12 @@ export class MinioClientService {
       file.size,
       metaData,
       (err: any) => {
-        if (err) throw new BadRequestException('Error uploading file', err);
+        if (err) {
+          this.logger.error(
+            `Can not upload file ${file.originalFileName} due to ${err}`,
+          );
+          throw new BadRequestException('Error uploading file', err);
+        }
       },
     );
 
@@ -61,6 +66,7 @@ export class MinioClientService {
   }
 
   async getFile(originalFileName: string, bucketName: BucketName) {
+    this.logger.log(`Getting file ${originalFileName}`);
     return this.client.getObject(bucketName, originalFileName, (err, data) => {
       if (err)
         throw new BadRequestException('An error occured when getting file!');
@@ -69,12 +75,17 @@ export class MinioClientService {
   }
 
   async delete(objetName: string, bucketName: BucketName) {
+    this.logger.log(`Deleting file ${objetName}`);
     this.client.removeObject(bucketName, objetName, (err) => {
-      if (err) throw new BadRequestException('An error occured when deleting!');
+      if (err) {
+        this.logger.error(`Can not delete file ${objetName} due to ${err}`);
+        throw new BadRequestException('An error occured when deleting!');
+      }
     });
   }
 
   async listAllBuckets() {
+    this.logger.error(`Listing all buckets`);
     return this.client.listBuckets();
   }
 }

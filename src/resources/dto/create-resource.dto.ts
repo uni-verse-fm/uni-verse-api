@@ -10,6 +10,12 @@ export class CreateResourceDto {
   readonly title: string;
 
   @IsNotEmpty()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(1024)
+  readonly originalFileName: string;
+
+  @IsNotEmpty()
   readonly file: SimpleCreateFileDto;
 
   @IsNotEmpty()
