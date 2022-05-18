@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import getLogLevels from './utils/get-log-levels';
 
-const API_VERSION = 2;
+const API_VERSION = 0
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -14,8 +14,6 @@ async function bootstrap() {
 
   app.use(cookieParser());
   const configService = app.get<ConfigService>(ConfigService);
-
-  app.setGlobalPrefix(`api/v${API_VERSION}`);
 
   const config = new DocumentBuilder()
     .setTitle('Uni Verse FM')
@@ -33,7 +31,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup(`api/v${API_VERSION}/docs`, app, document);
+  SwaggerModule.setup(`/docs`, app, document);
 
   const corsConfig = {
     origin: [configService.get('FRONTEND_URL'), 'http://localhost:3000'],

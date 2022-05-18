@@ -13,7 +13,7 @@ It communicates with another tinier API for fingerprinting purposes, and with 3 
 ### Routes
 Routes are documented automatically using Swagger.
 
-Documentation can be found at [https://uni-verse.api.vagahbond.com/api/v2/docs/](https://uni-verse.api.vagahbond.com/api/v2/docs/)
+Documentation can be found at [https://uni-verse.api.vagahbond.com/docs/](https://uni-verse.api.vagahbond.com/docs/)
 ## Setup
 
 ### Requirements
