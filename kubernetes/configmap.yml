@@ -14,3 +14,9 @@ data:
   JWT_SECRET: "secret"
   JWT_EXPIRATION_TIME: 60s
   JWT_ACCESS_TOKEN_EXPIRATION_TIME: 60s
+  MINIO_ROOT: idkbro
+  MINIO_ROOT_USER: universe
+  MINIO_ROOT_PASSWORD: password
+  MINIO_PORT: "9000"
+  MINIO_ENDPOINT: minio.minio.svc.cluster.local
+
