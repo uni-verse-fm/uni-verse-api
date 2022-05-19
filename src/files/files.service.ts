@@ -20,6 +20,14 @@ export class FilesService {
     return await this.minioClient.upload(createFileDto, bucketName);
   }
 
+  async removeFile(
+    fileName: string,
+    bucketName: BucketName,
+  ) {
+    this.logger.log(`Removing file ${fileName} from ${bucketName}`);
+    return await this.minioClient.delete(fileName, bucketName);
+  }
+
   findAllFiles() {
     this.logger.log('Finding all files');
     return `This action returns all files`;
@@ -33,10 +41,5 @@ export class FilesService {
   updateFile(id: string, updateFileDto: UpdateFileDto) {
     this.logger.log(`Updating file ${id}`);
     return `This action updates a #${id} file`;
-  }
-
-  removeFile(id: number) {
-    this.logger.log(`Removing file ${id}`);
-    return `This action removes a #${id} file`;
   }
 }

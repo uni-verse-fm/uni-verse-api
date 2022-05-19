@@ -40,9 +40,6 @@ export class MinioClientService {
       file.originalFileName.lastIndexOf('.'),
       file.originalFileName.length,
     );
-    const metaData = {
-      'Content-Type': file.mimetype,
-    };
 
     const fileName = hashedFileName + extension;
 
@@ -51,7 +48,6 @@ export class MinioClientService {
       fileName,
       file.buffer,
       file.size,
-      metaData,
       (err: any) => {
         if (err) {
           this.logger.error(

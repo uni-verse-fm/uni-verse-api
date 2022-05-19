@@ -16,6 +16,8 @@ import { UsersService } from '../users/users.service';
 import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response.interface';
 import { UpdateReleaseDto } from './dto/update-release.dto';
 import { isValidId } from '../utils/is-valid-id';
+import { response } from 'express';
+import { buildSimpleFile } from '../utils/buildSimpleFile';
 
 @Injectable()
 export class ReleasesService {
@@ -38,41 +40,37 @@ export class ReleasesService {
     this.logger.log(`Creating release "${createRelease.title}"`);
     await this.isReleaseUnique(createRelease.title);
 
-    const feats: UserDocument[] =
-      await this.usersService.findManyUsersByUsernames(
-        createRelease.feats.map((feat) => feat.username),
-      );
+    const feats: UserDocument[] = createRelease?.feats
+      ? await this.usersService.findManyUsersByUsernames(
+          createRelease.feats.map((feat) => feat.username),
+        )
+      : [];
 
     const session = await this.connection.startSession();
 
     const orderedTracks = this.orderedTracks(files, createRelease);
-
-    session.startTransaction();
     try {
-      const tracks: ICreateTrackResponse[] =
-        await this.tracksService.createManyTracks(
-          createRelease.tracks.map((track) => ({
-            ...track,
+      let release;
+      const createResponse = await session
+        .withTransaction(async () => {
+          const tracks: ICreateTrackResponse[] =
+            await this.tracksService.createManyTracks(
+              createRelease.tracks.map((track) => ({
+                ...track,
+                author,
+                file: buildSimpleFile(orderedTracks, track.originalFileName),
+              })),
+            );
+          const createdRelease = {
+            ...createRelease,
             author,
-            file: {
-              originalFileName: track.originalFileName,
-              buffer: orderedTracks.get(track.originalFileName).buffer,
-              size: orderedTracks.get(track.originalFileName).size,
-              mimetype: orderedTracks.get(track.originalFileName).mimetype,
-            },
-          })),
-        );
-      const createdRelease = {
-        ...createRelease,
-        author,
-        feats: feats.map((feat) => feat._id),
-        tracks: tracks.map((track) => track.id),
-      };
-      const release = await this.releaseModel.create(createdRelease);
-
-      await session.commitTransaction();
-
-      return this.buildReleaseInfo(release, feats);
+            feats: feats.map((feat) => feat._id),
+            tracks: tracks.map((track) => track.id),
+          };
+          release = await this.releaseModel.create(createdRelease);
+        })
+        .then(() => this.buildReleaseInfo(release, feats));
+        return createResponse;
     } catch (error) {
       await session.abortTransaction();
       this.logger.error(
@@ -174,15 +172,18 @@ export class ReleasesService {
 
     const session = await this.connection.startSession();
 
-    session.startTransaction();
     try {
-      await this.tracksService.removeManyTracks(release.tracks, session);
-      await release.remove();
-      return {
-        id: release._id.toString(),
-        title: release.title,
-        msg: 'Release deleted',
-      };
+      const deleteResponse = await session
+        .withTransaction(async () => {
+          await this.tracksService.removeManyTracks(release.tracks, session);
+          await release.remove();
+        })
+        .then((response) => ({
+          id: release._id.toString(),
+          title: release.title,
+          msg: 'Release deleted',
+        }));
+      return deleteResponse;
     } catch (error) {
       await session.abortTransaction();
       this.logger.error(`Can't remove release "${id}" due to: ${error}`);

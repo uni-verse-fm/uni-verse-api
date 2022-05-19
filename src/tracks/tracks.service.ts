@@ -107,6 +107,10 @@ export class TracksService {
       throw new NotFoundException('Somthing wrong with the server');
     }
     await track.remove(session);
+    await this.filesService.removeFile(
+        track.fileName,
+        BucketName.Tracks,
+      );
     return {
       id: track._id,
       title: track.title,
