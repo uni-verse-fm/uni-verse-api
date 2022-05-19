@@ -16,8 +16,9 @@ import {
   ResourcePack,
   ResourcePackSchema,
 } from './schemas/resource-pack.schema';
-import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
+import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
+import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 
 const resource_packs = data2list(data.resource_packs);
 
@@ -63,14 +64,7 @@ describe('ResourcePacksService', () => {
         ResourcesService,
         FilesService,
         UsersService,
-        {
-          provide: MinioClientService,
-          useValue: {
-            upload: jest.fn(() => {
-              return 'https://www.example.com';
-            }),
-          },
-        },
+        MinioServiceMock,
         {
           provide: PaymentsService,
           useValue: {
@@ -79,6 +73,7 @@ describe('ResourcePacksService', () => {
             }),
           },
         },
+        UserSearchServiceMock
       ],
     }).compile();
 

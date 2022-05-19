@@ -17,8 +17,10 @@ import { AuthController } from '../auth/auth.controller';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import * as data from '../test-utils/data/mock_data.json';
 import { FilesService } from '../files/files.service';
-import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
+import UsersSearchService from './users-search.service';
+import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
+import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 
 const author = data.users.jayz;
 const user = data.users.kanye;
@@ -64,14 +66,7 @@ describe('UsersController', () => {
             get: jest.fn().mockReturnValue('60s'),
           },
         },
-        {
-          provide: MinioClientService,
-          useValue: {
-            upload: jest.fn(() => {
-              return 'https://www.example.com';
-            }),
-          },
-        },
+        MinioServiceMock,
         {
           provide: PaymentsService,
           useValue: {
@@ -109,6 +104,7 @@ describe('UsersController', () => {
             }),
           },
         },
+        UserSearchServiceMock
       ],
     })
       .overrideGuard(JwtAuthGuard)

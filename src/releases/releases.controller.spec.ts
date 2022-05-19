@@ -24,8 +24,9 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
-import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
+import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
+import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 
 const release = data.releases.black_album;
 const releases = data2list(data.releases);
@@ -98,14 +99,7 @@ describe('ReleasesController', () => {
             }),
           },
         },
-        {
-          provide: MinioClientService,
-          useValue: {
-            upload: jest.fn(() => {
-              return 'https://www.example.com';
-            }),
-          },
-        },
+        MinioServiceMock,
         {
           provide: PaymentsService,
           useValue: {
@@ -126,6 +120,7 @@ describe('ReleasesController', () => {
           provide: getModelToken(Track.name),
           useValue: new TracksRepoMockModel(data.tracks),
         },
+        UserSearchServiceMock
       ],
     })
       .overrideGuard(JwtAuthGuard)

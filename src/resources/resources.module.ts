@@ -21,7 +21,6 @@ import { Resource, ResourceSchema } from './schemas/resource.schema';
   providers: [
     ResourcesService,
     FilesService,
-    UsersService,
     MinioClientService,
     PaymentsService,
   ],

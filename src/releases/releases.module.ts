@@ -26,7 +26,6 @@ import { PaymentsService } from '../payments/payments.service';
   controllers: [ReleasesController],
   providers: [
     ReleasesService,
-    UsersService,
     TracksService,
     FilesService,
     MinioClientService,

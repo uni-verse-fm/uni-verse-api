@@ -13,8 +13,9 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
-import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
+import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
+import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 
 const release = data.releases.black_album;
 
@@ -63,14 +64,7 @@ describe('ReleasesService', () => {
         TracksService,
         FilesService,
         UsersService,
-        {
-          provide: MinioClientService,
-          useValue: {
-            upload: jest.fn(() => {
-              return 'https://www.example.com';
-            }),
-          },
-        },
+        MinioServiceMock,
         {
           provide: PaymentsService,
           useValue: {
@@ -79,6 +73,7 @@ describe('ReleasesService', () => {
             }),
           },
         },
+        UserSearchServiceMock
       ],
     }).compile();
 

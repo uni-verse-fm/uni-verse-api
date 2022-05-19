@@ -34,7 +34,8 @@ async function bootstrap() {
   SwaggerModule.setup(`/docs`, app, document);
 
   const corsConfig = {
-    origin: [configService.get('FRONTEND_URL'), 'http://localhost:3000'],
+    // origin: [configService.get('FRONTEND_URL'), 'http://localhost:3000'],
+    origin: true,
     optionsSuccessStatus: 200,
     allowedHeaders: [
       'X-CSRF-Token',

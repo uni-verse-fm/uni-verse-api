@@ -18,8 +18,9 @@ import { ModelType } from './dto/create-comment.dto';
 import { Comment, CommentSchema } from './schemas/comment.schema';
 import { FilesService } from '../files/files.service';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
-import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
+import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
+import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -75,14 +76,7 @@ describe('CommentsService', () => {
         UsersService,
         ResourcesService,
         FilesService,
-        {
-          provide: MinioClientService,
-          useValue: {
-            upload: jest.fn(() => {
-              return 'https://www.example.com';
-            }),
-          },
-        },
+        MinioServiceMock,
         {
           provide: PaymentsService,
           useValue: {
@@ -91,6 +85,7 @@ describe('CommentsService', () => {
             }),
           },
         },
+        UserSearchServiceMock,
       ],
     }).compile();
 

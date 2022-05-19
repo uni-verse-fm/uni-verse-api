@@ -8,6 +8,7 @@ import {
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
 import { data2list } from '../test-utils/mocks/standard-mock.service.test';
+import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { User, UserSchema } from './schemas/user.schema';
 import { UsersService } from './users.service';
 
@@ -38,6 +39,7 @@ describe('UsersService', () => {
             }),
           },
         },
+        UserSearchServiceMock
       ],
     }).compile();
     userService = module.get<UsersService>(UsersService);

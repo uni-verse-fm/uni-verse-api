@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MinioClientService } from '../minio-client/minio-client.service';
+import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { FilesService } from './files.service';
 
 describe('FilesService', () => {
@@ -9,14 +9,7 @@ describe('FilesService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         FilesService,
-        {
-          provide: MinioClientService,
-          useValue: {
-            upload: jest.fn(() => {
-              return 'https://www.example.com';
-            }),
-          },
-        },
+        MinioServiceMock
       ],
     }).compile();
 

@@ -56,4 +56,6 @@ UserSchema.pre('save', async function (next) {
   }
 });
 
+UserSchema.index({ username: 'text', email: 'text' });
+
 export { UserSchema };

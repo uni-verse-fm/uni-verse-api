@@ -72,9 +72,7 @@ export class ResourcePacksService {
 
       return createResponse;
     } catch (error) {
-      await session.abortTransaction();
       this.logger.error(`Can not create resource pack due to: ${error}`);
-      throw error;
     } finally {
       session.endSession();
     }
@@ -195,9 +193,7 @@ export class ResourcePacksService {
         }));
       return removeResponse;
     } catch (error) {
-      await session.abortTransaction();
       this.logger.error(`Can not remove resource pack due to: ${error}`);
-      throw error;
     } finally {
       session.endSession();
     }

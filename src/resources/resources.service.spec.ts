@@ -15,9 +15,10 @@ import {
   ResourceSchema,
 } from './schemas/resource.schema';
 import * as data from '../test-utils/data/mock_data.json';
-import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
+import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
+import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 
 const create_user = data.create_users.abdou;
 
@@ -50,14 +51,7 @@ describe('ResourcesService', () => {
         ResourcesService,
         FilesService,
         UsersService,
-        {
-          provide: MinioClientService,
-          useValue: {
-            upload: jest.fn(() => {
-              return 'https://www.example.com';
-            }),
-          },
-        },
+        MinioServiceMock,
         {
           provide: PaymentsService,
           useValue: {
@@ -66,6 +60,7 @@ describe('ResourcesService', () => {
             }),
           },
         },
+        UserSearchServiceMock
       ],
     }).compile();
 

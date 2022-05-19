@@ -23,8 +23,9 @@ import { Track } from '../tracks/schemas/track.schema';
 import { User } from '../users/schemas/user.schema';
 import TracksRepoMockModel from '../test-utils/mocks/Tracks-mock.service.test';
 import { Resource } from '../resources/schemas/resource.schema';
-import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
+import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
+import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 
 const owner = data.users.abdou;
 
@@ -94,14 +95,7 @@ describe('CommentsController', () => {
             }),
           },
         },
-        {
-          provide: MinioClientService,
-          useValue: {
-            upload: jest.fn(() => {
-              return 'https://www.example.com';
-            }),
-          },
-        },
+        MinioServiceMock,
         {
           provide: PaymentsService,
           useValue: {
@@ -123,6 +117,7 @@ describe('CommentsController', () => {
           provide: getModelToken(Resource.name),
           useValue: new RepoMockModel(data.resources),
         },
+        UserSearchServiceMock,
       ],
     })
       .overrideGuard(JwtAuthGuard)

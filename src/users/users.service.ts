@@ -12,6 +12,7 @@ import { IUserResponse } from './interfaces/user-response.interface';
 import { User, UserDocument } from './schemas/user.schema';
 import { PaymentsService } from '../payments/payments.service';
 import { isValidId } from '../utils/is-valid-id';
+import UsersSearchService from './users-search.service';
 
 @Injectable()
 export class UsersService {
@@ -21,6 +22,7 @@ export class UsersService {
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private stripeService: PaymentsService,
+    private usersSearchService: UsersSearchService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UserDocument> {
@@ -36,7 +38,12 @@ export class UsersService {
       releases: [],
       stripeCustomerId: stripeCustomer.id,
     };
-    const user = await this.userModel.create(userWithEmptyReleases);
+
+    const userToSave = new this.userModel(userWithEmptyReleases);
+
+    const user = await userToSave.save();
+    this.usersSearchService.insertIndex(user);
+
     return this.buildRegistrationInfo(user);
   }
 
@@ -53,14 +60,15 @@ export class UsersService {
     return users.map((user) => this.buildUserInfo(user));
   }
 
-  async removeUser(userId: string): Promise<IRemoveResponse> {
-    this.logger.log(`Removing user ${userId}`);
-    isValidId(userId);
-    const user = await this.userModel.findById(userId);
+  async removeUser(id: string): Promise<IRemoveResponse> {
+    this.logger.log(`Removing user ${id}`);
+    isValidId(id);
+    const user = await this.userModel.findById(id);
     if (!user) {
-      this.logger.error(`User ${userId} not found`);
+      this.logger.error(`User ${id} not found`);
       throw new NotFoundException('Somthing wrong with the server');
     }
+    await this.usersSearchService.deleteIndex(id);
     await user.remove();
     return {
       email: user.email,
@@ -96,19 +104,20 @@ export class UsersService {
     return user;
   }
 
-  async findUserById(userId: string): Promise<IUserResponse | undefined> {
-    this.logger.log(`Finding user ${userId}`);
-    isValidId(userId);
-    const user = await this.findById(userId);
+  async findUserById(id: string): Promise<IUserResponse> {
+    this.logger.log(`Finding user ${id}`);
+    isValidId(id);
+    const user = await this.findById(id);
     return this.buildUserInfo(user);
   }
 
-  async findById(userId: string): Promise<User | undefined> {
-    this.logger.log(`Finding user ${userId}`);
-    isValidId(userId);
-    const user = await this.userModel.findById(userId);
+  async findById(id: string): Promise<User> {
+    this.logger.log(`Finding user ${id}`);
+    isValidId(id);
+    const user = await this.userModel.findById(id);
+    this.logger.log("here");
     if (!user) {
-      this.logger.error(`User ${userId} not found`);
+      this.logger.error(`User ${id} not found`);
       throw new BadRequestException("This user doesn't exist");
     }
     return user;
@@ -148,5 +157,18 @@ export class UsersService {
       email: user.email,
     };
     return userRegistrationInfo;
+  }
+
+  async searchUser(search: string) {
+    const results = await this.usersSearchService.searchIndex(search);
+    const ids = results.map((result) => result.id);
+    if (!ids.length) {
+      return [];
+    }
+    return this.userModel.find({
+      _id: {
+        $in: ids,
+      },
+    });
   }
 }

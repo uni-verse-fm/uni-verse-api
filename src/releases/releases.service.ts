@@ -16,7 +16,6 @@ import { UsersService } from '../users/users.service';
 import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response.interface';
 import { UpdateReleaseDto } from './dto/update-release.dto';
 import { isValidId } from '../utils/is-valid-id';
-import { response } from 'express';
 import { buildSimpleFile } from '../utils/buildSimpleFile';
 
 @Injectable()
@@ -70,13 +69,11 @@ export class ReleasesService {
           release = await this.releaseModel.create(createdRelease);
         })
         .then(() => this.buildReleaseInfo(release, feats));
-        return createResponse;
+      return createResponse;
     } catch (error) {
-      await session.abortTransaction();
       this.logger.error(
         `Can't create release "${createRelease.title}" due to: ${error}`,
       );
-      throw error;
     } finally {
       session.endSession();
     }
@@ -178,16 +175,14 @@ export class ReleasesService {
           await this.tracksService.removeManyTracks(release.tracks, session);
           await release.remove();
         })
-        .then((response) => ({
+        .then(() => ({
           id: release._id.toString(),
           title: release.title,
           msg: 'Release deleted',
         }));
       return deleteResponse;
     } catch (error) {
-      await session.abortTransaction();
       this.logger.error(`Can't remove release "${id}" due to: ${error}`);
-      throw error;
     } finally {
       session.endSession();
     }
