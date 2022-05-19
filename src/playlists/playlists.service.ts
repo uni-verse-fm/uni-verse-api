@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { UpdateResult } from 'mongodb';
 import { Model } from 'mongoose';
 import { Track } from '../tracks/schemas/track.schema';
 import { TracksService } from '../tracks/tracks.service';
@@ -84,7 +85,10 @@ export class PlaylistsService {
     this.logger.log(`Updating playlist ${id}`);
     isValidId(id);
     const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
-
+    const trackToUpdate =
+      updatePlaylistDto.trackId &&
+      (await this.tracksService.findTrackById(updatePlaylistDto.trackId));
+      
     let body = {
       title: playlist.title,
       tracks: playlist.tracks,
@@ -92,10 +96,6 @@ export class PlaylistsService {
 
     if (updatePlaylistDto.title)
       body = { ...body, title: updatePlaylistDto.title };
-
-    const trackToUpdate = await this.tracksService.findTrackById(
-      updatePlaylistDto.trackId,
-    );
 
     if (trackToUpdate) {
       const newTracks = this.updatedTracks(
@@ -111,7 +111,6 @@ export class PlaylistsService {
       .updateOne({ id: playlist._id }, body)
       .then(() => ({
         id: playlist._id.toString(),
-        title: playlist.title,
         msg: 'Playlist updated',
       }));
   }
