@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { UpdateResult } from 'mongodb';
 import { Model } from 'mongoose';
 import { Track } from '../tracks/schemas/track.schema';
 import { TracksService } from '../tracks/tracks.service';
@@ -88,7 +87,7 @@ export class PlaylistsService {
     const trackToUpdate =
       updatePlaylistDto.trackId &&
       (await this.tracksService.findTrackById(updatePlaylistDto.trackId));
-      
+
     let body = {
       title: playlist.title,
       tracks: playlist.tracks,
