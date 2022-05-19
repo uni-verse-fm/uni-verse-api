@@ -9,7 +9,6 @@ import { User, UserSchema } from '../users/schemas/user.schema';
 import { TracksModule } from '../tracks/tracks.module';
 import { FilesService } from '../files/files.service';
 import { MinioClientService } from '../minio-client/minio-client.service';
-import { UsersService } from '../users/users.service';
 import { PaymentsService } from '../payments/payments.service';
 import UsersModule from '../users/users.module';
 @Module({
@@ -20,7 +19,7 @@ import UsersModule from '../users/users.module';
       { name: User.name, schema: UserSchema },
     ]),
     TracksModule,
-    UsersModule
+    UsersModule,
   ],
   controllers: [PlaylistsController],
   providers: [

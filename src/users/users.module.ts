@@ -10,7 +10,7 @@ import UsersSearchService from './users-search.service';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    SearchModule
+    SearchModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, PaymentsService, UsersSearchService],

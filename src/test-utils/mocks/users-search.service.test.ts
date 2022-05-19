@@ -9,14 +9,14 @@ const users = data2list(data.users).map((user) => ({
   email: user.email,
 }));
 const findByUsernameExpected = {
-    id: user._id,
-    username: user.username,
-    email: user.email,
-  };
-  const delete_expected = {
-    email: user.email,
-    msg: 'user deleted',
-  };
+  id: user._id,
+  username: user.username,
+  email: user.email,
+};
+const delete_expected = {
+  email: user.email,
+  msg: 'user deleted',
+};
 
 export const UserSearchServiceMock = {
   provide: UsersSearchService,

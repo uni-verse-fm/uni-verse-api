@@ -1,4 +1,4 @@
-import IUserSearchBody from "./user-search-body.interface";
+import IUserSearchBody from './user-search-body.interface';
 
 interface IUserSearchResult {
   hits: {
@@ -7,10 +7,6 @@ interface IUserSearchResult {
       _source: IUserSearchBody;
     }>;
   };
-}
-
-interface ISearchUserResponse {
-    
 }
 
 export default IUserSearchResult;

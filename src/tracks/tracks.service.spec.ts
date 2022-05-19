@@ -11,10 +11,10 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
-import { PaymentsService } from '../payments/payments.service';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
+import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 
 const users = data.users;
 const tracks = data.tracks;
@@ -65,15 +65,8 @@ describe('TracksService', () => {
         FilesService,
         UsersService,
         MinioServiceMock,
-        {
-          provide: PaymentsService,
-          useValue: {
-            createCustomer: jest.fn(() => {
-              return { id: 1 };
-            }),
-          },
-        },
-        UserSearchServiceMock
+        PaymentServiceMock,
+        UserSearchServiceMock,
       ],
     }).compile();
 

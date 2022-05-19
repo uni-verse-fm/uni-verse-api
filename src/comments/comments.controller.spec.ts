@@ -23,9 +23,9 @@ import { Track } from '../tracks/schemas/track.schema';
 import { User } from '../users/schemas/user.schema';
 import TracksRepoMockModel from '../test-utils/mocks/Tracks-mock.service.test';
 import { Resource } from '../resources/schemas/resource.schema';
-import { PaymentsService } from '../payments/payments.service';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
+import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 
 const owner = data.users.abdou;
 
@@ -96,14 +96,7 @@ describe('CommentsController', () => {
           },
         },
         MinioServiceMock,
-        {
-          provide: PaymentsService,
-          useValue: {
-            createCustomer: jest.fn(() => {
-              return { id: 1 };
-            }),
-          },
-        },
+        PaymentServiceMock,
         {
           provide: getModelToken(User.name),
           useValue: new RepoMockModel(data.users, 4, 2),

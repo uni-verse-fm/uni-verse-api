@@ -6,7 +6,6 @@ import { Release, ReleaseSchema } from './schemas/release.schema';
 import { TracksService } from '../tracks/tracks.service';
 import { Track, TrackSchema } from '../tracks/schemas/track.schema';
 import { FilesService } from '../files/files.service';
-import { UsersService } from '../users/users.service';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { TracksModule } from '../tracks/tracks.module';
 import UsersModule from '../users/users.module';

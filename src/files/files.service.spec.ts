@@ -7,10 +7,7 @@ describe('FilesService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        FilesService,
-        MinioServiceMock
-      ],
+      providers: [FilesService, MinioServiceMock],
     }).compile();
 
     service = module.get<FilesService>(FilesService);

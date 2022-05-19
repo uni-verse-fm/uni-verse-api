@@ -21,9 +21,9 @@ import { getModelToken } from '@nestjs/mongoose';
 import { User } from '../users/schemas/user.schema';
 import TracksRepoMockModel from '../test-utils/mocks/Tracks-mock.service.test';
 import { Track } from '../tracks/schemas/track.schema';
-import { PaymentsService } from '../payments/payments.service';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
+import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 
 const playlists = data2list(data.playlists);
 
@@ -94,14 +94,7 @@ describe('PlaylistsController', () => {
           },
         },
         MinioServiceMock,
-        {
-          provide: PaymentsService,
-          useValue: {
-            createCustomer: jest.fn(() => {
-              return { id: 1 };
-            }),
-          },
-        },
+        PaymentServiceMock,
         {
           provide: getModelToken(User.name),
           useValue: new RepoMockModel(data.users, 4, 2),
@@ -110,7 +103,7 @@ describe('PlaylistsController', () => {
           provide: getModelToken(Track.name),
           useValue: new TracksRepoMockModel(data.tracks),
         },
-        UserSearchServiceMock
+        UserSearchServiceMock,
       ],
     })
       .overrideGuard(JwtAuthGuard)

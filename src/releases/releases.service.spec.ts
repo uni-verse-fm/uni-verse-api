@@ -13,9 +13,9 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
-import { PaymentsService } from '../payments/payments.service';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
+import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 
 const release = data.releases.black_album;
 
@@ -65,15 +65,8 @@ describe('ReleasesService', () => {
         FilesService,
         UsersService,
         MinioServiceMock,
-        {
-          provide: PaymentsService,
-          useValue: {
-            createCustomer: jest.fn(() => {
-              return { id: 1 };
-            }),
-          },
-        },
-        UserSearchServiceMock
+        PaymentServiceMock,
+        UserSearchServiceMock,
       ],
     }).compile();
 

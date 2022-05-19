@@ -16,9 +16,9 @@ import {
   ResourcePack,
   ResourcePackSchema,
 } from './schemas/resource-pack.schema';
-import { PaymentsService } from '../payments/payments.service';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
+import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 
 const resource_packs = data2list(data.resource_packs);
 
@@ -65,15 +65,8 @@ describe('ResourcePacksService', () => {
         FilesService,
         UsersService,
         MinioServiceMock,
-        {
-          provide: PaymentsService,
-          useValue: {
-            createCustomer: jest.fn(() => {
-              return { id: 1 };
-            }),
-          },
-        },
-        UserSearchServiceMock
+        PaymentServiceMock,
+        UserSearchServiceMock,
       ],
     }).compile();
 

@@ -15,15 +15,10 @@ import UsersModule from '../users/users.module';
       { name: Track.name, schema: TrackSchema },
       { name: User.name, schema: UserSchema },
     ]),
-    UsersModule
+    UsersModule,
   ],
   controllers: [],
-  providers: [
-    TracksService,
-    MinioClientService,
-    FilesService,
-    PaymentsService,
-  ],
+  providers: [TracksService, MinioClientService, FilesService, PaymentsService],
   exports: [TracksService],
 })
 export class TracksModule {}

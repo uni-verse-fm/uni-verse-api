@@ -24,9 +24,9 @@ import { ResourcePacksService } from './resource-packs.service';
 import { ResourcesService } from '../resources/resources.service';
 import { ResourcePack } from './schemas/resource-pack.schema';
 import { Resource } from '../resources/schemas/resource.schema';
-import { PaymentsService } from '../payments/payments.service';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
+import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 
 const resource_pack = data.resource_packs.resource_pack1;
 const resource_packs = data2list(data.resource_packs);
@@ -92,14 +92,7 @@ describe('ResourcePacksController', () => {
           },
         },
         MinioServiceMock,
-        {
-          provide: PaymentsService,
-          useValue: {
-            createCustomer: jest.fn(() => {
-              return { id: 1 };
-            }),
-          },
-        },
+        PaymentServiceMock,
         {
           provide: getModelToken(User.name),
           useValue: new RepoMockModel(data.users, 4, 2),
@@ -112,7 +105,7 @@ describe('ResourcePacksController', () => {
           provide: getModelToken(ResourcePack.name),
           useValue: new TracksRepoMockModel(data.resource_packs),
         },
-        UserSearchServiceMock
+        UserSearchServiceMock,
       ],
     })
       .overrideGuard(JwtAuthGuard)

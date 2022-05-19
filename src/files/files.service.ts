@@ -20,10 +20,7 @@ export class FilesService {
     return await this.minioClient.upload(createFileDto, bucketName);
   }
 
-  async removeFile(
-    fileName: string,
-    bucketName: BucketName,
-  ) {
+  async removeFile(fileName: string, bucketName: BucketName) {
     this.logger.log(`Removing file ${fileName} from ${bucketName}`);
     return await this.minioClient.delete(fileName, bucketName);
   }

@@ -24,9 +24,9 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
-import { PaymentsService } from '../payments/payments.service';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
+import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 
 const release = data.releases.black_album;
 const releases = data2list(data.releases);
@@ -100,14 +100,7 @@ describe('ReleasesController', () => {
           },
         },
         MinioServiceMock,
-        {
-          provide: PaymentsService,
-          useValue: {
-            createCustomer: jest.fn(() => {
-              return { id: 1 };
-            }),
-          },
-        },
+        PaymentServiceMock,
         {
           provide: getModelToken(User.name),
           useValue: new RepoMockModel(data.users, 4, 2),
@@ -120,7 +113,7 @@ describe('ReleasesController', () => {
           provide: getModelToken(Track.name),
           useValue: new TracksRepoMockModel(data.tracks),
         },
-        UserSearchServiceMock
+        UserSearchServiceMock,
       ],
     })
       .overrideGuard(JwtAuthGuard)

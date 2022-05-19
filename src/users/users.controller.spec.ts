@@ -17,10 +17,10 @@ import { AuthController } from '../auth/auth.controller';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import * as data from '../test-utils/data/mock_data.json';
 import { FilesService } from '../files/files.service';
-import { PaymentsService } from '../payments/payments.service';
-import UsersSearchService from './users-search.service';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
+import { ConfigServiceMock } from '../test-utils/mocks/config.service.test';
+import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 
 const author = data.users.jayz;
 const user = data.users.kanye;
@@ -60,21 +60,9 @@ describe('UsersController', () => {
         JwtStrategy,
         FilesService,
         LocalStrategy,
-        {
-          provide: ConfigService,
-          useValue: {
-            get: jest.fn().mockReturnValue('60s'),
-          },
-        },
+        ConfigServiceMock,
         MinioServiceMock,
-        {
-          provide: PaymentsService,
-          useValue: {
-            createCustomer: jest.fn(() => {
-              return { id: 1 };
-            }),
-          },
-        },
+        PaymentServiceMock,
         {
           provide: UsersService,
           useValue: {
@@ -104,7 +92,7 @@ describe('UsersController', () => {
             }),
           },
         },
-        UserSearchServiceMock
+        UserSearchServiceMock,
       ],
     })
       .overrideGuard(JwtAuthGuard)

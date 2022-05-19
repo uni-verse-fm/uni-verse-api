@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import getLogLevels from './utils/get-log-levels';
 
-const API_VERSION = 0
+const API_VERSION = 0;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

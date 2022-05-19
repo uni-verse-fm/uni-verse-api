@@ -13,11 +13,11 @@ import { Playlist, PlaylistSchema } from './schemas/playlist.schema';
 import * as data from '../test-utils/data/mock_data.json';
 import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response.interface';
 import { FilesService } from '../files/files.service';
-import { PaymentsService } from '../payments/payments.service';
 import { NonValidIdException } from '../utils/is-valid-id';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
+import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -56,7 +56,7 @@ describe('PlaylistsService', () => {
             name: User.name,
             schema: UserSchema,
           },
-        ])
+        ]),
       ],
       providers: [
         PlaylistsService,
@@ -64,15 +64,8 @@ describe('PlaylistsService', () => {
         UsersService,
         FilesService,
         MinioServiceMock,
-        {
-          provide: PaymentsService,
-          useValue: {
-            createCustomer: jest.fn(() => {
-              return { id: 1 };
-            }),
-          },
-        },
-        UserSearchServiceMock
+        PaymentServiceMock,
+        UserSearchServiceMock,
       ],
     }).compile();
 
@@ -105,12 +98,6 @@ describe('PlaylistsService', () => {
     });
 
     it('', async () => {
-      const encoreBuffer = Buffer.from(
-        JSON.parse(JSON.stringify(encoreTrack.buffer)),
-      );
-      const threatBuffer = Buffer.from(
-        JSON.parse(JSON.stringify(threatTrack.buffer)),
-      );
       const commonTrackInfos = {
         fileName: 'https://www.example.com',
         feats: [],
