@@ -84,58 +84,47 @@ export class PlaylistsService {
     this.logger.log(`Updating playlist ${id}`);
     isValidId(id);
     const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
-    const trackToUpdate =
-      updatePlaylistDto.trackId &&
-      (await this.tracksService.findTrackById(updatePlaylistDto.trackId));
 
-    let body = {
-      title: playlist.title,
-      tracks: playlist.tracks,
-    };
+    const trackId = updatePlaylistDto.trackId;
+    const playlistTracks = playlist.tracks;
 
-    if (updatePlaylistDto.title)
-      body = { ...body, title: updatePlaylistDto.title };
-
-    if (trackToUpdate) {
-      const newTracks = this.updatedTracks(
-        updatePlaylistDto.action,
-        playlist.tracks,
-        trackToUpdate,
-        id,
+    const trackToUpdate = await this.tracksService.findTrackById(
+      updatePlaylistDto.trackId,
+    );
+    if (!trackToUpdate) {
+      throw new NotFoundException(
+        this.logger.error(`Track with ID "${trackId}" not found.`),
+        `Track with ID "${trackToUpdate}" not found.`,
       );
-      body = { ...body, tracks: newTracks };
     }
 
-    return await this.playlistModel
-      .updateOne({ id: playlist._id }, body)
-      .then(() => ({
-        id: playlist._id.toString(),
-        msg: 'Playlist updated',
-      }));
-  }
-
-  private updatedTracks(
-    action: PlaylistUpdateTaskAction,
-    tracks: Track[],
-    trackToUpdate: Track,
-    playlistId: string,
-  ): Track[] {
-    switch (action) {
+    let newTracks: Track[];
+    switch (updatePlaylistDto.action) {
       case PlaylistUpdateTaskAction.Add:
-        this.logger.log(
-          `Adding track ${trackToUpdate._id} to playlist ${playlistId}`,
-        );
-        return [...tracks, trackToUpdate];
+        this.logger.log(`Adding track ${trackId} to playlist ${id}`);
+        newTracks = [...playlistTracks, trackToUpdate];
+        break;
       case PlaylistUpdateTaskAction.Remove:
-        this.logger.log(
-          `Removing track ${trackToUpdate._id} from playlist ${playlistId}`,
+        this.logger.log(`Removing track ${trackId} from playlist ${id}`);
+        newTracks = playlistTracks.filter(
+          (track) => track._id.toString() !== trackId,
         );
-        return tracks.filter(
-          (track) => track._id.toString() !== trackToUpdate._id.toString(),
-        );
+        break;
       default:
         throw new BadRequestException('Action not found.');
     }
+
+    const updatePlaylist = {
+      title: updatePlaylistDto.title || playlist.title,
+      tracks: newTracks,
+    };
+    await this.playlistModel.updateOne({ id: playlist._id }, updatePlaylist);
+
+    return {
+      id: playlist._id.toString(),
+      title: playlist.title,
+      msg: 'Playlist updated',
+    };
   }
 
   async removePlaylist(id: string, owner: UserDocument) {

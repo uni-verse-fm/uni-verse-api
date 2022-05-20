@@ -1,6 +1,5 @@
 import {
   IsEmail,
-  IsMongoId,
   IsNotEmpty,
   IsString,
   MaxLength,
@@ -8,11 +7,6 @@ import {
 } from 'class-validator';
 
 export default class AuthorDto {
-  @IsMongoId()
-  @IsString()
-  @IsNotEmpty()
-  readonly id: string;
-
   @IsNotEmpty()
   @IsString()
   @MinLength(5)

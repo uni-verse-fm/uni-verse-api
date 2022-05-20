@@ -26,7 +26,7 @@ import {
   FileMimeType,
   SimpleCreateFileDto,
 } from '../files/dto/simple-create-file.dto';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ResourcePackFormDataParserInterceptor } from '../utils/interceptors/create-resource-pack.interceptor copy';
 import { ApiMultiFileWithMetadata } from '../utils/swagger/multiple-file.decorator';
@@ -44,37 +44,23 @@ export class ResourcePacksController {
   @ApiConsumes('multipart/form-data')
   @ApiMultiFileWithMetadata()
   @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'resources', maxCount: 20 },
-      { name: 'cover', maxCount: 1 },
-    ]),
+    FilesInterceptor('files'),
     ResourcePackFormDataParserInterceptor,
   )
   create(
-    @UploadedFiles()
-    files: { resources: Express.Multer.File[]; cover: Express.Multer.File[] },
+    @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() body: CreateResourcePackWraperDto,
     @Request() request: IRequestWithUser,
   ) {
-    const filesBuffers: SimpleCreateFileDto[] = files.resources.map((file) => ({
+    const filesBuffers: SimpleCreateFileDto[] = files.map((file) => ({
       originalFileName: file.originalname,
       buffer: file.buffer,
       size: file.size,
       mimetype: FileMimeType[file.mimetype],
     }));
 
-    const simpleCreateImage: SimpleCreateFileDto | undefined = files.cover
-      ? {
-          originalFileName: files.cover[0].originalname,
-          buffer: files.cover[0].buffer,
-          size: files.cover[0].size,
-          mimetype: files.cover[0].mimetype,
-        }
-      : undefined;
-
     return this.resourcePacksService.createResourcePack(
       filesBuffers,
-      simpleCreateImage,
       body.data,
       request.user,
     );

@@ -12,7 +12,6 @@ import { IUserResponse } from './interfaces/user-response.interface';
 import { User, UserDocument } from './schemas/user.schema';
 import { PaymentsService } from '../payments/payments.service';
 import { isValidId } from '../utils/is-valid-id';
-import UsersSearchService from './users-search.service';
 
 @Injectable()
 export class UsersService {
@@ -22,7 +21,6 @@ export class UsersService {
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private stripeService: PaymentsService,
-    private usersSearchService: UsersSearchService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UserDocument> {
@@ -38,12 +36,7 @@ export class UsersService {
       releases: [],
       stripeCustomerId: stripeCustomer.id,
     };
-
-    const userToSave = new this.userModel(userWithEmptyReleases);
-
-    const user = await userToSave.save();
-    this.usersSearchService.insertIndex(user);
-
+    const user = await this.userModel.create(userWithEmptyReleases);
     return this.buildRegistrationInfo(user);
   }
 
@@ -60,15 +53,14 @@ export class UsersService {
     return users.map((user) => this.buildUserInfo(user));
   }
 
-  async removeUser(id: string): Promise<IRemoveResponse> {
-    this.logger.log(`Removing user ${id}`);
-    isValidId(id);
-    const user = await this.userModel.findById(id);
+  async removeUser(userId: string): Promise<IRemoveResponse> {
+    this.logger.log(`Removing user ${userId}`);
+    isValidId(userId);
+    const user = await this.userModel.findById(userId);
     if (!user) {
-      this.logger.error(`User ${id} not found`);
+      this.logger.error(`User ${userId} not found`);
       throw new NotFoundException('Somthing wrong with the server');
     }
-    await this.usersSearchService.deleteIndex(id);
     await user.remove();
     return {
       email: user.email,
@@ -86,22 +78,11 @@ export class UsersService {
     return user;
   }
 
-  async findManyUsersByIds(ids: string[]): Promise<UserDocument[]> {
-    this.logger.log(`Finding users by ids`);
-    const users = await this.userModel.find({
-      _id: {
-        $in: ids,
-      },
-    });
-
-    if (ids.length !== users.length) {
-      this.logger.error("one or more users who doesn't exist on our database");
-
-      throw new BadRequestException(
-        "one or more users who doesn't exist on our database",
-      );
-    }
-    return users;
+  async findManyUsersByUsernames(usernames: string[]): Promise<UserDocument[]> {
+    this.logger.log(`Finding users ${usernames}`);
+    return await Promise.all(
+      usernames.map((username) => this.findUserByUsername(username)),
+    );
   }
 
   async findUserByEmail(email: string): Promise<UserDocument | undefined> {
@@ -115,19 +96,19 @@ export class UsersService {
     return user;
   }
 
-  async findUserById(id: string): Promise<IUserResponse> {
-    this.logger.log(`Finding user ${id}`);
-    isValidId(id);
-    const user = await this.findById(id);
+  async findUserById(userId: string): Promise<IUserResponse | undefined> {
+    this.logger.log(`Finding user ${userId}`);
+    isValidId(userId);
+    const user = await this.findById(userId);
     return this.buildUserInfo(user);
   }
 
-  async findById(id: string): Promise<User> {
-    this.logger.log(`Finding user ${id}`);
-    isValidId(id);
-    const user = await this.userModel.findById(id);
+  async findById(userId: string): Promise<User | undefined> {
+    this.logger.log(`Finding user ${userId}`);
+    isValidId(userId);
+    const user = await this.userModel.findById(userId);
     if (!user) {
-      this.logger.error(`User ${id} not found`);
+      this.logger.error(`User ${userId} not found`);
       throw new BadRequestException("This user doesn't exist");
     }
     return user;
@@ -167,18 +148,5 @@ export class UsersService {
       email: user.email,
     };
     return userRegistrationInfo;
-  }
-
-  async searchUser(search: string, meId: string) {
-    const results = await this.usersSearchService.searchIndex(search);
-    const ids = results.map((result) => result.id).filter((id) => id !== meId);
-    if (!ids.length) {
-      return [];
-    }
-    return this.userModel.find({
-      _id: {
-        $in: ids,
-      },
-    });
   }
 }

@@ -16,10 +16,8 @@ import {
   ResourcePack,
   ResourcePackSchema,
 } from './schemas/resource-pack.schema';
-import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
-import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
-import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
-import { FileMimeType } from '../files/dto/simple-create-file.dto';
+import { MinioClientService } from '../minio-client/minio-client.service';
+import { PaymentsService } from '../payments/payments.service';
 
 const resource_packs = data2list(data.resource_packs);
 
@@ -65,9 +63,22 @@ describe('ResourcePacksService', () => {
         ResourcesService,
         FilesService,
         UsersService,
-        MinioServiceMock,
-        PaymentServiceMock,
-        UserSearchServiceMock,
+        {
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
+            }),
+          },
+        },
+        {
+          provide: PaymentsService,
+          useValue: {
+            createCustomer: jest.fn(() => {
+              return { id: 1 };
+            }),
+          },
+        },
       ],
     }).compile();
 
@@ -104,17 +115,11 @@ describe('ResourcePacksService', () => {
 
     create_resource_packs.forEach((resourcePack, resourcePackIndex) => {
       const test = files[resourcePackIndex];
-      const coverFile = data.create_files.coverFile;
-      const coverName = 'https://www.example.com';
       const files_resource_packs = (test as Array<any>).map((file) => ({
         ...file,
         buffer: Buffer.from(JSON.parse(JSON.stringify(file.buffer))),
       }));
-      const cover = {
-        ...coverFile,
-        mimetype: FileMimeType[coverFile.mimetype],
-        buffer: Buffer.from(JSON.parse(JSON.stringify(coverFile.buffer))),
-      };
+
       it('should return one resource pack infos', async () => {
         const resources = data2list(resourcePack.resources);
 
@@ -126,7 +131,7 @@ describe('ResourcePacksService', () => {
         const expected = {
           title: resourcePack.title,
           description: resourcePack.description,
-          coverName,
+          coverUrl: resourcePack.coverUrl,
           previewUrl: resourcePack.previewUrl,
           author: {
             id: users[resourcePackIndex].id,
@@ -137,7 +142,6 @@ describe('ResourcePacksService', () => {
 
         const result = await resourcePacksService.createResourcePack(
           files_resource_packs,
-          cover,
           create_resource_pack,
           users[resourcePackIndex],
         );
@@ -147,20 +151,18 @@ describe('ResourcePacksService', () => {
   });
 
   describe('When find all resource packs', () => {
-    const coverName = 'https://www.example.com';
-
     it('should return a list of resource packs', async () => {
       const expected1 = {
         title: resource_packs[0].title,
         description: resource_packs[0].description,
-        coverName,
+        coverUrl: resource_packs[0].coverUrl,
         author: abdou._id.toString(),
       };
 
       const expected2 = {
         title: resource_packs[1].title,
         description: resource_packs[1].description,
-        coverName,
+        coverUrl: resource_packs[1].coverUrl,
         author: yoni._id.toString(),
       };
 
@@ -171,7 +173,7 @@ describe('ResourcePacksService', () => {
       const cleanedResult = result.map((release) => ({
         title: release.title,
         description: release.description,
-        coverName: release.coverName,
+        coverUrl: release.coverUrl,
         author: release.author._id.toString(),
       }));
       expect(cleanedResult).toStrictEqual(expected);
@@ -180,7 +182,7 @@ describe('ResourcePacksService', () => {
 
   describe('When find one resource pack by title', () => {
     it('should return one resource pack', async () => {
-      const coverName = 'https://www.example.com';
+      const coverUrl = 'https://www.resource-pack.com';
       const previewUrl = 'https://www.resource-pack.com';
       const description = 'my resource pack 1';
       const title = 'resource pack 1';
@@ -193,7 +195,7 @@ describe('ResourcePacksService', () => {
 
       expect(result.title).toBe(title);
       expect(result.description).toBe(description);
-      expect(result.coverName).toBe(coverName);
+      expect(result.coverUrl).toBe(coverUrl);
       expect(result.previewUrl).toBe(previewUrl);
       expect(result.author).toStrictEqual(abdou._id);
       expect(result.resources).toBeDefined();
@@ -202,7 +204,7 @@ describe('ResourcePacksService', () => {
 
   describe('When find one resource pack by id', () => {
     it('should return one resource pack', async () => {
-      const coverName = 'https://www.example.com';
+      const coverUrl = 'https://www.resource-pack.com';
       const previewUrl = 'https://www.resource-pack.com';
       const description = 'my resource pack 1';
       const title = 'resource pack 1';
@@ -213,7 +215,7 @@ describe('ResourcePacksService', () => {
 
       expect(result.title).toBe(title);
       expect(result.description).toBe(description);
-      expect(result.coverName).toBe(coverName);
+      expect(result.coverUrl).toBe(coverUrl);
       expect(result.previewUrl).toBe(previewUrl);
       expect(result.author).toStrictEqual(abdou._id);
       expect(result.resources).toBeDefined();
