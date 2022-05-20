@@ -192,7 +192,10 @@ export class ResourcePacksService {
             resourcePack.resources,
             session,
           );
-          await this.filesService.removeFile(resourcePack.coverName, BucketName.Images);
+          await this.filesService.removeFile(
+            resourcePack.coverName,
+            BucketName.Images,
+          );
 
           await resourcePack.remove();
         })

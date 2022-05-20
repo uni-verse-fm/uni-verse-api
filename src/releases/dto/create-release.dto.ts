@@ -27,8 +27,8 @@ export class CreateReleaseDto {
   readonly coverUrl: string;
 
   @IsArray()
-  @IsNotEmpty()
-  readonly feats: AuthorDto[];
+  @IsOptional()
+  readonly feats?: AuthorDto[];
 
   @IsArray()
   @IsNotEmpty()

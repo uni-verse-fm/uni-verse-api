@@ -86,11 +86,22 @@ export class UsersService {
     return user;
   }
 
-  async findManyUsersByUsernames(usernames: string[]): Promise<UserDocument[]> {
-    this.logger.log(`Finding users ${usernames}`);
-    return await Promise.all(
-      usernames.map((username) => this.findUserByUsername(username)),
-    );
+  async findManyUsersByIds(ids: string[]): Promise<UserDocument[]> {
+    this.logger.log(`Finding users by ids`);
+    const users = await this.userModel.find({
+      _id: {
+        $in: ids,
+      },
+    });
+
+    if (ids.length !== users.length) {
+      this.logger.error("one or more users who doesn't exist on our database");
+
+      throw new BadRequestException(
+        "one or more users who doesn't exist on our database",
+      );
+    }
+    return users;
   }
 
   async findUserByEmail(email: string): Promise<UserDocument | undefined> {
@@ -158,9 +169,9 @@ export class UsersService {
     return userRegistrationInfo;
   }
 
-  async searchUser(search: string) {
+  async searchUser(search: string, meId: string) {
     const results = await this.usersSearchService.searchIndex(search);
-    const ids = results.map((result) => result.id);
+    const ids = results.map((result) => result.id).filter((id) => id !== meId);
     if (!ids.length) {
       return [];
     }

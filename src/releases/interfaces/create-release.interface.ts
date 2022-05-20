@@ -4,9 +4,6 @@ import ICreateUser from '../../users/interfaces/create-user.interface';
 export default interface ICreateRelease {
   title: string;
   description: string;
-  feats?: ICreateUser[];
+  feats: ICreateUser[];
   tracks: ICreateTrack[];
 }
-
-
-

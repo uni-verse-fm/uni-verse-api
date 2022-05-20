@@ -45,8 +45,8 @@ export class MinioClientService {
     const fileName = hashedFileName + extension;
 
     const metaData = {
-        'Content-Type': file.mimetype,
-      };
+      'Content-Type': file.mimetype,
+    };
 
     this.client.putObject(
       bucketName,

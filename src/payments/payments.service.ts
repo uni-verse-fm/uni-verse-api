@@ -42,10 +42,21 @@ export class PaymentsService {
 
   public async createCustomer(name: string, email: string) {
     this.logger.log(`Creating customer ${name} ${email}`);
-    const response = await this.stripe.customers.create({
-      name,
-      email,
-    });
+    const response = await this.stripe.customers
+      .create(
+        {
+          name,
+          email,
+        },
+        {
+          maxNetworkRetries: 2,
+        },
+      )
+      .catch((error) => {
+        this.logger.error(`Can't create payment acount due to: ${error.type}`);
+        throw new Error(error);
+      });
+
     if (!response) {
       this.logger.error(`Can not create customer ${name} ${email}`);
       throw new Error('Somthing wrong with the payment server');

@@ -32,11 +32,23 @@ export default class UsersSearchService
       index: this.index,
       body: {
         query: {
-          multi_match: {
-            query: text,
-            fields: ['username', 'email'],
-            fuzziness: 2,
-            prefix_length: 1,
+          bool: {
+            should: [
+              {
+                multi_match: {
+                  query: text,
+                  fields: ['username', 'email'],
+                  fuzziness: 'AUTO',
+                },
+              },
+              {
+                multi_match: {
+                  query: text,
+                  fields: ['username', 'email'],
+                  type: 'phrase_prefix',
+                },
+              },
+            ],
           },
         },
       },

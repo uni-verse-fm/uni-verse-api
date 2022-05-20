@@ -44,14 +44,11 @@ export class ReleasesService {
 
     await this.isReleaseUnique(createRelease.title);
 
-    const feats: UserDocument[] = createRelease?.feats
-      ? await this.usersService.findManyUsersByUsernames(
-          createRelease.feats.map((feat) => feat.username),
+    const feats: UserDocument[] = createRelease.feats
+      ? await this.usersService.findManyUsersByIds(
+          createRelease.feats.map((feat) => feat.id),
         )
       : [];
-
-      this.logger.log(`Creating release` + JSON.stringify(feats));
-
 
     const orderedTracks = this.orderedTracks(files, createRelease);
 
@@ -81,7 +78,7 @@ export class ReleasesService {
             coverName,
           };
 
-            release = await this.releaseModel.create(createdRelease);
+          release = await this.releaseModel.create(createdRelease);
         })
         .then(() => this.buildReleaseInfo(release, feats));
       return createResponse;
@@ -162,7 +159,7 @@ export class ReleasesService {
     this.logger.log(`Finding release by title "${title}"`);
     const release = await this.releaseModel.findOne({ title });
     if (!release) {
-      throw new NotFoundException(`Release with title ${title} not found.`);
+      throw new BadRequestException(`Release with title ${title} not found.`);
     }
     return release;
   }
@@ -188,7 +185,10 @@ export class ReleasesService {
       const deleteResponse = await session
         .withTransaction(async () => {
           await this.tracksService.removeManyTracks(release.tracks, session);
-          await this.filesService.removeFile(release.coverName, BucketName.Images);
+          await this.filesService.removeFile(
+            release.coverName,
+            BucketName.Images,
+          );
           await release.remove();
         })
         .then(() => ({
@@ -245,14 +245,11 @@ export class ReleasesService {
 
   private async isReleaseUnique(title: string) {
     this.logger.log(`Checking if release "${title}" is unique`);
-    let release: ReleaseDocument;
-    try {
-      await this.releaseModel.findOne({ title });
-      this.logger.log(`isUnique ${title} "${release?.title || undefined}" is unique`);
-    } catch (error) {
-      throw new Error('Somthing went wrong.');
-    }
-    if (release?.title === title) {
+    const release = await this.releaseModel
+      .findOne({ title })
+      .catch((error) => this.logger.error(`Failed to find release ${title}`));
+    if (release) {
+      this.logger.error('Release must be unique.');
       throw new BadRequestException('Release must be unique.');
     }
   }

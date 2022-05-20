@@ -26,9 +26,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  SimpleCreateFileDto,
-} from '../files/dto/simple-create-file.dto';
+import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
 import { ApiMultiFileWithMetadata } from '../utils/swagger/multiple-file.decorator';
 import { CreateReleaseWraperDto } from './dto/create-release-wraper.dto';
 import { CreateReleaseDto } from './dto/create-release.dto';
@@ -39,7 +37,7 @@ import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
 export class ReleasesController {
   constructor(private readonly releasesService: ReleasesService) {}
 
-  private readonly logger = new Logger(ReleasesController.name)
+  private readonly logger = new Logger(ReleasesController.name);
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -68,13 +66,15 @@ export class ReleasesController {
         mimetype: file.mimetype,
       }),
     );
-    
-    const simpleCreateImage: SimpleCreateFileDto | undefined = files.cover ? {
-      originalFileName: files.cover[0].originalname,
-      buffer: files.cover[0].buffer,
-      size: files.cover[0].size,
-      mimetype: files.cover[0].mimetype,
-    } : undefined;
+
+    const simpleCreateImage: SimpleCreateFileDto | undefined = files.cover
+      ? {
+          originalFileName: files.cover[0].originalname,
+          buffer: files.cover[0].buffer,
+          size: files.cover[0].size,
+          mimetype: files.cover[0].mimetype,
+        }
+      : undefined;
 
     return this.releasesService.createRelease(
       simpleCreateFiles,

@@ -12,10 +12,8 @@ export enum FileMimeType {
   MPEG = 'audio/mpeg',
   WAV = 'audio/vnd.wav',
   PNG = 'image/png',
-  JPEG = 'image/jpeg' 
+  JPEG = 'image/jpeg',
 }
-
-type fileMimeType = 'audio/mpeg' | 'audio/vnd.wav' |'image/png' | 'image/jpeg'
 export class SimpleCreateFileDto {
   @IsNotEmpty()
   @IsString()
