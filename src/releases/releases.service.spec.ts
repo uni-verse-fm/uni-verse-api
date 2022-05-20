@@ -106,7 +106,7 @@ describe('ReleasesService', () => {
         ...coverFile,
         mimetype: FileMimeType[coverFile.mimetype],
         buffer: Buffer.from(JSON.parse(JSON.stringify(coverFile.buffer))),
-      }
+      };
 
       it('should return one release infos', async () => {
         const tracks = data2list(release.tracks);
@@ -151,7 +151,7 @@ describe('ReleasesService', () => {
           files_release,
           cover,
           create_release,
-          author
+          author,
         );
         expect(result).toStrictEqual(expected);
       });

@@ -3,7 +3,6 @@ import { TracksService } from './tracks.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Track, TrackSchema } from './schemas/track.schema';
 import { FilesService } from '../files/files.service';
-import { UsersService } from '../users/users.service';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';

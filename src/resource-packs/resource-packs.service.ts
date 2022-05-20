@@ -44,12 +44,11 @@ export class ResourcePacksService {
     this.logger.log('Creating resource pack');
     await this.isResourcePackUnique(createResourcePack.title);
 
-    const session = await this.connection.startSession();
-
     const orderedResources = this.orderedResources(files, createResourcePack);
 
+    const session = await this.connection.startSession();
     try {
-        let resourcePack;
+      let resourcePack;
       const createResponse = await session
         .withTransaction(async () => {
           const resources: ICreateResourceResponse[] =
@@ -64,20 +63,20 @@ export class ResourcePacksService {
               })),
             );
 
-            const coverName: string = await this.filesService.createFile(
-                cover,
-                BucketName.Images,
-            );
+          const coverName: string = await this.filesService.createFile(
+            cover,
+            BucketName.Images,
+          );
 
-            const createdResourcePack = {
-                ...createResourcePack,
-                author,
-                resources: resources.map((resource) => resource._id),
-                coverName
-            };
-            resourcePack = await this.resourcePackModel.create(
-                createdResourcePack,
-            );
+          const createdResourcePack = {
+            ...createResourcePack,
+            author,
+            resources: resources.map((resource) => resource._id),
+            coverName,
+          };
+          resourcePack = await this.resourcePackModel.create(
+            createdResourcePack,
+          );
         })
         .then(() => this.buildResourcePackInfo(resourcePack));
       return createResponse;

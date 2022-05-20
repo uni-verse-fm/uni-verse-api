@@ -18,6 +18,7 @@ import { UpdateReleaseDto } from './dto/update-release.dto';
 import { isValidId } from '../utils/is-valid-id';
 import { buildSimpleFile } from '../utils/buildSimpleFile';
 import { FilesService } from '../files/files.service';
+import { BucketName } from '../minio-client/minio-client.service';
 
 @Injectable()
 export class ReleasesService {
@@ -39,7 +40,7 @@ export class ReleasesService {
     createRelease: CreateReleaseDto,
     author: UserDocument,
   ) {
-    this.logger.log(`Creating release "${createRelease.title}"`);
+    this.logger.log(`Creating release`);
     await this.isReleaseUnique(createRelease.title);
 
     const feats: UserDocument[] = createRelease?.feats
@@ -48,9 +49,9 @@ export class ReleasesService {
         )
       : [];
 
-    const session = await this.connection.startSession();
-
     const orderedTracks = this.orderedTracks(files, createRelease);
+
+    const session = await this.connection.startSession();
     try {
       let release;
       const createResponse = await session
@@ -63,6 +64,11 @@ export class ReleasesService {
                 file: buildSimpleFile(orderedTracks, track.originalFileName),
               })),
             );
+
+          const coverName: string = await this.filesService.createFile(
+            cover,
+            BucketName.Images,
+          );
           const createdRelease = {
             ...createRelease,
             author,
@@ -71,7 +77,7 @@ export class ReleasesService {
             coverName,
           };
 
-          const release = await this.releaseModel.create(createdRelease);
+            release = await this.releaseModel.create(createdRelease);
         })
         .then(() => this.buildReleaseInfo(release, feats));
       return createResponse;

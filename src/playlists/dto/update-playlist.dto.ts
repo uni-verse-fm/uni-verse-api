@@ -1,7 +1,5 @@
-import { PartialType } from '@nestjs/swagger';
 import {
   IsEnum,
-  IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
