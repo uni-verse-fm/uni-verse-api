@@ -40,7 +40,7 @@ const author = data.users.jayz;
 const create_expected = {
   title: release_wtt.title,
   description: release_wtt.description,
-  coverUrl: release_wtt.coverUrl,
+  coverName: release_wtt.coverName,
   author: {
     id: author._id,
     username: author.username,
@@ -154,13 +154,16 @@ describe('ReleasesController', () => {
       Buffer.from(track.title),
     );
 
+    const cover = Buffer.from(create_release.coverName);
+
     it('should return a release', () => {
       return request(app.getHttpServer())
         .post('/releases')
         .field('data', JSON.stringify(create_release))
-        .attach('files', files_data[0], 'track_1')
-        .attach('files', files_data[1], 'track_2')
-        .attach('files', files_data[2], 'track_3')
+        .attach('tracks', files_data[0], 'track_1')
+        .attach('tracks', files_data[1], 'track_2')
+        .attach('tracks', files_data[2], 'track_3')
+        .attach('cover', cover, 'cover')
         .expect(create_expected);
     });
   });
@@ -173,8 +176,8 @@ describe('ReleasesController', () => {
     });
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await closeInMongodConnection();
-    app.close();
+    await app.close();
   });
 });

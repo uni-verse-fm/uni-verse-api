@@ -24,7 +24,7 @@ export class Release {
   description: string;
 
   @Prop()
-  coverUrl: string;
+  coverName: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   @Type(() => User)

@@ -10,6 +10,7 @@ import {
 export enum FileMimeType {
   MPEG = 'audio/mpeg',
   WAV = 'audio/vnd.wav',
+  PNG = 'image/png',
 }
 export class SimpleCreateFileDto {
   @IsNotEmpty()

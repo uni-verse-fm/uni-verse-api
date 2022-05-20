@@ -11,8 +11,9 @@ import {
   UploadedFiles,
   UseGuards,
   UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 import { ReleaseFormDataParserInterceptor } from '../utils/interceptors/create-release.interceptor';
@@ -45,21 +46,33 @@ export class ReleasesController {
   @ApiOperation({ summary: 'Publish a release' })
   @ApiConsumes('multipart/form-data')
   @ApiMultiFileWithMetadata()
-  @UseInterceptors(FilesInterceptor('files'), ReleaseFormDataParserInterceptor)
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'tracks', maxCount: 20 },
+    { name: 'cover', maxCount: 1 },
+  ]), ReleaseFormDataParserInterceptor)
   async createRelease(
-    @UploadedFiles() files: Array<Express.Multer.File>,
+    @UploadedFiles() files: { tracks: Express.Multer.File[], cover: Express.Multer.File[] },
     @Body() body: CreateReleaseWraperDto,
     @Request() request: IRequestWithUser,
   ) {
-    const simpleCreateFiles: SimpleCreateFileDto[] = files.map((file) => ({
+    const simpleCreateFiles: SimpleCreateFileDto[] = files.tracks.map((file) => ({
       originalFileName: file.originalname,
       buffer: file.buffer,
       size: file.size,
       mimetype: FileMimeType[file.mimetype],
     }));
 
+    const coverFile = files.cover[0];
+    const simpleCreateImage: SimpleCreateFileDto = {
+        originalFileName: coverFile.originalname,
+        buffer: coverFile.buffer,
+        size: coverFile.size,
+        mimetype: FileMimeType[coverFile.mimetype],
+      };
+
     return this.releasesService.createRelease(
       simpleCreateFiles,
+      simpleCreateImage,
       body.data,
       request.user,
     );

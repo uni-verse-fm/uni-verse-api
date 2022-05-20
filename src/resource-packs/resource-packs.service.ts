@@ -19,6 +19,8 @@ import { ICreateResourceResponse } from '../resources/interfaces/resource-create
 import { IResourcePackResponse } from './interfaces/resource-pack-response.interface';
 import { isValidId } from '../utils/is-valid-id';
 import { buildSimpleFile } from '../utils/buildSimpleFile';
+import { BucketName } from '../minio-client/minio-client.service';
+import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class ResourcePacksService {
@@ -30,10 +32,12 @@ export class ResourcePacksService {
     private resourcesService: ResourcesService,
     @InjectConnection()
     private connection: Connection,
+    private filesService: FilesService,
   ) {}
 
   async createResourcePack(
     files: SimpleCreateFileDto[],
+    cover: SimpleCreateFileDto,
     createResourcePack: CreateResourcePackDto,
     author: UserDocument,
   ) {
@@ -45,7 +49,7 @@ export class ResourcePacksService {
     const orderedResources = this.orderedResources(files, createResourcePack);
 
     try {
-      let resourcePack;
+        let resourcePack;
       const createResponse = await session
         .withTransaction(async () => {
           const resources: ICreateResourceResponse[] =
@@ -59,17 +63,23 @@ export class ResourcePacksService {
                 ),
               })),
             );
-          const createdResourcePack = {
-            ...createResourcePack,
-            author,
-            resources: resources.map((resource) => resource._id),
-          };
-          resourcePack = await this.resourcePackModel.create(
-            createdResourcePack,
-          );
+
+            const coverName: string = await this.filesService.createFile(
+                cover,
+                BucketName.Images,
+            );
+
+            const createdResourcePack = {
+                ...createResourcePack,
+                author,
+                resources: resources.map((resource) => resource._id),
+                coverName
+            };
+            resourcePack = await this.resourcePackModel.create(
+                createdResourcePack,
+            );
         })
         .then(() => this.buildResourcePackInfo(resourcePack));
-
       return createResponse;
     } catch (error) {
       this.logger.error(`Can not create resource pack due to: ${error}`);
@@ -206,7 +216,7 @@ export class ResourcePacksService {
     return {
       title: resourcePack.title,
       description: resourcePack.description,
-      coverUrl: resourcePack.coverUrl,
+      coverName: resourcePack.coverName,
       previewUrl: resourcePack.previewUrl,
       author: {
         id: resourcePack.author._id.toString(),

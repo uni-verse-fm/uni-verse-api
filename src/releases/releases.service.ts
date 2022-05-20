@@ -17,6 +17,7 @@ import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response
 import { UpdateReleaseDto } from './dto/update-release.dto';
 import { isValidId } from '../utils/is-valid-id';
 import { buildSimpleFile } from '../utils/buildSimpleFile';
+import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class ReleasesService {
@@ -29,10 +30,12 @@ export class ReleasesService {
     private usersService: UsersService,
     @InjectConnection()
     private connection: Connection,
+    private filesService: FilesService,
   ) {}
 
   async createRelease(
     files: SimpleCreateFileDto[],
+    cover: SimpleCreateFileDto,
     createRelease: CreateReleaseDto,
     author: UserDocument,
   ) {
@@ -65,8 +68,10 @@ export class ReleasesService {
             author,
             feats: feats.map((feat) => feat._id),
             tracks: tracks.map((track) => track.id),
+            coverName,
           };
-          release = await this.releaseModel.create(createdRelease);
+
+          const release = await this.releaseModel.create(createdRelease);
         })
         .then(() => this.buildReleaseInfo(release, feats));
       return createResponse;
@@ -196,7 +201,7 @@ export class ReleasesService {
     return {
       title: release.title,
       description: release.description,
-      coverUrl: release.coverUrl,
+      coverName: release.coverName,
       feats: feats.map((feat) => ({
         id: feat._id.toString(),
         username: feat.username,
