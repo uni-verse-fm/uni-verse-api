@@ -13,8 +13,10 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
-import { MinioClientService } from '../minio-client/minio-client.service';
-import { PaymentsService } from '../payments/payments.service';
+import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
+import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
+import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
+import { FileMimeType } from '../files/dto/simple-create-file.dto';
 
 const release = data.releases.black_album;
 
@@ -63,22 +65,9 @@ describe('ReleasesService', () => {
         TracksService,
         FilesService,
         UsersService,
-        {
-          provide: MinioClientService,
-          useValue: {
-            upload: jest.fn(() => {
-              return 'https://www.example.com';
-            }),
-          },
-        },
-        {
-          provide: PaymentsService,
-          useValue: {
-            createCustomer: jest.fn(() => {
-              return { id: 1 };
-            }),
-          },
-        },
+        MinioServiceMock,
+        PaymentServiceMock,
+        UserSearchServiceMock,
       ],
     }).compile();
 
@@ -106,10 +95,18 @@ describe('ReleasesService', () => {
 
     create_releases.forEach((release, releaseIndex) => {
       const test = files[releaseIndex];
+      const coverFile = data.create_files.coverFile;
+      const coverName = 'https://www.example.com';
       const files_release = (test as Array<any>).map((file) => ({
         ...file,
         buffer: Buffer.from(JSON.parse(JSON.stringify(file.buffer))),
       }));
+
+      const cover = {
+        ...coverFile,
+        mimetype: FileMimeType[coverFile.mimetype],
+        buffer: Buffer.from(JSON.parse(JSON.stringify(coverFile.buffer))),
+      };
 
       it('should return one release infos', async () => {
         const tracks = data2list(release.tracks);
@@ -137,7 +134,7 @@ describe('ReleasesService', () => {
         const expected = {
           title: release.title,
           description: release.description,
-          coverUrl: release.coverUrl,
+          coverName,
           author: {
             id: author._id.toString(),
             username: author.username,
@@ -152,6 +149,7 @@ describe('ReleasesService', () => {
 
         const result = await releasesService.createRelease(
           files_release,
+          cover,
           create_release,
           author,
         );
@@ -161,6 +159,8 @@ describe('ReleasesService', () => {
   });
 
   describe('When find all rleases', () => {
+    const coverName = 'https://www.example.com';
+
     it('should return a list of releases', async () => {
       const releases_list = data2list([
         data.releases.black_album,
@@ -170,7 +170,7 @@ describe('ReleasesService', () => {
       const expected = releases_list.map((release) => ({
         title: release.title,
         description: release.description,
-        coverUrl: release.coverUrl,
+        coverName,
         author: author._id.toString(),
       }));
 
@@ -179,7 +179,7 @@ describe('ReleasesService', () => {
       const cleanedResult = result.map((release) => ({
         title: release.title,
         description: release.description,
-        coverUrl: release.coverUrl,
+        coverName: release.coverName,
         author: release.author._id.toString(),
       }));
       expect(cleanedResult).toStrictEqual(expected);
@@ -192,7 +192,7 @@ describe('ReleasesService', () => {
 
   describe('When find one release by title', () => {
     it('should return one release', async () => {
-      const coverUrl = 'https://www.release.com';
+      const coverName = 'https://www.example.com';
       const description = 'one of the greatest';
       const title = 'balck album';
 
@@ -202,7 +202,7 @@ describe('ReleasesService', () => {
 
       expect(result.title).toBe(title);
       expect(result.description).toBe(description);
-      expect(result.coverUrl).toBe(coverUrl);
+      expect(result.coverName).toBe(coverName);
       expect(result.author).toStrictEqual(author._id);
       expect(result.feats).toBeDefined();
       expect(result.tracks).toBeDefined();
@@ -211,7 +211,7 @@ describe('ReleasesService', () => {
 
   describe('When find one release by id', () => {
     it('should return one release', async () => {
-      const coverUrl = 'https://www.release.com';
+      const coverName = 'https://www.example.com';
       const description = 'one of the greatest';
       const title = 'balck album';
 
@@ -219,7 +219,7 @@ describe('ReleasesService', () => {
 
       expect(result.title).toBe(title);
       expect(result.description).toBe(description);
-      expect(result.coverUrl).toBe(coverUrl);
+      expect(result.coverName).toBe(coverName);
       expect(result.author).toStrictEqual(author._id);
       expect(result.feats).toBeDefined();
       expect(result.tracks).toBeDefined();

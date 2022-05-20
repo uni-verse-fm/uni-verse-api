@@ -24,8 +24,9 @@ import { ResourcePacksService } from './resource-packs.service';
 import { ResourcesService } from '../resources/resources.service';
 import { ResourcePack } from './schemas/resource-pack.schema';
 import { Resource } from '../resources/schemas/resource.schema';
-import { MinioClientService } from '../minio-client/minio-client.service';
-import { PaymentsService } from '../payments/payments.service';
+import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
+import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
+import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 
 const resource_pack = data.resource_packs.resource_pack1;
 const resource_packs = data2list(data.resource_packs);
@@ -37,7 +38,7 @@ const author = data.users.jayz;
 const create_expected = {
   title: resource_pack.title,
   description: resource_pack.description,
-  coverUrl: resource_pack.coverUrl,
+  coverUrl: resource_pack.coverName,
   author: {
     id: author._id,
     username: author.username,
@@ -90,22 +91,8 @@ describe('ResourcePacksController', () => {
             }),
           },
         },
-        {
-          provide: MinioClientService,
-          useValue: {
-            upload: jest.fn(() => {
-              return 'https://www.example.com';
-            }),
-          },
-        },
-        {
-          provide: PaymentsService,
-          useValue: {
-            createCustomer: jest.fn(() => {
-              return { id: 1 };
-            }),
-          },
-        },
+        MinioServiceMock,
+        PaymentServiceMock,
         {
           provide: getModelToken(User.name),
           useValue: new RepoMockModel(data.users, 4, 2),
@@ -118,6 +105,7 @@ describe('ResourcePacksController', () => {
           provide: getModelToken(ResourcePack.name),
           useValue: new TracksRepoMockModel(data.resource_packs),
         },
+        UserSearchServiceMock,
       ],
     })
       .overrideGuard(JwtAuthGuard)
@@ -158,18 +146,21 @@ describe('ResourcePacksController', () => {
       Buffer.from(resource.title),
     );
 
+    const cover = Buffer.from(create_resource_pack.coverName);
+
     it('should return a resource pack', () => {
       return request(app.getHttpServer())
         .post('/resource-packs')
         .field('data', JSON.stringify(create_resource_pack))
-        .attach('files', files_data[0], 'track_1')
-        .attach('files', files_data[1], 'track_2')
-        .attach('files', files_data[2], 'track_3')
+        .attach('resources', files_data[0], 'resource_1')
+        .attach('resources', files_data[1], 'resource_2')
+        .attach('resources', files_data[2], 'resource_3')
+        .attach('cover', cover, 'cover')
         .expect(create_expected);
     });
   });
 
-  describe('delete my release', () => {
+  describe('delete my resource pack', () => {
     it('should return the resource pack', async () => {
       return await request(app.getHttpServer())
         .delete(`/resource-packs/${resource_pack._id}`)
@@ -177,7 +168,7 @@ describe('ResourcePacksController', () => {
     });
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await closeInMongodConnection();
     app.close();
   });

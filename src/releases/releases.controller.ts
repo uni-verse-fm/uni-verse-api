@@ -11,8 +11,9 @@ import {
   UploadedFiles,
   UseGuards,
   UseInterceptors,
+  Logger,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 import { ReleaseFormDataParserInterceptor } from '../utils/interceptors/create-release.interceptor';
@@ -25,10 +26,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  FileMimeType,
-  SimpleCreateFileDto,
-} from '../files/dto/simple-create-file.dto';
+import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
 import { ApiMultiFileWithMetadata } from '../utils/swagger/multiple-file.decorator';
 import { CreateReleaseWraperDto } from './dto/create-release-wraper.dto';
 import { CreateReleaseDto } from './dto/create-release.dto';
@@ -39,27 +37,48 @@ import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
 export class ReleasesController {
   constructor(private readonly releasesService: ReleasesService) {}
 
+  private readonly logger = new Logger(ReleasesController.name);
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Publish a release' })
   @ApiConsumes('multipart/form-data')
   @ApiMultiFileWithMetadata()
-  @UseInterceptors(FilesInterceptor('files'), ReleaseFormDataParserInterceptor)
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'tracks', maxCount: 20 },
+      { name: 'cover', maxCount: 1 },
+    ]),
+    ReleaseFormDataParserInterceptor,
+  )
   async createRelease(
-    @UploadedFiles() files: Array<Express.Multer.File>,
+    @UploadedFiles()
+    files: { tracks: Express.Multer.File[]; cover: Express.Multer.File[] },
     @Body() body: CreateReleaseWraperDto,
     @Request() request: IRequestWithUser,
   ) {
-    const simpleCreateFiles: SimpleCreateFileDto[] = files.map((file) => ({
-      originalFileName: file.originalname,
-      buffer: file.buffer,
-      size: file.size,
-      mimetype: FileMimeType[file.mimetype],
-    }));
+    const simpleCreateFiles: SimpleCreateFileDto[] = files.tracks.map(
+      (file) => ({
+        originalFileName: file.originalname,
+        buffer: file.buffer,
+        size: file.size,
+        mimetype: file.mimetype,
+      }),
+    );
+
+    const simpleCreateImage: SimpleCreateFileDto | undefined = files.cover
+      ? {
+          originalFileName: files.cover[0].originalname,
+          buffer: files.cover[0].buffer,
+          size: files.cover[0].size,
+          mimetype: files.cover[0].mimetype,
+        }
+      : undefined;
 
     return this.releasesService.createRelease(
       simpleCreateFiles,
+      simpleCreateImage,
       body.data,
       request.user,
     );

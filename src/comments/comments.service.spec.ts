@@ -18,8 +18,9 @@ import { ModelType } from './dto/create-comment.dto';
 import { Comment, CommentSchema } from './schemas/comment.schema';
 import { FilesService } from '../files/files.service';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
-import { MinioClientService } from '../minio-client/minio-client.service';
-import { PaymentsService } from '../payments/payments.service';
+import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
+import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
+import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -75,22 +76,9 @@ describe('CommentsService', () => {
         UsersService,
         ResourcesService,
         FilesService,
-        {
-          provide: MinioClientService,
-          useValue: {
-            upload: jest.fn(() => {
-              return 'https://www.example.com';
-            }),
-          },
-        },
-        {
-          provide: PaymentsService,
-          useValue: {
-            createCustomer: jest.fn(() => {
-              return { id: 1 };
-            }),
-          },
-        },
+        MinioServiceMock,
+        PaymentServiceMock,
+        UserSearchServiceMock,
       ],
     }).compile();
 
@@ -124,12 +112,6 @@ describe('CommentsService', () => {
     });
 
     it('', async () => {
-      const encoreBuffer = Buffer.from(
-        JSON.parse(JSON.stringify(encoreTrack.buffer)),
-      );
-      const threatBuffer = Buffer.from(
-        JSON.parse(JSON.stringify(threatTrack.buffer)),
-      );
       const commonTrackInfos = {
         fileName: 'https://www.example.com',
         feats: [],

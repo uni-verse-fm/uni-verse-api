@@ -13,7 +13,6 @@ import { FilesService } from '../files/files.service';
 import { UsersService } from '../users/users.service';
 import { UserDocument } from '../users/schemas/user.schema';
 import { IDeleteTrackResponse } from './interfaces/track-delete-response.interface copy';
-import { FileMimeType } from '../files/dto/simple-create-file.dto';
 import { BucketName } from '../minio-client/minio-client.service';
 import { isValidId } from '../utils/is-valid-id';
 
@@ -107,6 +106,7 @@ export class TracksService {
       throw new NotFoundException('Somthing wrong with the server');
     }
     await track.remove(session);
+    await this.filesService.removeFile(track.fileName, BucketName.Tracks);
     return {
       id: track._id,
       title: track.title,

@@ -5,7 +5,6 @@ import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import UsersModule from '../users/users.module';
-import { UsersService } from '../users/users.service';
 import { ResourcesService } from './resources.service';
 import { Resource, ResourceSchema } from './schemas/resource.schema';
 
@@ -21,7 +20,6 @@ import { Resource, ResourceSchema } from './schemas/resource.schema';
   providers: [
     ResourcesService,
     FilesService,
-    UsersService,
     MinioClientService,
     PaymentsService,
   ],

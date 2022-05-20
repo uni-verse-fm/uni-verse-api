@@ -1,10 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
+import { ObjectId } from 'mongodb';
 
 export const isValidId = (id: string): void => {
-  if (!/^[0-9a-fA-F]{24}$/.test(id)) throw new NonValidIdException();
+  if (!ObjectId.isValid(id)) throw new NonValidIdException();
 };
 
-export class NonValidIdException extends Error {
+export class NonValidIdException extends BadRequestException {
   constructor() {
     super('Not valid id');
   }

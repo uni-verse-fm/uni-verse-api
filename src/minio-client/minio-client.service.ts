@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 export enum BucketName {
   Resources = 'resources',
   Tracks = 'tracks',
+  Images = 'images',
 }
 
 @Injectable()
@@ -40,11 +41,12 @@ export class MinioClientService {
       file.originalFileName.lastIndexOf('.'),
       file.originalFileName.length,
     );
+
+    const fileName = hashedFileName + extension;
+
     const metaData = {
       'Content-Type': file.mimetype,
     };
-
-    const fileName = hashedFileName + extension;
 
     this.client.putObject(
       bucketName,

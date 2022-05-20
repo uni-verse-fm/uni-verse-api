@@ -9,8 +9,8 @@ import { User, UserSchema } from '../users/schemas/user.schema';
 import { TracksModule } from '../tracks/tracks.module';
 import { FilesService } from '../files/files.service';
 import { MinioClientService } from '../minio-client/minio-client.service';
-import { UsersService } from '../users/users.service';
 import { PaymentsService } from '../payments/payments.service';
+import UsersModule from '../users/users.module';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -19,6 +19,7 @@ import { PaymentsService } from '../payments/payments.service';
       { name: User.name, schema: UserSchema },
     ]),
     TracksModule,
+    UsersModule,
   ],
   controllers: [PlaylistsController],
   providers: [
@@ -26,7 +27,6 @@ import { PaymentsService } from '../payments/payments.service';
     TracksService,
     MinioClientService,
     FilesService,
-    UsersService,
     PaymentsService,
   ],
   exports: [PlaylistsService],

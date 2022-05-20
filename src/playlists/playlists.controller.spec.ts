@@ -21,14 +21,13 @@ import { getModelToken } from '@nestjs/mongoose';
 import { User } from '../users/schemas/user.schema';
 import TracksRepoMockModel from '../test-utils/mocks/Tracks-mock.service.test';
 import { Track } from '../tracks/schemas/track.schema';
-import { MinioClientService } from '../minio-client/minio-client.service';
-import { PaymentsService } from '../payments/payments.service';
+import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
+import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
+import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 
 const playlists = data2list(data.playlists);
 
 const playlist1 = data.playlists.fav_1;
-
-const create_playlist = data.create_playlists.my_playlist1;
 
 const author = data.users.jayz;
 
@@ -94,22 +93,8 @@ describe('PlaylistsController', () => {
             }),
           },
         },
-        {
-          provide: MinioClientService,
-          useValue: {
-            upload: jest.fn(() => {
-              return 'https://www.example.com';
-            }),
-          },
-        },
-        {
-          provide: PaymentsService,
-          useValue: {
-            createCustomer: jest.fn(() => {
-              return { id: 1 };
-            }),
-          },
-        },
+        MinioServiceMock,
+        PaymentServiceMock,
         {
           provide: getModelToken(User.name),
           useValue: new RepoMockModel(data.users, 4, 2),
@@ -118,6 +103,7 @@ describe('PlaylistsController', () => {
           provide: getModelToken(Track.name),
           useValue: new TracksRepoMockModel(data.tracks),
         },
+        UserSearchServiceMock,
       ],
     })
       .overrideGuard(JwtAuthGuard)

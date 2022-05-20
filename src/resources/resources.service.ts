@@ -98,6 +98,7 @@ export class ResourcesService {
       throw new NotFoundException('Somthing wrong with the server');
     }
     await resource.remove(session);
+    await this.filesService.removeFile(resource.fileName, BucketName.Resources);
     return {
       id: resource._id,
       title: resource.title,

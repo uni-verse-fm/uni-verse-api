@@ -36,7 +36,7 @@
       "_id": "000000000000000000000000",
       "title": "balck album",
       "description": "one of the greatest",
-      "coverUrl": "https://www.release.com",
+      "coverName": "https://www.release.com",
       "author": {
         "_id": "000000000000000000000002",
         "username": "jay-z",
@@ -95,7 +95,7 @@
       "_id": "000000000000000000000001",
       "title": "Watch the Throne",
       "description": "just legendary",
-      "coverUrl": "https://www.release.com",
+      "coverName": "https://www.release.com",
       "author": {
         "_id": "000000000000000000000002",
         "username": "jay-z",
@@ -174,7 +174,7 @@
       "_id": "000000000000000000000002",
       "title": "In My Mind",
       "description": "cool to hear",
-      "coverUrl": "https://www.release.com",
+      "coverName": "https://www.release.com",
       "author": {
         "_id": "000000000000000000000003",
         "username": "pharrell williams",
@@ -240,7 +240,7 @@
       "_id": "000000000000000000000000",
       "title": "resource pack 1",
       "description": "my resource pack 1",
-      "coverUrl": "https://www.resource-pack.com",
+      "coverName": "https://www.resource-pack.com",
       "previewUrl": "https://www.resource-pack.com",
       "author": "000000000000000000000000",
       "resources": [
@@ -266,7 +266,7 @@
       "_id": "000000000000000000000001",
       "title": "resource pack 2",
       "description": "my resource pack 2",
-      "coverUrl": "https://www.resource-pack.com",
+      "coverName": "https://www.resource-pack.com",
       "previewUrl": "https://www.resource-pack.com",
       "author": "000000000000000000000002",
       "resources": [
@@ -593,7 +593,7 @@
     "resource_pack1": {
       "title": "resource pack 1",
       "description": "my resource pack 1",
-      "coverUrl": "https://www.resource-pack.com",
+      "coverName": "https://www.resource-pack.com",
       "previewUrl": "https://www.resource-pack.com",
       "resources": [
         {
@@ -617,7 +617,7 @@
     "resource_pack2": {
       "title": "resource pack 2",
       "description": "my resource pack 2",
-      "coverUrl": "https://www.resource-pack.com",
+      "coverName": "https://www.resource-pack.com",
       "previewUrl": "https://www.resource-pack.com",
       "resources": [
         {
@@ -635,7 +635,7 @@
     "black_album": {
       "title": "balck album",
       "description": "one of the greatest",
-      "coverUrl": "https://www.release.com",
+      "coverName": "https://www.release.com",
       "feats": [],
       "tracks": [
         {
@@ -675,7 +675,7 @@
     "wtt": {
       "title": "Watch the Throne",
       "description": "just legendary",
-      "coverUrl": "https://www.release.com",
+      "coverName": "https://www.release.com",
       "feats": [
         {
           "username": "kanye west",
@@ -737,21 +737,27 @@
           "data": [
             99, 104, 97, 110, 103, 101, 32, 99, 108, 111, 116, 104, 101, 115
           ]
-        }
+        },
+        "size": 100,
+        "mimetype": "audio/mpeg"
       },
       {
         "originalFileName": "track_2",
         "buffer": {
           "type": "Buffer",
           "data": [101, 110, 99, 111, 114, 101]
-        }
+        },
+        "size": 100,
+        "mimetype": "audio/mpeg"
       },
       {
         "originalFileName": "track_3",
         "buffer": {
           "type": "Buffer",
           "data": [116, 104, 114, 101, 97, 116]
-        }
+        },
+        "size": 100,
+        "mimetype": "audio/mpeg"
       }
     ],
     "wtt": [
@@ -762,21 +768,27 @@
           "data": [
             99, 104, 97, 110, 103, 101, 32, 99, 108, 111, 116, 104, 101, 115
           ]
-        }
+        },
+        "size": 100,
+        "mimetype": "audio/mpeg"
       },
       {
         "originalFileName": "track_5",
         "buffer": {
           "type": "Buffer",
           "data": [101, 110, 99, 111, 114, 101]
-        }
+        },
+        "size": 100,
+        "mimetype": "audio/mpeg"
       },
       {
         "originalFileName": "track_6",
         "buffer": {
           "type": "Buffer",
           "data": [116, 104, 114, 101, 97, 116]
-        }
+        },
+        "size": 100,
+        "mimetype": "audio/mpeg"
       }
     ],
     "resources_pack_1": [
@@ -787,14 +799,18 @@
           "data": [
             99, 104, 97, 110, 103, 101, 32, 99, 108, 111, 116, 104, 101, 115
           ]
-        }
+        },
+        "size": 100,
+        "mimetype": "audio/mpeg"
       },
       {
         "originalFileName": "resource_2",
         "buffer": {
           "type": "Buffer",
           "data": [101, 110, 99, 111, 114, 101]
-        }
+        },
+        "size": 100,
+        "mimetype": "audio/mpeg"
       }
     ],
     "resources_pack_2": [
@@ -805,9 +821,22 @@
           "data": [
             99, 104, 97, 110, 103, 101, 32, 99, 108, 111, 116, 104, 101, 115
           ]
-        }
+        },
+        "size": 100,
+        "mimetype": "audio/mpeg"
       }
-    ]
+    ],
+    "coverFile": {
+      "originalFileName": "coverFile",
+      "buffer": {
+        "type": "Buffer",
+        "data": [
+          99, 104, 97, 110, 103, 101, 32, 99, 108, 111, 116, 104, 101, 115
+        ]
+      },
+      "size": 100,
+      "mimetype": "image/png"
+    }
   },
   "create_playlists": {
     "my_playlist1": {
