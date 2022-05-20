@@ -1,10 +1,9 @@
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import mockedJwtService from '../test-utils/mocks/jwt-mock.service.test';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import * as data from '../test-utils/data/mock_data.json';
+import { ConfigServiceMock } from '../test-utils/mocks/config.service.test';
+import { JwtServiceMock } from '../test-utils/mocks/jwt.service.test';
 
 const user = data.users.abdou;
 
@@ -15,16 +14,8 @@ describe('AuthService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
-        {
-          provide: JwtService,
-          useValue: mockedJwtService,
-        },
-        {
-          provide: ConfigService,
-          useValue: {
-            get: jest.fn().mockReturnValue('60s'),
-          },
-        },
+        JwtServiceMock,
+        ConfigServiceMock,
         {
           provide: UsersService,
           useValue: {

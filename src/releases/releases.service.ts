@@ -16,6 +16,9 @@ import { UsersService } from '../users/users.service';
 import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response.interface';
 import { UpdateReleaseDto } from './dto/update-release.dto';
 import { isValidId } from '../utils/is-valid-id';
+import { buildSimpleFile } from '../utils/buildSimpleFile';
+import { FilesService } from '../files/files.service';
+import { BucketName } from '../minio-client/minio-client.service';
 
 @Injectable()
 export class ReleasesService {
@@ -28,57 +31,61 @@ export class ReleasesService {
     private usersService: UsersService,
     @InjectConnection()
     private connection: Connection,
+    private filesService: FilesService,
   ) {}
 
   async createRelease(
     files: SimpleCreateFileDto[],
+    cover: SimpleCreateFileDto,
     createRelease: CreateReleaseDto,
     author: UserDocument,
   ) {
-    this.logger.log(`Creating release "${createRelease.title}"`);
+    this.logger.log(`Creating release`);
+
     await this.isReleaseUnique(createRelease.title);
 
-    const feats: UserDocument[] =
-      await this.usersService.findManyUsersByUsernames(
-        createRelease.feats.map((feat) => feat.username),
-      );
-
-    const session = await this.connection.startSession();
+    const feats: UserDocument[] = createRelease.feats
+      ? await this.usersService.findManyUsersByIds(
+          createRelease.feats.map((feat) => feat.id),
+        )
+      : [];
 
     const orderedTracks = this.orderedTracks(files, createRelease);
 
-    session.startTransaction();
+    const session = await this.connection.startSession();
     try {
-      const tracks: ICreateTrackResponse[] =
-        await this.tracksService.createManyTracks(
-          createRelease.tracks.map((track) => ({
-            ...track,
+      let release;
+      const createResponse = await session
+        .withTransaction(async () => {
+          const tracks: ICreateTrackResponse[] =
+            await this.tracksService.createManyTracks(
+              createRelease.tracks.map((track) => ({
+                ...track,
+                author,
+                file: buildSimpleFile(orderedTracks, track.originalFileName),
+              })),
+            );
+
+          const coverName: string = await this.filesService.createFile(
+            cover,
+            BucketName.Images,
+          );
+          const createdRelease = {
+            ...createRelease,
             author,
-            file: {
-              originalFileName: track.originalFileName,
-              buffer: orderedTracks.get(track.originalFileName).buffer,
-              size: orderedTracks.get(track.originalFileName).size,
-              mimetype: orderedTracks.get(track.originalFileName).mimetype,
-            },
-          })),
-        );
-      const createdRelease = {
-        ...createRelease,
-        author,
-        feats: feats.map((feat) => feat._id),
-        tracks: tracks.map((track) => track.id),
-      };
-      const release = await this.releaseModel.create(createdRelease);
+            feats: feats.map((feat) => feat._id),
+            tracks: tracks.map((track) => track.id),
+            coverName,
+          };
 
-      await session.commitTransaction();
-
-      return this.buildReleaseInfo(release, feats);
+          release = await this.releaseModel.create(createdRelease);
+        })
+        .then(() => this.buildReleaseInfo(release, feats));
+      return createResponse;
     } catch (error) {
-      await session.abortTransaction();
       this.logger.error(
         `Can't create release "${createRelease.title}" due to: ${error}`,
       );
-      throw error;
     } finally {
       session.endSession();
     }
@@ -152,7 +159,7 @@ export class ReleasesService {
     this.logger.log(`Finding release by title "${title}"`);
     const release = await this.releaseModel.findOne({ title });
     if (!release) {
-      throw new NotFoundException(`Release with title ${title} not found.`);
+      throw new BadRequestException(`Release with title ${title} not found.`);
     }
     return release;
   }
@@ -174,19 +181,24 @@ export class ReleasesService {
 
     const session = await this.connection.startSession();
 
-    session.startTransaction();
     try {
-      await this.tracksService.removeManyTracks(release.tracks, session);
-      await release.remove();
-      return {
-        id: release._id.toString(),
-        title: release.title,
-        msg: 'Release deleted',
-      };
+      const deleteResponse = await session
+        .withTransaction(async () => {
+          await this.tracksService.removeManyTracks(release.tracks, session);
+          await this.filesService.removeFile(
+            release.coverName,
+            BucketName.Images,
+          );
+          await release.remove();
+        })
+        .then(() => ({
+          id: release._id.toString(),
+          title: release.title,
+          msg: 'Release deleted',
+        }));
+      return deleteResponse;
     } catch (error) {
-      await session.abortTransaction();
       this.logger.error(`Can't remove release "${id}" due to: ${error}`);
-      throw error;
     } finally {
       session.endSession();
     }
@@ -200,7 +212,7 @@ export class ReleasesService {
     return {
       title: release.title,
       description: release.description,
-      coverUrl: release.coverUrl,
+      coverName: release.coverName,
       feats: feats.map((feat) => ({
         id: feat._id.toString(),
         username: feat.username,
@@ -233,13 +245,11 @@ export class ReleasesService {
 
   private async isReleaseUnique(title: string) {
     this.logger.log(`Checking if release "${title}" is unique`);
-    let release: ReleaseDocument;
-    try {
-      release = await this.releaseModel.findOne({ title });
-    } catch (error) {
-      throw new Error('Somthing went wrong.');
-    }
-    if (release?.title === title) {
+    const release = await this.releaseModel
+      .findOne({ title })
+      .catch((error) => this.logger.error(`Failed to find release ${title}`));
+    if (release) {
+      this.logger.error('Release must be unique.');
       throw new BadRequestException('Release must be unique.');
     }
   }

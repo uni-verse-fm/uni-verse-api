@@ -24,8 +24,9 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
-import { MinioClientService } from '../minio-client/minio-client.service';
-import { PaymentsService } from '../payments/payments.service';
+import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
+import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
+import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 
 const release = data.releases.black_album;
 const releases = data2list(data.releases);
@@ -39,7 +40,7 @@ const author = data.users.jayz;
 const create_expected = {
   title: release_wtt.title,
   description: release_wtt.description,
-  coverUrl: release_wtt.coverUrl,
+  coverName: release_wtt.coverName,
   author: {
     id: author._id,
     username: author.username,
@@ -98,22 +99,8 @@ describe('ReleasesController', () => {
             }),
           },
         },
-        {
-          provide: MinioClientService,
-          useValue: {
-            upload: jest.fn(() => {
-              return 'https://www.example.com';
-            }),
-          },
-        },
-        {
-          provide: PaymentsService,
-          useValue: {
-            createCustomer: jest.fn(() => {
-              return { id: 1 };
-            }),
-          },
-        },
+        MinioServiceMock,
+        PaymentServiceMock,
         {
           provide: getModelToken(User.name),
           useValue: new RepoMockModel(data.users, 4, 2),
@@ -126,6 +113,7 @@ describe('ReleasesController', () => {
           provide: getModelToken(Track.name),
           useValue: new TracksRepoMockModel(data.tracks),
         },
+        UserSearchServiceMock,
       ],
     })
       .overrideGuard(JwtAuthGuard)
@@ -166,13 +154,16 @@ describe('ReleasesController', () => {
       Buffer.from(track.title),
     );
 
+    const cover = Buffer.from(create_release.coverName);
+
     it('should return a release', () => {
       return request(app.getHttpServer())
         .post('/releases')
         .field('data', JSON.stringify(create_release))
-        .attach('files', files_data[0], 'track_1')
-        .attach('files', files_data[1], 'track_2')
-        .attach('files', files_data[2], 'track_3')
+        .attach('tracks', files_data[0], 'track_1')
+        .attach('tracks', files_data[1], 'track_2')
+        .attach('tracks', files_data[2], 'track_3')
+        .attach('cover', cover, 'cover')
         .expect(create_expected);
     });
   });
@@ -185,8 +176,8 @@ describe('ReleasesController', () => {
     });
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await closeInMongodConnection();
-    app.close();
+    await app.close();
   });
 });

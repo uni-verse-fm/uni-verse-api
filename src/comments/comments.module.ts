@@ -10,8 +10,8 @@ import { TracksService } from '../tracks/tracks.service';
 import { ResourcesService } from '../resources/resources.service';
 import { MinioClientService } from '../minio-client/minio-client.service';
 import { FilesService } from '../files/files.service';
-import { UsersService } from '../users/users.service';
 import { PaymentsService } from '../payments/payments.service';
+import UsersModule from '../users/users.module';
 
 @Module({
   imports: [
@@ -21,6 +21,7 @@ import { PaymentsService } from '../payments/payments.service';
       { name: Resource.name, schema: ResourceSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    UsersModule,
   ],
   controllers: [CommentsController],
   providers: [
@@ -29,7 +30,6 @@ import { PaymentsService } from '../payments/payments.service';
     ResourcesService,
     MinioClientService,
     FilesService,
-    UsersService,
     PaymentsService,
   ],
   exports: [CommentsService],

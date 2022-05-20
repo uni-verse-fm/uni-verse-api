@@ -33,6 +33,18 @@ export class UsersController {
     return this.usersService.findUsers(username);
   }
 
+  @Get('/search')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Search user' })
+  searchUsers(
+    @Query('search') search: string,
+    @Request() request: IRequestWithUser,
+  ) {
+    if (search) return this.usersService.searchUser(search, request.user.id);
+    return [];
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
