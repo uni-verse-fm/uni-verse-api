@@ -1,11 +1,7 @@
 import { ApiBody } from '@nestjs/swagger';
 
 export const ApiMultiFileWithMetadata =
-  (
-    originalFileName = 'tracks',
-    data = 'data',
-    cover = 'cover',
-  ): MethodDecorator =>
+  (originalFileName = 'files', data = 'data'): MethodDecorator =>
   (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
     ApiBody({
       type: 'multipart/form-data',
@@ -19,10 +15,6 @@ export const ApiMultiFileWithMetadata =
               type: 'string',
               format: 'binary',
             },
-          },
-          [cover]: {
-            type: 'string',
-            format: 'binary',
           },
           [data]: {
             type: 'string',

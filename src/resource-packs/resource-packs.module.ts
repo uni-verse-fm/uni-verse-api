@@ -9,6 +9,7 @@ import {
 import { Resource, ResourceSchema } from '../resources/schemas/resource.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { ResourcesService } from '../resources/resources.service';
+import { UsersService } from '../users/users.service';
 import { ResourcesModule } from '../resources/resources.module';
 import { FilesService } from '../files/files.service';
 import { MinioClientService } from '../minio-client/minio-client.service';

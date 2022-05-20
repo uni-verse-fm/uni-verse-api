@@ -18,9 +18,6 @@ import { ResourcesService } from '../resources/resources.service';
 import { ICreateResourceResponse } from '../resources/interfaces/resource-create-response.interface';
 import { IResourcePackResponse } from './interfaces/resource-pack-response.interface';
 import { isValidId } from '../utils/is-valid-id';
-import { buildSimpleFile } from '../utils/buildSimpleFile';
-import { BucketName } from '../minio-client/minio-client.service';
-import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class ResourcePacksService {
@@ -32,56 +29,51 @@ export class ResourcePacksService {
     private resourcesService: ResourcesService,
     @InjectConnection()
     private connection: Connection,
-    private filesService: FilesService,
   ) {}
 
   async createResourcePack(
     files: SimpleCreateFileDto[],
-    cover: SimpleCreateFileDto,
     createResourcePack: CreateResourcePackDto,
     author: UserDocument,
   ) {
     this.logger.log('Creating resource pack');
     await this.isResourcePackUnique(createResourcePack.title);
 
-    const orderedResources = this.orderedResources(files, createResourcePack);
-
     const session = await this.connection.startSession();
+
+    const orderedTracks = this.orderedResources(files, createResourcePack);
+
+    session.startTransaction();
     try {
-      let resourcePack;
-      const createResponse = await session
-        .withTransaction(async () => {
-          const resources: ICreateResourceResponse[] =
-            await this.resourcesService.createManyResources(
-              createResourcePack.resources.map((resource) => ({
-                ...resource,
-                author,
-                file: buildSimpleFile(
-                  orderedResources,
-                  resource.originalFileName,
-                ),
-              })),
-            );
-
-          const coverName: string = await this.filesService.createFile(
-            cover,
-            BucketName.Images,
-          );
-
-          const createdResourcePack = {
-            ...createResourcePack,
+      const resources: ICreateResourceResponse[] =
+        await this.resourcesService.createManyResources(
+          createResourcePack.resources.map((resource) => ({
+            ...resource,
             author,
-            resources: resources.map((resource) => resource._id),
-            coverName,
-          };
-          resourcePack = await this.resourcePackModel.create(
-            createdResourcePack,
-          );
-        })
-        .then(() => this.buildResourcePackInfo(resourcePack));
-      return createResponse;
+            file: {
+              originalFileName: resource.originalFileName,
+              buffer: orderedTracks.get(resource.originalFileName).buffer,
+              size: orderedTracks.get(resource.originalFileName).size,
+              mimetype: orderedTracks.get(resource.originalFileName).mimetype,
+            },
+          })),
+        );
+      const createdResourcePack = {
+        ...createResourcePack,
+        author,
+        resources: resources.map((resource) => resource._id),
+      };
+      const resourcePack = await this.resourcePackModel.create(
+        createdResourcePack,
+      );
+
+      await session.commitTransaction();
+
+      return this.buildResourcePackInfo(resourcePack);
     } catch (error) {
+      await session.abortTransaction();
       this.logger.error(`Can not create resource pack due to: ${error}`);
+      throw error;
     } finally {
       session.endSession();
     }
@@ -185,28 +177,23 @@ export class ResourcePacksService {
 
     const session = await this.connection.startSession();
 
+    session.startTransaction();
     try {
-      const removeResponse = await session
-        .withTransaction(async () => {
-          await this.resourcesService.removeManyResources(
-            resourcePack.resources,
-            session,
-          );
-          await this.filesService.removeFile(
-            resourcePack.coverName,
-            BucketName.Images,
-          );
+      await this.resourcesService.removeManyResources(
+        resourcePack.resources,
+        session,
+      );
 
-          await resourcePack.remove();
-        })
-        .then(() => ({
-          id: resourcePack._id.toString(),
-          title: resourcePack.title,
-          msg: 'ResourcePack deleted',
-        }));
-      return removeResponse;
+      await resourcePack.remove();
+      return {
+        id: resourcePack._id.toString(),
+        title: resourcePack.title,
+        msg: 'ResourcePack deleted',
+      };
     } catch (error) {
+      await session.abortTransaction();
       this.logger.error(`Can not remove resource pack due to: ${error}`);
+      throw error;
     } finally {
       session.endSession();
     }
@@ -219,7 +206,7 @@ export class ResourcePacksService {
     return {
       title: resourcePack.title,
       description: resourcePack.description,
-      coverName: resourcePack.coverName,
+      coverUrl: resourcePack.coverUrl,
       previewUrl: resourcePack.previewUrl,
       author: {
         id: resourcePack.author._id.toString(),

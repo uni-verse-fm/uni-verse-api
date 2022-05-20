@@ -2,15 +2,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
+import { JwtService } from '@nestjs/jwt';
+import mockedJwtService from '../test-utils/mocks/jwt-mock.service.test';
 import * as request from 'supertest';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as passport from 'passport';
 import { LocalStrategy } from './strategies/local.strategy';
 import * as data from '../test-utils/data/mock_data.json';
 import { data2list } from '../test-utils/mocks/standard-mock.service.test';
 import { LoginDto } from './dto/login.dto';
-import { ConfigServiceMock } from '../test-utils/mocks/config.service.test';
-import { JwtServiceMock } from '../test-utils/mocks/jwt.service.test';
 
 const users = data2list(data.users);
 const user = data.users.abdou;
@@ -29,8 +30,16 @@ describe('AuthController', () => {
       providers: [
         AuthService,
         LocalStrategy,
-        JwtServiceMock,
-        ConfigServiceMock,
+        {
+          provide: JwtService,
+          useValue: mockedJwtService,
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn().mockReturnValue('60s'),
+          },
+        },
         {
           provide: UsersService,
           useValue: {

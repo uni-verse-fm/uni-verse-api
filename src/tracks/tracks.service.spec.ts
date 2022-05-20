@@ -11,10 +11,9 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
+import { MinioClientService } from '../minio-client/minio-client.service';
+import { PaymentsService } from '../payments/payments.service';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
-import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
-import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
-import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 
 const users = data.users;
 const tracks = data.tracks;
@@ -64,9 +63,22 @@ describe('TracksService', () => {
         TracksService,
         FilesService,
         UsersService,
-        MinioServiceMock,
-        PaymentServiceMock,
-        UserSearchServiceMock,
+        {
+          provide: MinioClientService,
+          useValue: {
+            upload: jest.fn(() => {
+              return 'https://www.example.com';
+            }),
+          },
+        },
+        {
+          provide: PaymentsService,
+          useValue: {
+            createCustomer: jest.fn(() => {
+              return { id: 1 };
+            }),
+          },
+        },
       ],
     }).compile();
 

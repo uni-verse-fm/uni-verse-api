@@ -1,14 +1,13 @@
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { PaymentsService } from '../payments/payments.service';
 import * as data from '../test-utils/data/mock_data.json';
 import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
-import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 import { data2list } from '../test-utils/mocks/standard-mock.service.test';
-import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { User, UserSchema } from './schemas/user.schema';
 import { UsersService } from './users.service';
 
@@ -31,8 +30,14 @@ describe('UsersService', () => {
       providers: [
         UsersService,
         ConfigModule,
-        PaymentServiceMock,
-        UserSearchServiceMock,
+        {
+          provide: PaymentsService,
+          useValue: {
+            createCustomer: jest.fn(() => {
+              return { id: 1 };
+            }),
+          },
+        },
       ],
     }).compile();
     userService = module.get<UsersService>(UsersService);
