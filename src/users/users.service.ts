@@ -115,7 +115,6 @@ export class UsersService {
     this.logger.log(`Finding user ${id}`);
     isValidId(id);
     const user = await this.userModel.findById(id);
-    this.logger.log('here');
     if (!user) {
       this.logger.error(`User ${id} not found`);
       throw new BadRequestException("This user doesn't exist");

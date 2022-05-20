@@ -1,5 +1,6 @@
 import {
   IsEnum,
+  IsMimeType,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -11,7 +12,10 @@ export enum FileMimeType {
   MPEG = 'audio/mpeg',
   WAV = 'audio/vnd.wav',
   PNG = 'image/png',
+  JPEG = 'image/jpeg' 
 }
+
+type fileMimeType = 'audio/mpeg' | 'audio/vnd.wav' |'image/png' | 'image/jpeg'
 export class SimpleCreateFileDto {
   @IsNotEmpty()
   @IsString()
@@ -30,5 +34,6 @@ export class SimpleCreateFileDto {
 
   @IsNotEmpty()
   @IsEnum(FileMimeType)
-  readonly mimetype: FileMimeType;
+  @IsMimeType()
+  readonly mimetype: string;
 }

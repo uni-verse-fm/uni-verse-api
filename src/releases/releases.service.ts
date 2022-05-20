@@ -41,6 +41,7 @@ export class ReleasesService {
     author: UserDocument,
   ) {
     this.logger.log(`Creating release`);
+
     await this.isReleaseUnique(createRelease.title);
 
     const feats: UserDocument[] = createRelease?.feats
@@ -48,6 +49,9 @@ export class ReleasesService {
           createRelease.feats.map((feat) => feat.username),
         )
       : [];
+
+      this.logger.log(`Creating release` + JSON.stringify(feats));
+
 
     const orderedTracks = this.orderedTracks(files, createRelease);
 
@@ -184,6 +188,7 @@ export class ReleasesService {
       const deleteResponse = await session
         .withTransaction(async () => {
           await this.tracksService.removeManyTracks(release.tracks, session);
+          await this.filesService.removeFile(release.coverName, BucketName.Images);
           await release.remove();
         })
         .then(() => ({
@@ -242,7 +247,8 @@ export class ReleasesService {
     this.logger.log(`Checking if release "${title}" is unique`);
     let release: ReleaseDocument;
     try {
-      release = await this.releaseModel.findOne({ title });
+      await this.releaseModel.findOne({ title });
+      this.logger.log(`isUnique ${title} "${release?.title || undefined}" is unique`);
     } catch (error) {
       throw new Error('Somthing went wrong.');
     }

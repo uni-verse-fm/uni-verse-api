@@ -63,13 +63,12 @@ export class ResourcePacksController {
       mimetype: FileMimeType[file.mimetype],
     }));
 
-    const coverFile = files.cover[0];
-    const simpleCreateImage: SimpleCreateFileDto = {
-      originalFileName: coverFile.originalname,
-      buffer: coverFile.buffer,
-      size: coverFile.size,
-      mimetype: FileMimeType[coverFile.mimetype],
-    };
+    const simpleCreateImage:  SimpleCreateFileDto | undefined = files.cover ? {
+      originalFileName: files.cover[0].originalname,
+      buffer: files.cover[0].buffer,
+      size: files.cover[0].size,
+      mimetype: files.cover[0].mimetype,
+    } : undefined;
 
     return this.resourcePacksService.createResourcePack(
       filesBuffers,

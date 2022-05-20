@@ -11,6 +11,7 @@ import {
   UploadedFiles,
   UseGuards,
   UseInterceptors,
+  Logger,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -26,7 +27,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {
-  FileMimeType,
   SimpleCreateFileDto,
 } from '../files/dto/simple-create-file.dto';
 import { ApiMultiFileWithMetadata } from '../utils/swagger/multiple-file.decorator';
@@ -38,6 +38,8 @@ import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
 @Controller('releases')
 export class ReleasesController {
   constructor(private readonly releasesService: ReleasesService) {}
+
+  private readonly logger = new Logger(ReleasesController.name)
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -63,17 +65,16 @@ export class ReleasesController {
         originalFileName: file.originalname,
         buffer: file.buffer,
         size: file.size,
-        mimetype: FileMimeType[file.mimetype],
+        mimetype: file.mimetype,
       }),
     );
-
-    const coverFile = files.cover[0];
-    const simpleCreateImage: SimpleCreateFileDto = {
-      originalFileName: coverFile.originalname,
-      buffer: coverFile.buffer,
-      size: coverFile.size,
-      mimetype: FileMimeType[coverFile.mimetype],
-    };
+    
+    const simpleCreateImage: SimpleCreateFileDto | undefined = files.cover ? {
+      originalFileName: files.cover[0].originalname,
+      buffer: files.cover[0].buffer,
+      size: files.cover[0].size,
+      mimetype: files.cover[0].mimetype,
+    } : undefined;
 
     return this.releasesService.createRelease(
       simpleCreateFiles,

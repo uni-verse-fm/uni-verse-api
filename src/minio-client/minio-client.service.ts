@@ -44,11 +44,16 @@ export class MinioClientService {
 
     const fileName = hashedFileName + extension;
 
+    const metaData = {
+        'Content-Type': file.mimetype,
+      };
+
     this.client.putObject(
       bucketName,
       fileName,
       file.buffer,
       file.size,
+      metaData,
       (err: any) => {
         if (err) {
           this.logger.error(
