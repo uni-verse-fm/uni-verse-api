@@ -19,4 +19,5 @@ data:
   MINIO_ROOT_PASSWORD: password
   MINIO_PORT: "9000"
   MINIO_ENDPOINT: minio.minio.svc.cluster.local
+  FRONTEND_URL: https://uni-verse.vagahbond.com
 
