@@ -68,8 +68,8 @@ export class UsersService {
       this.logger.error(`User ${id} not found`);
       throw new NotFoundException('Somthing wrong with the server');
     }
-    await this.usersSearchService.deleteIndex(id);
     await user.remove();
+    this.usersSearchService.deleteIndex(id);
     return {
       email: user.email,
       msg: 'user deleted',

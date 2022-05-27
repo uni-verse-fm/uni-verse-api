@@ -74,6 +74,8 @@ services:
       - grafana-storage:/var/lib/grafana
     ports:
       - '3009:3000'
+    depends_on:
+      - prometheus
     env_file:
       - docker.env
 
@@ -95,6 +97,8 @@ services:
       - elasticsearch-data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
+    depends_on:
+      - dev
     env_file:
       - docker.env
   kibana:

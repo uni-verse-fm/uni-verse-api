@@ -30,9 +30,9 @@ export class FilesService {
     return `This action returns all files`;
   }
 
-  findFileById(id: string) {
-    this.logger.log(`Finding file ${id}`);
-    return `This action returns a #${id} file`;
+  async findFileByName(fileName: string, bucketName: BucketName) {
+    this.logger.log(`Finding file ${fileName}`);
+    return await this.minioClient.getFile(fileName, bucketName);
   }
 
   updateFile(id: string, updateFileDto: UpdateFileDto) {

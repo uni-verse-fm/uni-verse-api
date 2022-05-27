@@ -3,6 +3,7 @@ import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
 import * as crypto from 'crypto';
 import * as Minio from 'minio';
 import { ConfigService } from '@nestjs/config';
+import { Readable } from 'stream';
 
 export enum BucketName {
   Resources = 'resources',
@@ -67,13 +68,14 @@ export class MinioClientService {
     return fileName;
   }
 
-  async getFile(originalFileName: string, bucketName: BucketName) {
-    this.logger.log(`Getting file ${originalFileName}`);
-    return this.client.getObject(bucketName, originalFileName, (err, data) => {
-      if (err)
-        throw new BadRequestException('An error occured when getting file!');
-      data;
-    });
+  async getFile(fileName: string, bucketName: BucketName): Promise<Readable> {
+    this.logger.log(`Getting file ${fileName}`);
+    try {
+      const file = await this.client.getObject(bucketName, fileName);
+      return file;
+    } catch (error) {
+      throw new BadRequestException('An error occured when getting file!');
+    }
   }
 
   async delete(objetName: string, bucketName: BucketName) {

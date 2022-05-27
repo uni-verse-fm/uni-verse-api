@@ -8,14 +8,20 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { Track, TrackDocument } from './schemas/track.schema';
 import { Model, ClientSession } from 'mongoose';
-import { ICreateTrackResponse } from './interfaces/track-create-response.interface';
+import { ITrackResponse } from './interfaces/track-response.interface';
 import { FilesService } from '../files/files.service';
 import { UsersService } from '../users/users.service';
 import { UserDocument } from '../users/schemas/user.schema';
 import { IDeleteTrackResponse } from './interfaces/track-delete-response.interface copy';
 import { BucketName } from '../minio-client/minio-client.service';
 import { isValidId } from '../utils/is-valid-id';
+import { Readable } from 'stream';
+import TracksSearchService from './tracks-search.service';
 
+type StreamTrackResponse = {
+  fileName: string;
+  file: Readable;
+};
 @Injectable()
 export class TracksService {
   private readonly logger: Logger = new Logger(TracksService.name);
@@ -25,12 +31,13 @@ export class TracksService {
     private trackModel: Model<TrackDocument>,
     private filesService: FilesService,
     private usersService: UsersService,
+    private tracksSearchService: TracksSearchService,
   ) {}
 
   async createTrack(
     createTrackDto: CreateTrackDto,
     session: ClientSession | null = null,
-  ): Promise<ICreateTrackResponse> {
+  ): Promise<ITrackResponse> {
     this.logger.log(`Creating track ${createTrackDto.title}`);
     const feats: UserDocument[] = [];
 
@@ -55,6 +62,7 @@ export class TracksService {
     const newTrack = new this.trackModel(createTrack);
 
     const createdTrack = await newTrack.save({ session });
+    this.tracksSearchService.insertIndex(createdTrack);
 
     return this.buildTrackInfo(createdTrack);
   }
@@ -62,7 +70,7 @@ export class TracksService {
   async createManyTracks(
     tracks: CreateTrackDto[],
     session: ClientSession | null = null,
-  ): Promise<ICreateTrackResponse[]> {
+  ): Promise<ITrackResponse[]> {
     this.logger.log(`Creating ${tracks.length} tracks`);
     return await Promise.all(
       tracks.map((track) => this.createTrack(track, session)),
@@ -72,6 +80,19 @@ export class TracksService {
   async findAllTracks() {
     this.logger.log('Finding all tracks');
     return await this.trackModel.find();
+  }
+
+  async findTrackByIdExternal(id: string): Promise<ITrackResponse> {
+    this.logger.log(`Finding track by id ${id}`);
+    isValidId(id);
+    const track = await this.trackModel
+      .findById(id)
+      .populate('author')
+      .populate('feats');
+    if (!track) {
+      throw new BadRequestException(`Track with ID "${id}" doesn't exist`);
+    }
+    return this.buildTrackInfo(track);
   }
 
   async findTrackById(id: string): Promise<TrackDocument> {
@@ -100,13 +121,14 @@ export class TracksService {
     session: ClientSession | null = null,
   ): Promise<IDeleteTrackResponse> {
     this.logger.log(`Removing track ${id}`);
-    const track = await this.findTrackById(id);
+    const track = await this.trackModel.findById(id);
     if (!track) {
       this.logger.error(`Track ${id} not found`);
       throw new NotFoundException('Somthing wrong with the server');
     }
     await track.remove(session);
     await this.filesService.removeFile(track.fileName, BucketName.Tracks);
+    this.tracksSearchService.deleteIndex(id);
     return {
       id: track._id,
       title: track.title,
@@ -120,22 +142,39 @@ export class TracksService {
   ): Promise<IDeleteTrackResponse[]> {
     this.logger.log(`Removing ${tracks.length} tracks`);
     return await Promise.all(
-      tracks.map((track) => this.removeTrack(track.toString(), session)),
+      tracks.map((track) => this.removeTrack(track._id.toString(), session)),
     );
   }
 
-  private buildTrackInfo(track: any): ICreateTrackResponse {
+  async streamTrack(id: string): Promise<StreamTrackResponse> {
+    const track = await this.findTrackById(id);
+    const file = await this.filesService.findFileByName(
+      track.fileName,
+      BucketName.Tracks,
+    );
+
+    return {
+      fileName: track.title,
+      file: file,
+    };
+  }
+
+  private buildTrackInfo(track: TrackDocument): ITrackResponse {
     this.logger.log(`Building track info ${track.title}`);
     return {
       id: track._id,
       title: track.title,
       fileName: track.fileName,
       feats: track.feats.map((feat) => ({
-        _id: feat._id,
+        id: feat._id.toString(),
         username: feat.username,
         email: feat.email,
       })),
-      author: track.author,
+      author: {
+        id: track.author._id.toString(),
+        username: track.author.username,
+        email: track.author.email,
+      },
     };
   }
 
@@ -145,5 +184,76 @@ export class TracksService {
     if (release?.title === title) {
       throw new BadRequestException('Title must be unique.');
     }
+  }
+
+  async searchTrack(search: string): Promise<TrackDocument[]> {
+    this.logger.log(`Searching for track`);
+
+    const results = await this.tracksSearchService.searchIndex(search);
+    const ids = results.map((result) => result.id);
+    if (!ids.length) {
+      return [];
+    }
+
+    return this.trackModel.aggregate([
+      {
+        $lookup: {
+          from: 'users',
+          let: { user_id: '$author' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ['$$user_id', '$_id'],
+                },
+              },
+            },
+          ],
+          as: 'author',
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'feats',
+          foreignField: '_id',
+          as: 'feats',
+        },
+      },
+      {
+        $lookup: {
+          from: 'releases',
+          let: { track_id: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: ['$$track_id', '$tracks'],
+              },
+            },
+          ],
+          as: 'release',
+        },
+      },
+      {
+        $project: {
+          id: '$_id',
+          title: 1,
+          feats: {
+            id: '$_id',
+            username: 1,
+            email: 1,
+          },
+          release: {
+            id: '$_id',
+            title: 1,
+          },
+          author: {
+            id: '$_id',
+            username: 1,
+            email: 1,
+          },
+        },
+      },
+    ]);
   }
 }

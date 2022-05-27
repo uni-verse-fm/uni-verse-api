@@ -15,6 +15,7 @@ import { FileMimeType } from '../files/dto/simple-create-file.dto';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
+import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
 
 const users = data.users;
 const tracks = data.tracks;
@@ -67,6 +68,7 @@ describe('TracksService', () => {
         MinioServiceMock,
         PaymentServiceMock,
         UserSearchServiceMock,
+        TrackSearchServiceMock,
       ],
     }).compile();
 
@@ -112,10 +114,10 @@ describe('TracksService', () => {
         };
 
         const result = await tracksService.createTrack(body);
-        expect(result.author).toBe(author);
+        expect(result.author.id).toBe(author.id);
         expect(result.feats).toStrictEqual(
           feats.map((feat) => ({
-            _id: feat._id,
+            id: feat._id.toString(),
             username: feat.username,
             email: feat.email,
           })),

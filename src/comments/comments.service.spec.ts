@@ -7,7 +7,6 @@ import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
-import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response.interface';
 import { Track, TrackSchema } from '../tracks/schemas/track.schema';
 import { TracksService } from '../tracks/tracks.service';
 import { User, UserDocument, UserSchema } from '../users/schemas/user.schema';
@@ -21,6 +20,8 @@ import { FileMimeType } from '../files/dto/simple-create-file.dto';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
+import { ITrackResponse } from '../tracks/interfaces/track-response.interface';
+import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -36,8 +37,8 @@ const commentThreeResult = data.comments.comment_3;
 
 let user: UserDocument;
 let artist: UserDocument;
-let encore: ICreateTrackResponse;
-let threat: ICreateTrackResponse;
+let encore: ITrackResponse;
+let threat: ITrackResponse;
 let resourceOne: ICreateResourceResponse;
 let commentId: string;
 describe('CommentsService', () => {
@@ -79,6 +80,7 @@ describe('CommentsService', () => {
         MinioServiceMock,
         PaymentServiceMock,
         UserSearchServiceMock,
+        TrackSearchServiceMock,
       ],
     }).compile();
 

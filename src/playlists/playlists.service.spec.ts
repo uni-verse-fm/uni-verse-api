@@ -11,13 +11,15 @@ import { UsersService } from '../users/users.service';
 import { PlaylistsService } from './playlists.service';
 import { Playlist, PlaylistSchema } from './schemas/playlist.schema';
 import * as data from '../test-utils/data/mock_data.json';
-import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response.interface';
 import { FilesService } from '../files/files.service';
 import { NonValidIdException } from '../utils/is-valid-id';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
+import { ITrackResponse } from '../tracks/interfaces/track-response.interface';
+import { PlaylistsSearchServiceMock } from '../test-utils/mocks/playlists-search.service.test';
+import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -28,8 +30,8 @@ const my_playlist2 = data.create_playlists.my_playlist2;
 
 let user: UserDocument;
 let artist: UserDocument;
-let encore: ICreateTrackResponse;
-let threat: ICreateTrackResponse;
+let encore: ITrackResponse;
+let threat: ITrackResponse;
 let playlist1_id: string;
 let playlist2_id: string;
 
@@ -66,6 +68,8 @@ describe('PlaylistsService', () => {
         MinioServiceMock,
         PaymentServiceMock,
         UserSearchServiceMock,
+        PlaylistsSearchServiceMock,
+        TrackSearchServiceMock,
       ],
     }).compile();
 

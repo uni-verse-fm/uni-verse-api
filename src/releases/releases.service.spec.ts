@@ -17,6 +17,8 @@ import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
+import { ReleasesSearchServiceMock } from '../test-utils/mocks/releases-search.service.test';
+import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
 
 const release = data.releases.black_album;
 
@@ -68,6 +70,8 @@ describe('ReleasesService', () => {
         MinioServiceMock,
         PaymentServiceMock,
         UserSearchServiceMock,
+        ReleasesSearchServiceMock,
+        TrackSearchServiceMock,
       ],
     }).compile();
 
@@ -108,7 +112,7 @@ describe('ReleasesService', () => {
         buffer: Buffer.from(JSON.parse(JSON.stringify(coverFile.buffer))),
       };
 
-      it('should return one release infos', async () => {
+      it('should return one release create infos', async () => {
         const tracks = data2list(release.tracks);
 
         const feat_list_from_data = data2list(release.feats);
@@ -220,14 +224,14 @@ describe('ReleasesService', () => {
       expect(result.title).toBe(title);
       expect(result.description).toBe(description);
       expect(result.coverName).toBe(coverName);
-      expect(result.author).toStrictEqual(author._id);
+      expect(result.author._id).toStrictEqual(author._id);
       expect(result.feats).toBeDefined();
       expect(result.tracks).toBeDefined();
     });
   });
 
   describe('When remove one release', () => {
-    it('should return one release infos', async () => {
+    it('should return one release delete infos', async () => {
       const title = 'balck album';
       const msg = 'Release deleted';
 

@@ -3,7 +3,6 @@ import { ReleasesService } from './releases.service';
 import { ReleasesController } from './releases.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Release, ReleaseSchema } from './schemas/release.schema';
-import { TracksService } from '../tracks/tracks.service';
 import { Track, TrackSchema } from '../tracks/schemas/track.schema';
 import { FilesService } from '../files/files.service';
 import { User, UserSchema } from '../users/schemas/user.schema';
@@ -11,6 +10,8 @@ import { TracksModule } from '../tracks/tracks.module';
 import UsersModule from '../users/users.module';
 import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
+import { SearchModule } from '../search/search.module';
+import ReleasesSearchService from './releases-search.service';
 
 @Module({
   imports: [
@@ -21,16 +22,17 @@ import { PaymentsService } from '../payments/payments.service';
     ]),
     TracksModule,
     UsersModule,
+    SearchModule,
   ],
   controllers: [ReleasesController],
   providers: [
     ReleasesService,
-    TracksService,
     FilesService,
     MinioClientService,
     PaymentsService,
+    ReleasesSearchService,
   ],
-  exports: [ReleasesService],
+  exports: [ReleasesService, ReleasesSearchService],
 })
 class ReleasesModule {}
 

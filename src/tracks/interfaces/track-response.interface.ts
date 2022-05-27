@@ -1,11 +1,10 @@
 import { ObjectId } from 'mongodb';
-import AuthorDto from '../../users/dto/author.dto';
 import { IUserResponse } from '../../users/interfaces/user-response.interface';
 
-export interface ICreateTrackResponse {
+export interface ITrackResponse {
   id: ObjectId;
   title: string;
   fileName: string;
   author: IUserResponse;
-  feats: AuthorDto[];
+  feats: IUserResponse[];
 }
