@@ -209,8 +209,8 @@ export class TracksService {
               },
             },
             {
-                $project: { id: '$_id', username: '$username', email: '$email' },
-            }
+              $project: { id: '$_id', username: '$username', email: '$email' },
+            },
           ],
           as: 'author',
         },

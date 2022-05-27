@@ -6,7 +6,6 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ReleasesController } from './releases.controller';
-import { ReleasesService } from './releases.service';
 import * as request from 'supertest';
 import { getModelToken } from '@nestjs/mongoose';
 import * as data from '../test-utils/data/mock_data.json';
