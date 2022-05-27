@@ -8,6 +8,8 @@ import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
 import { TracksController } from './tracks.controller';
 import UsersModule from '../users/users.module';
+import TracksSearchService from './tracks-search.service';
+import { SearchModule } from '../search/search.module';
 
 @Module({
   imports: [
@@ -16,9 +18,16 @@ import UsersModule from '../users/users.module';
       { name: User.name, schema: UserSchema },
     ]),
     UsersModule,
+    SearchModule,
   ],
   controllers: [TracksController],
-  providers: [TracksService, MinioClientService, FilesService, PaymentsService],
-  exports: [TracksService],
+  providers: [
+    TracksService,
+    MinioClientService,
+    FilesService,
+    PaymentsService,
+    TracksSearchService,
+  ],
+  exports: [TracksService, TracksSearchService],
 })
 export class TracksModule {}

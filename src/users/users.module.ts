@@ -14,7 +14,7 @@ import UsersSearchService from './users-search.service';
   ],
   controllers: [UsersController],
   providers: [UsersService, PaymentsService, UsersSearchService],
-  exports: [UsersService],
+  exports: [UsersService, UsersSearchService],
 })
 class UsersModule {}
 

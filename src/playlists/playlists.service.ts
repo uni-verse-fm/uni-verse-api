@@ -15,6 +15,7 @@ import {
   PlaylistUpdateTaskAction,
   UpdatePlaylistDto,
 } from './dto/update-playlist.dto';
+import PlaylistsSearchService from './playlists-search.service';
 import { Playlist, PlaylistDocument } from './schemas/playlist.schema';
 
 @Injectable()
@@ -25,6 +26,7 @@ export class PlaylistsService {
     @InjectModel(Playlist.name)
     private playlistModel: Model<PlaylistDocument>,
     private tracksService: TracksService,
+    private playlistsSearchService: PlaylistsSearchService,
   ) {}
 
   async createPlaylist(
@@ -184,5 +186,33 @@ export class PlaylistsService {
     if (playlist?.title === title) {
       throw new BadRequestException('Playlist must be unique.');
     }
+  }
+
+  async searchPlaylist(search: string) {
+    const results = await this.playlistsSearchService.searchIndex(search);
+    const ids = results.map((result) => result.id);
+    if (!ids.length) {
+      return [];
+    }
+    return this.playlistModel
+      .find({
+        _id: {
+          $in: ids,
+        },
+      })
+      .populate('tracks')
+      .populate({
+        path: 'tracks',
+        populate: {
+          path: 'author',
+        },
+      })
+      .populate({
+        path: 'tracks',
+        populate: {
+          path: 'feats',
+        },
+      })
+      .populate('owner');
   }
 }

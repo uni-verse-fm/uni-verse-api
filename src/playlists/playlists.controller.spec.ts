@@ -15,7 +15,6 @@ import { FilesService } from '../files/files.service';
 import RepoMockModel, {
   data2list,
 } from '../test-utils/mocks/standard-mock.service.test';
-import { PlaylistsService } from './playlists.service';
 import { TracksService } from '../tracks/tracks.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { User } from '../users/schemas/user.schema';
@@ -24,6 +23,9 @@ import { Track } from '../tracks/schemas/track.schema';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
+import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
+import { PlaylistsSearchServiceMock } from '../test-utils/mocks/playlists-search.service.test';
+import { PlaylistsServiceMock } from '../test-utils/mocks/playlists.service.test';
 
 const playlists = data2list(data.playlists);
 
@@ -64,35 +66,7 @@ describe('PlaylistsController', () => {
         FilesService,
         UsersService,
         ConfigService,
-        {
-          provide: PlaylistsService,
-          useValue: {
-            createPlaylist: jest.fn(() => {
-              return {
-                ...create_expected,
-              };
-            }),
-            findAllPlaylists: jest.fn(() => {
-              return playlists;
-            }),
-            findPlaylistById: jest.fn(() => {
-              return {
-                ...playlist1,
-              };
-            }),
-            updatePlaylist: jest.fn(() => {
-              return {};
-            }),
-            removePlaylist: jest.fn(() => {
-              return {
-                ...delete_expected,
-              };
-            }),
-            find: jest.fn(() => {
-              return playlists;
-            }),
-          },
-        },
+        PlaylistsServiceMock,
         MinioServiceMock,
         PaymentServiceMock,
         {
@@ -104,6 +78,8 @@ describe('PlaylistsController', () => {
           useValue: new TracksRepoMockModel(data.tracks),
         },
         UserSearchServiceMock,
+        TrackSearchServiceMock,
+        PlaylistsSearchServiceMock,
       ],
     })
       .overrideGuard(JwtAuthGuard)

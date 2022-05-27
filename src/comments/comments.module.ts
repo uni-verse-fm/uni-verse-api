@@ -6,12 +6,13 @@ import { CommentSchema, Comment } from './schemas/comment.schema';
 import { Track, TrackSchema } from '../tracks/schemas/track.schema';
 import { Resource, ResourceSchema } from '../resources/schemas/resource.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
-import { TracksService } from '../tracks/tracks.service';
 import { ResourcesService } from '../resources/resources.service';
 import { MinioClientService } from '../minio-client/minio-client.service';
 import { FilesService } from '../files/files.service';
 import { PaymentsService } from '../payments/payments.service';
 import UsersModule from '../users/users.module';
+import { TracksModule } from '../tracks/tracks.module';
+import { SearchModule } from '../search/search.module';
 
 @Module({
   imports: [
@@ -22,11 +23,12 @@ import UsersModule from '../users/users.module';
       { name: User.name, schema: UserSchema },
     ]),
     UsersModule,
+    TracksModule,
+    SearchModule,
   ],
   controllers: [CommentsController],
   providers: [
     CommentsService,
-    TracksService,
     ResourcesService,
     MinioClientService,
     FilesService,

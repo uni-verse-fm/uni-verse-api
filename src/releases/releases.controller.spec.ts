@@ -27,6 +27,9 @@ import {
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
+import { ReleasesSearchServiceMock } from '../test-utils/mocks/releases-search.service.test';
+import { ReleasesServiceMock } from '../test-utils/mocks/releases.service.test';
+import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
 
 const release = data.releases.black_album;
 const releases = data2list(data.releases);
@@ -70,35 +73,7 @@ describe('ReleasesController', () => {
         TracksService,
         FilesService,
         UsersService,
-        {
-          provide: ReleasesService,
-          useValue: {
-            createRelease: jest.fn(() => {
-              return {
-                ...create_expected,
-              };
-            }),
-            findAllReleases: jest.fn(() => {
-              return releases;
-            }),
-            findReleaseById: jest.fn(() => {
-              return {
-                ...release,
-              };
-            }),
-            updateRelease: jest.fn(() => {
-              return {};
-            }),
-            removeRelease: jest.fn(() => {
-              return {
-                ...delete_expected,
-              };
-            }),
-            find: jest.fn(() => {
-              return releases;
-            }),
-          },
-        },
+        ReleasesServiceMock,
         MinioServiceMock,
         PaymentServiceMock,
         {
@@ -114,6 +89,8 @@ describe('ReleasesController', () => {
           useValue: new TracksRepoMockModel(data.tracks),
         },
         UserSearchServiceMock,
+        ReleasesSearchServiceMock,
+        TrackSearchServiceMock,
       ],
     })
       .overrideGuard(JwtAuthGuard)

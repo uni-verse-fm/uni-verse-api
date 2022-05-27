@@ -71,10 +71,10 @@ export class MinioClientService {
   async getFile(fileName: string, bucketName: BucketName): Promise<Readable> {
     this.logger.log(`Getting file ${fileName}`);
     try {
-        const file = await this.client.getObject(bucketName, fileName);
-        return file;
+      const file = await this.client.getObject(bucketName, fileName);
+      return file;
     } catch (error) {
-        throw new BadRequestException('An error occured when getting file!');
+      throw new BadRequestException('An error occured when getting file!');
     }
   }
 

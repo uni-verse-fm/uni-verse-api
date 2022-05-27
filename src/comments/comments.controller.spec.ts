@@ -26,6 +26,7 @@ import { Resource } from '../resources/schemas/resource.schema';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
+import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
 
 const owner = data.users.abdou;
 
@@ -111,6 +112,7 @@ describe('CommentsController', () => {
           useValue: new RepoMockModel(data.resources),
         },
         UserSearchServiceMock,
+        TrackSearchServiceMock,
       ],
     })
       .overrideGuard(JwtAuthGuard)

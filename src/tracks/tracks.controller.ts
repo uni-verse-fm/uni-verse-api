@@ -1,19 +1,21 @@
-import { Controller, Get, Param, Response, StreamableFile } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Query, UseGuards, Logger } from '@nestjs/common';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TracksService } from './tracks.service';
 
 @ApiTags('tracks')
 @Controller('tracks')
 export class TracksController {
+  private readonly logger: Logger = new Logger(TracksController.name);
+
   constructor(private readonly tracksService: TracksService) {}
 
-  @Get(':trackId')
-  async getFile(@Response({ passthrough: true }) res, @Param('trackId') trackId: string): Promise<StreamableFile> {
-      const fileInfo = await this.tracksService.streamTrack(trackId)
-    res.set({
-      'Content-Type': 'audio/mp3',
-      'Content-Disposition': `attachment; filename="${fileInfo.fileName}.mp3"`,
-    });
-    return new StreamableFile(fileInfo.file);
+  @Get('/search')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Search user' })
+  searchUsers(@Query('search') search: string) {
+    if (search) return this.tracksService.searchTrack(search);
+    return [];
   }
 }

@@ -93,6 +93,15 @@ export class ReleasesController {
     return this.releasesService.find(title);
   }
 
+  @Get('/search')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Search user' })
+  searchUsers(@Query('search') search: string) {
+    if (search) return this.releasesService.searchRelease(search);
+    return [];
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')

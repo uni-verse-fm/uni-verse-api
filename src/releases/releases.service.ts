@@ -13,12 +13,13 @@ import { IReleaseResponse } from './interfaces/release-response.interface';
 import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
 import { TracksService } from '../tracks/tracks.service';
 import { UsersService } from '../users/users.service';
-import { ICreateTrackResponse } from '../tracks/interfaces/track-create-response.interface';
-import { UpdateReleaseDto } from './dto/update-release.dto';
 import { isValidId } from '../utils/is-valid-id';
 import { buildSimpleFile } from '../utils/buildSimpleFile';
 import { FilesService } from '../files/files.service';
 import { BucketName } from '../minio-client/minio-client.service';
+import { ITrackResponse } from '../tracks/interfaces/track-response.interface';
+import { UpdateReleaseDto } from './dto/update-release.dto';
+import ReleasesSearchService from './releases-search.service';
 
 @Injectable()
 export class ReleasesService {
@@ -32,6 +33,7 @@ export class ReleasesService {
     @InjectConnection()
     private connection: Connection,
     private filesService: FilesService,
+    private releasesSearchService: ReleasesSearchService,
   ) {}
 
   async createRelease(
@@ -57,7 +59,7 @@ export class ReleasesService {
       let release;
       const createResponse = await session
         .withTransaction(async () => {
-          const tracks: ICreateTrackResponse[] =
+          const tracks: ITrackResponse[] =
             await this.tracksService.createManyTracks(
               createRelease.tracks.map((track) => ({
                 ...track,
@@ -79,6 +81,7 @@ export class ReleasesService {
           };
 
           release = await this.releaseModel.create(createdRelease);
+          this.releasesSearchService.insertIndex(release);
         })
         .then(() => this.buildReleaseInfo(release, feats));
       return createResponse;
@@ -148,7 +151,16 @@ export class ReleasesService {
   async findReleaseById(id: string): Promise<ReleaseDocument> {
     this.logger.log(`Finding release by id "${id}"`);
     isValidId(id);
-    const release = await this.releaseModel.findById(id);
+    const release = await this.releaseModel
+      .findById(id)
+      .populate('tracks')
+      .populate({
+        path: 'tracks',
+        populate: {
+          path: 'author',
+        },
+      })
+      .populate('author');
     if (!release) {
       throw new BadRequestException(`Release with ID "${id}" not found.`);
     }
@@ -196,6 +208,8 @@ export class ReleasesService {
           title: release.title,
           msg: 'Release deleted',
         }));
+      this.releasesSearchService.deleteIndex(id);
+
       return deleteResponse;
     } catch (error) {
       this.logger.error(`Can't remove release "${id}" due to: ${error}`);
@@ -252,5 +266,34 @@ export class ReleasesService {
       this.logger.error('Release must be unique.');
       throw new BadRequestException('Release must be unique.');
     }
+  }
+
+  async searchRelease(search: string) {
+    const results = await this.releasesSearchService.searchIndex(search);
+    const ids = results.map((result) => result.id);
+    if (!ids.length) {
+      return [];
+    }
+    return this.releaseModel
+      .find({
+        _id: {
+          $in: ids,
+        },
+      })
+      .populate('tracks')
+      .populate({
+        path: 'tracks',
+        populate: {
+          path: 'author',
+        },
+      })
+      .populate({
+        path: 'tracks',
+        populate: {
+          path: 'feats',
+        },
+      })
+      .populate('author')
+      .populate('feats');
   }
 }
