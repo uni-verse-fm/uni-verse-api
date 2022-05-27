@@ -208,9 +208,6 @@ export class TracksService {
                 },
               },
             },
-            {
-                $project: { id: '$_id', username: '$username', email: '$email' },
-            }
           ],
           as: 'author',
         },
@@ -233,9 +230,6 @@ export class TracksService {
                 $expr: ['$$track_id', '$tracks'],
               },
             },
-            {
-              $project: { id: '$_id', title: '$title' },
-            },
           ],
           as: 'release',
         },
@@ -244,14 +238,20 @@ export class TracksService {
         $project: {
           id: '$_id',
           title: 1,
-          fileName: 1,
           feats: {
             id: '$_id',
             username: 1,
             email: 1,
           },
-          release: { $arrayElemAt: ['$release', 0] },
-          author: { $arrayElemAt: ['$author', 0] },
+          release: {
+            id: '$_id',
+            title: 1,
+          },
+          author: {
+            id: '$_id',
+            username: 1,
+            email: 1,
+          },
         },
       },
     ]);

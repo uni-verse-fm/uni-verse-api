@@ -45,7 +45,6 @@ export class PlaylistsService {
     const playlist = new this.playlistModel(createPlaylist);
 
     const savedPlaylist = await playlist.save();
-    this.playlistsSearchService.insertIndex(savedPlaylist);
     return savedPlaylist;
   }
 
@@ -153,7 +152,6 @@ export class PlaylistsService {
       throw new Error("Can't delete playlist");
     }
 
-    this.playlistsSearchService.deleteIndex(id);
     return {
       id: playlist._id.toString(),
       title: playlist.title,
