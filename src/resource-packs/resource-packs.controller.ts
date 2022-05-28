@@ -10,6 +10,7 @@ import {
   UploadedFiles,
   UseGuards,
   UseInterceptors,
+  Logger,
 } from '@nestjs/common';
 import { ResourcePacksService } from './resource-packs.service';
 import { UpdateResourcePackDto } from './dto/update-resource-pack.dto';
@@ -22,10 +23,7 @@ import {
 } from '@nestjs/swagger';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 import { CreateResourcePackWraperDto } from './dto/create-resource-pack-wraper.dto';
-import {
-  FileMimeType,
-  SimpleCreateFileDto,
-} from '../files/dto/simple-create-file.dto';
+import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ResourcePackFormDataParserInterceptor } from '../utils/interceptors/create-resource-pack.interceptor copy';
@@ -36,6 +34,8 @@ import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
 @Controller('resource-packs')
 export class ResourcePacksController {
   constructor(private readonly resourcePacksService: ResourcePacksService) {}
+
+  private readonly logger: Logger = new Logger(ResourcePacksController.name);
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -65,7 +65,7 @@ export class ResourcePacksController {
       originalFileName: file.originalname,
       buffer: file.buffer,
       size: file.size,
-      mimetype: FileMimeType[file.mimetype],
+      mimetype: file.mimetype,
     }));
 
     const previews = files.previews ? files.previews : [];
@@ -73,7 +73,7 @@ export class ResourcePacksController {
       originalFileName: file.originalname,
       buffer: file.buffer,
       size: file.size,
-      mimetype: FileMimeType[file.mimetype],
+      mimetype: file.mimetype,
     }));
 
     const simpleCreateImage: SimpleCreateFileDto | undefined = files.cover

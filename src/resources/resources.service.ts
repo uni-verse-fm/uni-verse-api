@@ -35,10 +35,12 @@ export class ResourcesService {
       BucketName.Resources,
     );
 
-    const previewFileName: string = createResourceDto.previewFile ? await this.filesService.createFile(
-        createResourceDto.previewFile,
-        BucketName.Previews,
-      ) : null;
+    const previewFileName: string = createResourceDto.previewFile
+      ? await this.filesService.createFile(
+          createResourceDto.previewFile,
+          BucketName.Previews,
+        )
+      : null;
 
     const createResource = {
       ...createResourceDto,

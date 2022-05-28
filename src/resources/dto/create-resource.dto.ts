@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { SimpleCreateFileDto } from '../../files/dto/simple-create-file.dto';
 import { UserDocument } from '../../users/schemas/user.schema';
 

@@ -67,25 +67,9 @@ export class ResourcePacksService {
                   orderedResources,
                   resource.originalFileName,
                 ),
-                // {
-                //   originalFileName: resource.originalFileName,
-                //   buffer: orderedResources.get(resource.originalFileName)
-                //     .buffer,
-                //   size: orderedResources.get(resource.originalFileName).size,
-                //   mimetype: orderedResources.get(resource.originalFileName)
-                //     .mimetype,
-                // }
                 previewFile:
                   resource.previewFileName &&
                   buildSimpleFile(previewFilesMap, resource.previewFileName),
-                // {
-                //     originalFileName: resource.previewFileName,
-                //     buffer: previewFilesMap.get(resource.previewFileName)
-                //       .buffer,
-                //     size: previewFilesMap.get(resource.previewFileName).size,
-                //     mimetype: previewFilesMap.get(resource.previewFileName)
-                //       .mimetype,
-                // },
               })),
             );
 

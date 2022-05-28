@@ -50,6 +50,13 @@ export class MinioClientService {
       'Content-Type': file.mimetype,
     };
 
+    if (!file.mimetype) {
+      this.logger.error(
+        `Can not upload file ${file.originalFileName} mimetype undefined`,
+      );
+      throw new BadRequestException('Error uploading file mimetype undefined');
+    }
+
     this.client.putObject(
       bucketName,
       fileName,

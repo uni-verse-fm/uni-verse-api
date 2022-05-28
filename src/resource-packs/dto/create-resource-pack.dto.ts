@@ -56,7 +56,7 @@ export class CreateReleaseResourceDto {
   @IsNotEmpty()
   readonly author: AuthorDto;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @MinLength(1)
   @MaxLength(1024)
