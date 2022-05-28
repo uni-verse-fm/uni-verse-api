@@ -261,7 +261,7 @@ export class ReleasesService {
     this.logger.log(`Checking if release "${title}" is unique`);
     const release = await this.releaseModel
       .findOne({ title })
-      .catch((error) => this.logger.error(`Failed to find release ${title}`));
+      .catch(() => this.logger.error(`Failed to find release ${title}`));
     if (release) {
       this.logger.error('Release must be unique.');
       throw new BadRequestException('Release must be unique.');

@@ -33,18 +33,6 @@ const playlist1 = data.playlists.fav_1;
 
 const author = data.users.jayz;
 
-const create_expected = {
-  title: playlist1.title,
-  owner: playlist1.owner,
-  tracks: playlist1.tracks,
-};
-
-const delete_expected = {
-  id: playlist1._id,
-  title: playlist1.title,
-  msg: 'Playlist deleted',
-};
-
 describe('PlaylistsController', () => {
   let app: INestApplication;
 
