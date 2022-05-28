@@ -26,8 +26,11 @@ export class ResourcePack {
   @Prop()
   coverName: string;
 
+  @Prop({ type: String, enum: ['free', 'paid', 'donation'] })
+  accessType: string;
+
   @Prop()
-  previewUrl: string;
+  amount?: number;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   @Type(() => User)
@@ -40,6 +43,6 @@ export class ResourcePack {
 
 const ResourcePackSchema = SchemaFactory.createForClass(ResourcePack);
 
-ResourcePackSchema.index({ title: 'text', description: 'text' });
+ResourcePackSchema.index({ title: 'text' });
 
 export { ResourcePackSchema };
