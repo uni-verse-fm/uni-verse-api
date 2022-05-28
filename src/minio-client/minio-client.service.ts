@@ -9,6 +9,7 @@ export enum BucketName {
   Resources = 'resources',
   Tracks = 'tracks',
   Images = 'images',
+  Previews = 'previews',
 }
 
 @Injectable()

@@ -47,16 +47,29 @@ export class ResourcePacksController {
     FileFieldsInterceptor([
       { name: 'resources', maxCount: 20 },
       { name: 'cover', maxCount: 1 },
+      { name: 'previews', maxCount: 20 },
     ]),
     ResourcePackFormDataParserInterceptor,
   )
   create(
     @UploadedFiles()
-    files: { resources: Express.Multer.File[]; cover: Express.Multer.File[] },
+    files: {
+      resources: Express.Multer.File[];
+      cover: Express.Multer.File[];
+      previews: Express.Multer.File[];
+    },
     @Body() body: CreateResourcePackWraperDto,
     @Request() request: IRequestWithUser,
   ) {
     const filesBuffers: SimpleCreateFileDto[] = files.resources.map((file) => ({
+      originalFileName: file.originalname,
+      buffer: file.buffer,
+      size: file.size,
+      mimetype: FileMimeType[file.mimetype],
+    }));
+
+    const previews = files.previews ? files.previews : [];
+    const previewFilesBuffers: SimpleCreateFileDto[] = previews.map((file) => ({
       originalFileName: file.originalname,
       buffer: file.buffer,
       size: file.size,
@@ -74,6 +87,7 @@ export class ResourcePacksController {
 
     return this.resourcePacksService.createResourcePack(
       filesBuffers,
+      previewFilesBuffers,
       simpleCreateImage,
       body.data,
       request.user,

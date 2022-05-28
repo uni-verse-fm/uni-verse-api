@@ -4,6 +4,5 @@ export interface IResourcePackResponse {
   title: string;
   description: string;
   coverName: string;
-  previewUrl: string;
   author: IUserResponse;
 }

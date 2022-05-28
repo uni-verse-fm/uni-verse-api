@@ -37,6 +37,7 @@ export class ResourcePacksService {
 
   async createResourcePack(
     files: SimpleCreateFileDto[],
+    previewFiles: SimpleCreateFileDto[],
     cover: SimpleCreateFileDto,
     createResourcePack: CreateResourcePackDto,
     author: UserDocument,
@@ -45,6 +46,12 @@ export class ResourcePacksService {
     await this.isResourcePackUnique(createResourcePack.title);
 
     const orderedResources = this.orderedResources(files, createResourcePack);
+    const previewFilesMap: Map<string, SimpleCreateFileDto> = new Map(
+      previewFiles.map((previewFile) => [
+        previewFile.originalFileName,
+        previewFile,
+      ]),
+    );
 
     const session = await this.connection.startSession();
     try {
@@ -60,6 +67,25 @@ export class ResourcePacksService {
                   orderedResources,
                   resource.originalFileName,
                 ),
+                // {
+                //   originalFileName: resource.originalFileName,
+                //   buffer: orderedResources.get(resource.originalFileName)
+                //     .buffer,
+                //   size: orderedResources.get(resource.originalFileName).size,
+                //   mimetype: orderedResources.get(resource.originalFileName)
+                //     .mimetype,
+                // }
+                previewFile:
+                  resource.previewFileName &&
+                  buildSimpleFile(previewFilesMap, resource.previewFileName),
+                // {
+                //     originalFileName: resource.previewFileName,
+                //     buffer: previewFilesMap.get(resource.previewFileName)
+                //       .buffer,
+                //     size: previewFilesMap.get(resource.previewFileName).size,
+                //     mimetype: previewFilesMap.get(resource.previewFileName)
+                //       .mimetype,
+                // },
               })),
             );
 
@@ -220,7 +246,6 @@ export class ResourcePacksService {
       title: resourcePack.title,
       description: resourcePack.description,
       coverName: resourcePack.coverName,
-      previewUrl: resourcePack.previewUrl,
       author: {
         id: resourcePack.author._id.toString(),
         username: resourcePack.author.username,

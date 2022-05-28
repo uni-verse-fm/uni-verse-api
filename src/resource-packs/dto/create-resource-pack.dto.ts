@@ -1,12 +1,20 @@
 import {
   IsArray,
+  IsEnum,
   IsNotEmpty,
+  IsNumber,
+  IsOptional,
   IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
 import AuthorDto from '../../users/dto/author.dto';
 
+export enum AccessType {
+  Free = 'free',
+  Paid = 'paid',
+  Donation = 'donation',
+}
 export class CreateResourcePackDto {
   @IsNotEmpty()
   @IsString()
@@ -20,10 +28,12 @@ export class CreateResourcePackDto {
   readonly description: string;
 
   @IsNotEmpty()
-  @IsString()
-  @MinLength(1)
-  @MaxLength(1024)
-  readonly previewUrl: string;
+  @IsEnum(AccessType)
+  readonly accessType: AccessType;
+
+  @IsOptional()
+  @IsNumber()
+  readonly amount?: number;
 
   @IsArray()
   @IsNotEmpty()
@@ -45,4 +55,10 @@ export class CreateReleaseResourceDto {
 
   @IsNotEmpty()
   readonly author: AuthorDto;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(1024)
+  readonly previewFileName: string;
 }

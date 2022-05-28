@@ -30,14 +30,20 @@ export class ResourcesService {
     session: ClientSession | null = null,
   ): Promise<ICreateResourceResponse> {
     this.logger.log(`Creating resource ${createResourceDto.title}`);
-    const result: string = await this.filesService.createFile(
+    const fileName: string = await this.filesService.createFile(
       createResourceDto.file,
       BucketName.Resources,
     );
 
+    const previewFileName: string = createResourceDto.previewFile ? await this.filesService.createFile(
+        createResourceDto.previewFile,
+        BucketName.Previews,
+      ) : null;
+
     const createResource = {
       ...createResourceDto,
-      fileName: result,
+      fileName,
+      previewFileName,
     };
 
     const newResource = new this.resourceModel(createResource);
