@@ -7,7 +7,10 @@ import {
   Request,
   Query,
   UseInterceptors,
+  Post,
+  Res,
 } from '@nestjs/common';
+import { Response as ExpressResponse } from 'express';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from './interfaces/request-with-user.interface';
@@ -43,6 +46,18 @@ export class UsersController {
   ) {
     if (search) return this.usersService.searchUser(search, request.user.id);
     return [];
+  }
+
+  @Post('/onboard')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Onboad to stripe' })
+  async onboardUser(
+    @Request() request: IRequestWithUser,
+    @Res() response: ExpressResponse,
+  ) {
+    const onboardUrl = await this.usersService.onboardUser(request);
+    return response.json({ onboardUrl });
   }
 
   @Get(':id')

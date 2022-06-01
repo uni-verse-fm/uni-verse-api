@@ -6,12 +6,14 @@ import {
   Param,
   Request,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Response as ExpressResponse } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
-import { CreateDonateDto } from './dto/create-donate.dto';
-import { CreatePaymentDto } from './dto/create-payment.dto';
+import { CheckoutDto } from './dto/checkout.dto';
+import { DonateDto } from './dto/create-donate.dto';
 import { PaymentsService } from './payments.service';
 
 @ApiTags('payments')
@@ -23,34 +25,54 @@ export class PaymentsController {
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Make a donation' })
-  donate(
-    @Body() payement: CreateDonateDto,
+  async donate(
+    @Body() donate: DonateDto,
     @Request() request: IRequestWithUser,
+    @Res() response: ExpressResponse,
   ) {
-    return this.paymentsService.donate({
-      customerId: request.user.stripeCustomerId,
-      ...payement,
-    });
+    const donateUrl = await this.paymentsService.donate(
+      donate.amount,
+      request.user.donationProductId,
+      donate.connectedAccountId,
+    );
+    return response.json({ donateUrl });
   }
 
-  @Post('/charge')
+  @Post('/checkout')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Make a purshase' })
-  charge(
-    @Body() payement: CreatePaymentDto,
+  checkout(@Body() checkout: CheckoutDto) {
+    return this.paymentsService.checkout(
+      checkout.priceId,
+      checkout.connectedAccountId,
+    );
+  }
+
+  @Get('/refresh')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Refresh stripe onboarding' })
+  async refresh(
     @Request() request: IRequestWithUser,
+    @Res() response: ExpressResponse,
   ) {
-    return this.paymentsService.buyResourcePack({
-      customerId: request.user.stripeCustomerId,
-      ...payement,
-    });
+    const onboardUrl = await this.paymentsService.refreshOnboardLink(request);
+    return response.json({ onboardUrl });
+  }
+
+  @Get('/account/me')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Find my account' })
+  findMyAccount(@Request() request: IRequestWithUser) {
+    return this.paymentsService.findAccount(request.user.stripeAccountId);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'FInd all payments' })
+  @ApiOperation({ summary: 'Find all payments' })
   findAllPayments(@Request() request: IRequestWithUser) {
     return this.paymentsService.findAllPayments(request.user.stripeCustomerId);
   }

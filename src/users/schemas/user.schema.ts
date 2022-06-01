@@ -29,7 +29,13 @@ export class User {
   releases: Release[];
 
   @Prop()
-  public stripeCustomerId: string;
+  stripeCustomerId: string;
+
+  @Prop()
+  stripeAccountId: string;
+
+  @Prop()
+  donationProductId: string;
 }
 
 const UserSchema = SchemaFactory.createForClass(User);

@@ -13,6 +13,8 @@ import { User, UserDocument } from './schemas/user.schema';
 import { PaymentsService } from '../payments/payments.service';
 import { isValidId } from '../utils/is-valid-id';
 import UsersSearchService from './users-search.service';
+import { IUpdateResponse } from './interfaces/update-response.interface';
+import { IRequestWithUser } from './interfaces/request-with-user.interface';
 
 @Injectable()
 export class UsersService {
@@ -37,6 +39,7 @@ export class UsersService {
       ...createUserDto,
       releases: [],
       stripeCustomerId: stripeCustomer.id,
+      stripeAccountId: null,
     };
 
     const userToSave = new this.userModel(userWithEmptyReleases);
@@ -74,6 +77,69 @@ export class UsersService {
       email: user.email,
       msg: 'user deleted',
     };
+  }
+
+  async onboardUser(request: IRequestWithUser) {
+    const id = request.user?._id;
+    const userAccountId = request.user?.stripeAccountId;
+    this.logger.log(`Onboarding user ${id}`);
+
+    const accountId =
+      userAccountId || (await this.stripeService.createAccount());
+    const donationProductId = await this.stripeService.createDonations(id);
+    await this.updateUserStripeAccountId(id, accountId);
+    await this.updateUserDonationProductId(id, donationProductId);
+
+    const user = await this.findById(id);
+    return this.stripeService.onboard(user);
+  }
+
+  async updateUserStripeAccountId(
+    id: string,
+    accountId: string,
+  ): Promise<IUpdateResponse> {
+    this.logger.log(`Updating account id for user ${id}`);
+    isValidId(id);
+    const user = await this.findById(id);
+    return await this.userModel
+      .updateOne(
+        { _id: user._id },
+        {
+          $set: { stripeAccountId: accountId },
+        },
+      )
+      .then(() => ({
+        id,
+        msg: 'user account id updated',
+      }))
+      .catch(() => {
+        this.logger.error(`Couldn't update your account id for user ${id}`);
+        throw new Error("Couldn't update your account id");
+      });
+  }
+
+  async updateUserDonationProductId(
+    id: string,
+    donationProductId: string,
+  ): Promise<IUpdateResponse> {
+    this.logger.log(`Updating donation product id for user ${id}`);
+    isValidId(id);
+    const user = await this.findById(id);
+    return await this.userModel
+      .updateOne(
+        { _id: user._id },
+        {
+          $set: { donationProductId: donationProductId },
+        },
+      )
+      .then(() => ({
+        id,
+        msg: 'user account id updated',
+      }))
+      .catch(() => {
+        this.logger.error(`Couldn't update donation product id for user ${id}`);
+        throw new Error("Couldn't update donation product id ");
+      });
   }
 
   async findUserByUsername(username: string): Promise<UserDocument> {

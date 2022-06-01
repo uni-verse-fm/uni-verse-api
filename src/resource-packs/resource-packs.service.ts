@@ -6,9 +6,12 @@ import {
 } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Model, Connection } from 'mongoose';
-import { UserDocument } from '../users/schemas/user.schema';
+import { User, UserDocument } from '../users/schemas/user.schema';
 import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
-import { CreateResourcePackDto } from './dto/create-resource-pack.dto';
+import {
+  AccessType,
+  CreateResourcePackDto,
+} from './dto/create-resource-pack.dto';
 import { UpdateResourcePackDto } from './dto/update-resource-pack.dto';
 import {
   ResourcePack,
@@ -21,6 +24,7 @@ import { isValidId } from '../utils/is-valid-id';
 import { buildSimpleFile } from '../utils/buildSimpleFile';
 import { BucketName } from '../minio-client/minio-client.service';
 import { FilesService } from '../files/files.service';
+import { PaymentsService } from '../payments/payments.service';
 
 @Injectable()
 export class ResourcePacksService {
@@ -33,6 +37,7 @@ export class ResourcePacksService {
     @InjectConnection()
     private connection: Connection,
     private filesService: FilesService,
+    private stripeService: PaymentsService,
   ) {}
 
   async createResourcePack(
@@ -44,6 +49,7 @@ export class ResourcePacksService {
   ) {
     this.logger.log('Creating resource pack');
     await this.isResourcePackUnique(createResourcePack.title);
+    await this.isValidAccount(author, createResourcePack.accessType);
 
     const orderedResources = this.orderedResources(files, createResourcePack);
     const previewFilesMap: Map<string, SimpleCreateFileDto> = new Map(
@@ -54,8 +60,11 @@ export class ResourcePacksService {
     );
 
     const session = await this.connection.startSession();
+
+    let productId: string | undefined;
     try {
       let resourcePack;
+
       const createResponse = await session
         .withTransaction(async () => {
           const resources: ICreateResourceResponse[] =
@@ -78,10 +87,20 @@ export class ResourcePacksService {
             BucketName.Images,
           );
 
+          const price = await this.stripeService.createPrice(
+            createResourcePack.title,
+            author._id,
+            createResourcePack.amount,
+          );
+
+          productId = price.product.toString();
+
           const createdResourcePack = {
             ...createResourcePack,
             author,
             resources: resources.map((resource) => resource._id),
+            priceId: price.id,
+            productId: price.product.toString(),
             coverName,
           };
           resourcePack = await this.resourcePackModel.create(
@@ -92,6 +111,7 @@ export class ResourcePacksService {
       return createResponse;
     } catch (error) {
       this.logger.error(`Can not create resource pack due to: ${error}`);
+      productId && (await this.stripeService.disableProduct(productId));
     } finally {
       session.endSession();
     }
@@ -268,5 +288,20 @@ export class ResourcePacksService {
       this.logger.error(`Resource pack with title ${title} already exists`);
       throw new BadRequestException('Resource pack must be unique.');
     }
+  }
+
+  private async isValidAccount(user: User, accessType: AccessType) {
+    this.logger.log('Checking if resource pack is unique');
+    if (!user.stripeAccountId && accessType !== AccessType.Free) {
+      throw new BadRequestException('Please do the payment onboarding first');
+    }
+
+    const accountInfo = await this.stripeService.findAccount(
+      user.stripeAccountId,
+    );
+    if (!accountInfo.charges_enabled || !accountInfo.details_submitted)
+      throw new BadRequestException(
+        'Please finish your payment onboarding first',
+      );
   }
 }

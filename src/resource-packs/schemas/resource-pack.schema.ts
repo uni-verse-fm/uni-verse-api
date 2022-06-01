@@ -39,6 +39,9 @@ export class ResourcePack {
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Resource' }])
   @Type(() => Resource)
   resources: Resource[];
+
+  @Prop()
+  priceId: string;
 }
 
 const ResourcePackSchema = SchemaFactory.createForClass(ResourcePack);
