@@ -13,12 +13,14 @@ import { DonationAmount } from './dto/create-donate.dto';
 @Injectable()
 export class PaymentsService {
   private stripe: Stripe;
+  private univerDonationProductId: string;
   private readonly logger: Logger = new Logger(PaymentsService.name);
 
   constructor(private configService: ConfigService) {
     this.stripe = new Stripe(configService.get('STRIPE_SECRET_KEY'), {
       apiVersion: '2020-08-27',
     });
+    this.univerDonationProductId = configService.get('UNIVERSE_DONATION_PRODUCT_ID')
   }
 
   public async onboard(user: User) {
@@ -211,30 +213,6 @@ export class PaymentsService {
     }));
   }
 
-  public async createCustomer(name: string, email: string) {
-    this.logger.log(`Creating customer ${name} ${email}`);
-    const response = await this.stripe.customers
-      .create(
-        {
-          name,
-          email,
-        },
-        {
-          maxNetworkRetries: 2,
-        },
-      )
-      .catch((error) => {
-        this.logger.error(`Can't create payment acount due to: ${error.type}`);
-        throw new Error(error);
-      });
-
-    if (!response) {
-      this.logger.error(`Can not create customer ${name} ${email}`);
-      throw new Error('Somthing wrong with the payment server');
-    }
-    return response;
-  }
-
   public async deleteCustomer(customerId: string) {
     this.logger.log(`Deleting customer ${customerId}`);
     const response = await this.stripe.customers.del(customerId);
@@ -244,7 +222,7 @@ export class PaymentsService {
 
   public async donate(
     donationAmout: DonationAmount,
-    productId: string,
+    productId: string = this.univerDonationProductId,
     connectedAccountId?: string,
   ) {
     this.logger.log(`Making donation`);

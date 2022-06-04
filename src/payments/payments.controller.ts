@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Param,
   Request,
   UseGuards,
   Res,
@@ -69,25 +68,4 @@ export class PaymentsController {
     return this.paymentsService.findAccount(request.user.stripeAccountId);
   }
 
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Find all payments' })
-  findAllPayments(@Request() request: IRequestWithUser) {
-    return this.paymentsService.findAllPayments(request.user.stripeCustomerId);
-  }
-
-  @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Find one payment' })
-  findOnePayment(
-    @Param('id') payementId: string,
-    @Request() request: IRequestWithUser,
-  ) {
-    return this.paymentsService.findOnePayementById(
-      request.user.stripeCustomerId,
-      payementId,
-    );
-  }
 }

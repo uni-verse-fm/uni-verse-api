@@ -10,21 +10,45 @@ export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
   constructor(
-    private jwtService: JwtService,
-    private configService: ConfigService,
-    private usersService: UsersService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
   ) {}
 
-  public getCookieWithJwtToken(userId: string): string {
-    this.logger.log(`Generating JWT token for user ${userId}`);
+  public getCookieWithJwtAccessToken(userId: string) {
+    this.logger.log(`Generating JWT access token for user ${userId}`);
     const payload = { userId };
     const token = this.jwtService.sign(payload, {
-      secret: this.configService.get('JWT_SECRET'),
-      expiresIn: `${this.configService.get('JWT_EXPIRATION_TIME')}`,
+      secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+      )}`,
     });
-    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-      'JWT_EXPIRATION_TIME',
+    const cookie = `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
+      'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
     )}`;
+    return {
+      cookie,
+      token,
+    };
+  }
+
+  public getCookieWithJwtRefreshToken(userId: string) {
+    this.logger.log(`Generating JWT access token for user ${userId}`);
+    const payload = { userId };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      )}`,
+    });
+    const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
+      'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+    )}`;
+    return {
+      cookie,
+      token,
+    };
   }
 
   public async getAuthenticatedUser(
@@ -49,9 +73,12 @@ export class AuthService {
     return user;
   }
 
-  public getCookieForLogOut() {
+  public getCookiesForLogOut() {
     this.logger.log(`Generating empty JWT for logout`);
-    return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
+    return [
+      'Authentication=; HttpOnly; Path=/; Max-Age=0',
+      'Refresh=; HttpOnly; Path=/; Max-Age=0',
+    ];
   }
 
   async checkPassword(password: string, user: User): Promise<boolean> {

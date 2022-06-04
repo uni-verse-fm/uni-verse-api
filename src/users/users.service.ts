@@ -15,6 +15,7 @@ import { isValidId } from '../utils/is-valid-id';
 import UsersSearchService from './users-search.service';
 import { IUpdateResponse } from './interfaces/update-response.interface';
 import { IRequestWithUser } from './interfaces/request-with-user.interface';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -31,14 +32,9 @@ export class UsersService {
     this.logger.log('Creating user');
     await this.isEmailUnique(createUserDto.email);
     await this.isUsernameUnique(createUserDto.username);
-    const stripeCustomer = await this.stripeService.createCustomer(
-      createUserDto.username,
-      createUserDto.email,
-    );
     const userWithEmptyReleases = {
       ...createUserDto,
       releases: [],
-      stripeCustomerId: stripeCustomer.id,
       stripeAccountId: null,
     };
 
@@ -236,6 +232,7 @@ export class UsersService {
   }
 
   async searchUser(search: string, meId: string) {
+    this.logger.log(`Searching user ${meId}`);
     const results = await this.usersSearchService.searchIndex(search);
     const ids = results.map((result) => result.id).filter((id) => id !== meId);
     if (!ids.length) {
@@ -246,5 +243,50 @@ export class UsersService {
         $in: ids,
       },
     });
+  }
+
+  async setCurrentRefreshToken(refreshToken: string, userId: string) {
+    this.logger.log(`Setting refresh token ${userId}`);
+
+    this.logger.debug(`refreshToken ${refreshToken}`);
+
+    const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.userModel.updateOne(
+      { _id: userId },
+      {
+        $set: { currentHashedRefreshToken },
+      },
+    );
+  }
+
+  async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
+    this.logger.log(`Getting refresh token ${userId}`);
+    const user = await this.userModel
+      .findOne({ _id: userId })
+      .select('+currentHashedRefreshToken');
+
+    this.logger.debug(`refreshToken: ${refreshToken}`);
+    this.logger.debug(
+      `user.currentHashedRefreshToken: ${user.currentHashedRefreshToken}`,
+    );
+
+    const isRefreshTokenMatching = await bcrypt.compare(
+      refreshToken,
+      user.currentHashedRefreshToken,
+    );
+    this.logger.debug(`isRefreshTokenMatching: ${isRefreshTokenMatching}`);
+
+    if (isRefreshTokenMatching) {
+      return user;
+    }
+  }
+
+  async removeRefreshToken(userId: string) {
+    return this.userModel.updateOne(
+      { _id: userId },
+      {
+        $set: { currentHashedRefreshToken: null },
+      },
+    );
   }
 }

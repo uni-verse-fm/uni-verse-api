@@ -28,22 +28,39 @@ describe('AuthService', () => {
     service = module.get<AuthService>(AuthService);
   });
 
-  describe('when ask for a cookie', () => {
+  describe('when ask for a cookie with refresh token', () => {
     it('should return a string', () => {
       get;
       const userId = '0';
-      const expectedResult =
-        'Authentication=mercure23beta; HttpOnly; Path=/; Max-Age=60s';
-      const jwt = service.getCookieWithJwtToken(userId);
-      expect(jwt).toBe(expectedResult);
+      const expectedResult = {
+          cookie: 'Authentication=mercure23beta; HttpOnly; Path=/; Max-Age=60s',
+          token: 'mercure23beta',
+      }
+        ;
+      const jwt = service.getCookieWithJwtAccessToken(userId);
+      expect(jwt).toStrictEqual(expectedResult);
+    });
+  });
+
+  describe('when ask for a cookie with refresh token', () => {
+    it('should return a string', () => {
+      get;
+      const userId = '0';
+      const expectedResult = {
+        cookie: 'Refresh=mercure23beta; HttpOnly; Path=/; Max-Age=60s',
+        token: 'mercure23beta',
+    }
+      const jwt = service.getCookieWithJwtRefreshToken(userId);
+      expect(jwt).toStrictEqual(expectedResult);
     });
   });
 
   describe('when logout', () => {
     it('should return an empty', () => {
-      const expectedResult = 'Authentication=; HttpOnly; Path=/; Max-Age=0';
-      const jwt = service.getCookieForLogOut();
-      expect(jwt).toBe(expectedResult);
+      const expectedResult =
+        ["Authentication=; HttpOnly; Path=/; Max-Age=0","Refresh=; HttpOnly; Path=/; Max-Age=0"];
+      const jwt = service.getCookiesForLogOut();
+      expect(jwt).toStrictEqual(expectedResult);
     });
   });
 

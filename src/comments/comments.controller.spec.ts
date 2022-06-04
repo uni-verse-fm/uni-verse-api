@@ -56,7 +56,7 @@ describe('CommentsController', () => {
           imports: [ConfigModule],
           inject: [ConfigService],
           useFactory: async (configService: ConfigService) => ({
-            secret: configService.get('JWT_SECRET'),
+            secret: configService.get('JWT_ACCESS_TOKEN_SECRET'),
             signOptions: { expiresIn: '6000s' },
           }),
         }),

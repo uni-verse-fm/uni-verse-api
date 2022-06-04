@@ -29,13 +29,13 @@ export class User {
   releases: Release[];
 
   @Prop()
-  stripeCustomerId: string;
-
-  @Prop()
   stripeAccountId: string;
 
   @Prop()
   donationProductId: string;
+
+  @Prop({ select: false })
+  currentHashedRefreshToken: string;
 }
 
 const UserSchema = SchemaFactory.createForClass(User);
@@ -53,7 +53,6 @@ UserSchema.pre('save', async function (next) {
     }
 
     const hashed = await bcrypt.hash(this['password'], 10);
-
     this['password'] = hashed;
 
     return next();
