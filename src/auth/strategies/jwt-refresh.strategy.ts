@@ -32,7 +32,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
     this.logger.log(`Validating user ${payload.userId}`);
 
     const refreshToken = request.cookies?.Refresh;
-    
+
     return this.userService.getUserIfRefreshTokenMatches(
       refreshToken,
       payload.userId,

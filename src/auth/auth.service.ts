@@ -2,9 +2,12 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { CreateUserWithGoogleDto } from '../users/dto/create-google-user.dto';
+import { CreateUserWithSpotifyDto } from '../users/dto/create-spotify-user.dto';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 
+export type Provider = 'local' | 'spotify' | 'google';
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -82,10 +85,79 @@ export class AuthService {
   }
 
   async checkPassword(password: string, user: User): Promise<boolean> {
+    this.logger.log(`Checking password`);
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       throw new UnauthorizedException('Wrong email or password.');
     }
     return match;
+  }
+
+  async getCookiesForUser(user: User) {
+    this.logger.log(`Getting cookies for ${user._id}`);
+    const userId: string = user._id.toString();
+    const accessToken = this.getCookieWithJwtAccessToken(userId);
+    const refreshToken = this.getCookieWithJwtRefreshToken(userId);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async handleRegisteredUser(user: User) {
+    this.logger.log(`Handling registred user ${user._id}`);
+    if (user.provider !== 'google' && user.provider !== 'spotify') {
+      throw new UnauthorizedException();
+    }
+
+    const { accessToken, refreshToken } = await this.getCookiesForUser(user);
+
+    await this.usersService.setCurrentRefreshToken(
+      refreshToken.token,
+      user._id.toString(),
+    );
+    return {
+      accessToken,
+      refreshToken,
+      user,
+    };
+  }
+
+  async registerUser(
+    createUserWithGoogle: CreateUserWithGoogleDto,
+    provider: Provider,
+  ) {
+    this.logger.log(
+      `Registring ${provider} user ${createUserWithGoogle.email}`,
+    );
+    const user = await this.usersService.createUserWithProvider(
+      createUserWithGoogle,
+      provider,
+    );
+
+    return this.handleRegisteredUser(user);
+  }
+
+  async authWithProvider(
+    createUserWithGoogle: CreateUserWithGoogleDto,
+    provider: Provider,
+  ) {
+    this.logger.log(
+      `Authenticating ${provider} user ${createUserWithGoogle.email}`,
+    );
+    try {
+      const user = await this.usersService.findUserByEmail(
+        createUserWithGoogle.email,
+      );
+
+      return this.handleRegisteredUser(user);
+    } catch (error) {
+      if (error.response.statusCode !== 404) {
+        throw new Error(error);
+      }
+
+      return this.registerUser(createUserWithGoogle, provider);
+    }
   }
 }

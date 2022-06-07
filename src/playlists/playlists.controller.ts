@@ -52,10 +52,18 @@ export class PlaylistsController {
     return this.playlistsService.find(title);
   }
 
-  @Get('/search')
+  @Get('myplaylists')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Search user' })
+  @ApiOperation({ summary: 'Find my playlists' })
+  myPlaylists(@Request() request: IRequestWithUser) {
+    return this.playlistsService.playlistsByUserId(request.user._id);
+  }
+
+  @Get('search')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Search playlist' })
   searchUsers(@Query('search') search: string) {
     if (search) return this.playlistsService.searchPlaylist(search);
     return [];

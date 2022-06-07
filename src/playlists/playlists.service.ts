@@ -34,8 +34,6 @@ export class PlaylistsService {
     owner: UserDocument,
   ): Promise<PlaylistDocument> {
     this.logger.log(`Creating playlist ${createPlaylistDto.title}`);
-    this.isPlaylistUnique(createPlaylistDto.title);
-
     const createPlaylist = {
       ...createPlaylistDto,
       owner,
@@ -188,6 +186,12 @@ export class PlaylistsService {
     if (playlist?.title === title) {
       throw new BadRequestException('Playlist must be unique.');
     }
+  }
+
+  async playlistsByUserId(userId: string) {
+    return await this.playlistModel.find({ owner: userId }).catch(() => {
+      throw new Error('Somthing went wrong');
+    });
   }
 
   async searchPlaylist(search: string) {

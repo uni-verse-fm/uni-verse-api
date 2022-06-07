@@ -40,7 +40,7 @@ describe('AuthController', () => {
               username: user1.username,
               email: user1.email,
             }),
-            setCurrentRefreshToken: () => ({})
+            setCurrentRefreshToken: () => ({}),
           },
         },
       ],

@@ -67,5 +67,4 @@ export class PaymentsController {
   findMyAccount(@Request() request: IRequestWithUser) {
     return this.paymentsService.findAccount(request.user.stripeAccountId);
   }
-
 }

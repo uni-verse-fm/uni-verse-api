@@ -3,6 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId, Document } from 'mongoose';
 import { Release } from '../../releases/schemas/release.schema';
 import { Transform, Type } from 'class-transformer';
+import { Provider } from '../../auth/auth.service';
 
 export type UserDocument = User & Document;
 
@@ -26,13 +27,16 @@ export class User {
   password: string;
 
   @Type(() => Release)
-  releases: Release[];
+  releases: Release[] = [];
 
   @Prop()
-  stripeAccountId: string;
+  stripeAccountId: string = null;
 
   @Prop()
-  donationProductId: string;
+  donationProductId: string = null;
+
+  @Prop()
+  provider: Provider = 'local';
 
   @Prop({ select: false })
   currentHashedRefreshToken: string;

@@ -16,6 +16,8 @@ import UsersSearchService from './users-search.service';
 import { IUpdateResponse } from './interfaces/update-response.interface';
 import { IRequestWithUser } from './interfaces/request-with-user.interface';
 import * as bcrypt from 'bcrypt';
+import { CreateUserWithGoogleDto } from './dto/create-google-user.dto';
+import { Provider } from '../auth/auth.service';
 
 @Injectable()
 export class UsersService {
@@ -172,7 +174,7 @@ export class UsersService {
       .findOne({ email: email })
       .select('+password');
     if (!user) {
-      throw new BadRequestException("This user doesn't exist");
+      throw new NotFoundException("This user doesn't exist");
     }
     return user;
   }
@@ -247,9 +249,6 @@ export class UsersService {
 
   async setCurrentRefreshToken(refreshToken: string, userId: string) {
     this.logger.log(`Setting refresh token ${userId}`);
-
-    this.logger.debug(`refreshToken ${refreshToken}`);
-
     const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
     await this.userModel.updateOne(
       { _id: userId },
@@ -265,16 +264,10 @@ export class UsersService {
       .findOne({ _id: userId })
       .select('+currentHashedRefreshToken');
 
-    this.logger.debug(`refreshToken: ${refreshToken}`);
-    this.logger.debug(
-      `user.currentHashedRefreshToken: ${user.currentHashedRefreshToken}`,
-    );
-
     const isRefreshTokenMatching = await bcrypt.compare(
       refreshToken,
       user.currentHashedRefreshToken,
     );
-    this.logger.debug(`isRefreshTokenMatching: ${isRefreshTokenMatching}`);
 
     if (isRefreshTokenMatching) {
       return user;
@@ -288,5 +281,28 @@ export class UsersService {
         $set: { currentHashedRefreshToken: null },
       },
     );
+  }
+
+  async createUserWithProvider(
+    { email, username }: CreateUserWithGoogleDto,
+    provider: Provider,
+  ) {
+    this.logger.log('Creating google user');
+    await this.isEmailUnique(email);
+    await this.isUsernameUnique(username);
+    const googleUserWithEmptyReleases = {
+      email,
+      username,
+      releases: [],
+      provider,
+      stripeAccountId: null,
+    };
+
+    const userToSave = new this.userModel(googleUserWithEmptyReleases);
+
+    const user = await userToSave.save();
+    this.usersSearchService.insertIndex(user);
+
+    return user;
   }
 }

@@ -20,7 +20,9 @@ export class PaymentsService {
     this.stripe = new Stripe(configService.get('STRIPE_SECRET_KEY'), {
       apiVersion: '2020-08-27',
     });
-    this.univerDonationProductId = configService.get('UNIVERSE_DONATION_PRODUCT_ID')
+    this.univerDonationProductId = configService.get(
+      'UNIVERSE_DONATION_PRODUCT_ID',
+    );
   }
 
   public async onboard(user: User) {

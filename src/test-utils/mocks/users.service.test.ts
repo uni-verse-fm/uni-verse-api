@@ -52,6 +52,6 @@ export const UsersServiceMock = {
       username: yoni.username,
       email: yoni.email,
     }),
-    setCurrentRefreshToken: jest.fn(() => {})
+    setCurrentRefreshToken: jest.fn(() => ({})),
   },
 };

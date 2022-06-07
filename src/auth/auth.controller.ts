@@ -18,6 +18,9 @@ import { IRequestWithUser } from '../users/interfaces/request-with-user.interfac
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import JwtRefreshGuard from './guards/jwt-refresh.guard';
+import { CreateUserWithGoogleDto } from '../users/dto/create-google-user.dto';
+import { Request as ExpressRequest } from 'express';
+import { CreateUserWithSpotifyDto } from '../users/dto/create-spotify-user.dto';
 
 @ApiTags('authentication')
 @Controller('auth')
@@ -31,6 +34,40 @@ export class AuthController {
   @ApiOperation({ summary: 'Register a user' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.createUser(createUserDto);
+  }
+
+  @Post('google')
+  @ApiOperation({ summary: 'Register with google' })
+  async authWithGoogle(
+    @Body() createUserWithGoogle: CreateUserWithGoogleDto,
+    @Req() request: ExpressRequest,
+  ) {
+    const { accessToken, refreshToken, user } =
+      await this.authService.authWithProvider(createUserWithGoogle, 'google');
+
+    request.res.setHeader('Set-Cookie', [
+      accessToken.cookie,
+      refreshToken.cookie,
+    ]);
+
+    return user;
+  }
+
+  @Post('spotify')
+  @ApiOperation({ summary: 'Register with spotify' })
+  async authWithSpotify(
+    @Body() createUserWithSpotify: CreateUserWithSpotifyDto,
+    @Req() request: ExpressRequest,
+  ) {
+    const { accessToken, refreshToken, user } =
+      await this.authService.authWithProvider(createUserWithSpotify, 'spotify');
+
+    request.res.setHeader('Set-Cookie', [
+      accessToken.cookie,
+      refreshToken.cookie,
+    ]);
+
+    return user;
   }
 
   @UseGuards(LocalAuthGuard)
@@ -86,25 +123,15 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('session')
-  @ApiOperation({ summary: 'Me' })
+  @ApiOperation({ summary: 'Session' })
   session(@Request() request: IRequestWithUser, @Res() response: Response) {
     return response.send(request.user);
   }
 
   @UseGuards(JwtRefreshGuard)
   @Get('refresh')
+  @ApiOperation({ summary: 'Refresh access token' })
   refresh(@Req() request: IRequestWithUser) {
-    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
-      request.user.id,
-    );
-
-    request.res.setHeader('Set-Cookie', accessTokenCookie.cookie);
-    return request.user;
-  }
-
-  @UseGuards(JwtRefreshGuard)
-  @Post('refresh')
-  postRefresh(@Req() request: IRequestWithUser) {
     const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
       request.user.id,
     );
