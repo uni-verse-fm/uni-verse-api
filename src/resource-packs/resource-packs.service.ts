@@ -180,8 +180,8 @@ export class ResourcePacksService {
 
   async updateResourcePack(
     id: string,
-    updateResourcePackDto: UpdateResourcePackDto,
-    owner: UserDocument,
+    _updateResourcePackDto: UpdateResourcePackDto,
+    _owner: UserDocument,
   ) {
     this.logger.log('Updating resource pack');
     isValidId(id);

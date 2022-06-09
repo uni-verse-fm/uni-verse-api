@@ -35,7 +35,7 @@ export class FilesService {
     return await this.minioClient.getFile(fileName, bucketName);
   }
 
-  updateFile(id: string, updateFileDto: UpdateFileDto) {
+  updateFile(id: string, _updateFileDto: UpdateFileDto) {
     this.logger.log(`Updating file ${id}`);
     return `This action updates a #${id} file`;
   }

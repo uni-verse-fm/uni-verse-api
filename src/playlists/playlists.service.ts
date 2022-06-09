@@ -110,7 +110,7 @@ export class PlaylistsService {
     }
 
     return await this.playlistModel
-      .updateOne({ id: playlist._id }, body)
+      .updateOne({ _id: playlist._id }, body)
       .then(() => ({
         id: playlist._id.toString(),
         msg: 'Playlist updated',

@@ -10,6 +10,7 @@ import {
   Request,
   Query,
   UseInterceptors,
+  Logger,
 } from '@nestjs/common';
 import { PlaylistsService } from './playlists.service';
 import { CreatePlaylistDto } from './dto/create-playlist.dto';
@@ -28,6 +29,8 @@ import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
 @Controller('playlists')
 export class PlaylistsController {
   constructor(private readonly playlistsService: PlaylistsService) {}
+
+  private readonly logger: Logger = new Logger(PlaylistsController.name);
 
   @Post()
   @UseGuards(JwtAuthGuard)
