@@ -93,7 +93,7 @@ export class ResourcesService {
     return resource;
   }
 
-  updateResource(id: string, updateResourceDto: UpdateResourceDto) {
+  updateResource(id: string, _updateResourceDto: UpdateResourceDto) {
     this.logger.log(`Updating resource ${id}`);
     return `This action updates a #${id} resource`;
   }

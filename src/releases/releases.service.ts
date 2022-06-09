@@ -178,8 +178,8 @@ export class ReleasesService {
 
   async updateRelease(
     id: string,
-    updateReleaseDto: UpdateReleaseDto,
-    owner: UserDocument,
+    _updateReleaseDto: UpdateReleaseDto,
+    _owner: UserDocument,
   ) {
     this.logger.log(`Updating release "${id}"`);
     isValidId(id);

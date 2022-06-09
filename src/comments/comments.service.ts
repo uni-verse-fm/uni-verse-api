@@ -83,8 +83,8 @@ export class CommentsService {
 
   updateComment(
     id: string,
-    updateCommentDto: UpdateCommentDto,
-    owner: UserDocument,
+    _updateCommentDto: UpdateCommentDto,
+    _owner: UserDocument,
   ) {
     isValidId(id);
     this.logger.log(`Updating comment by id: ${id}`);

@@ -30,7 +30,7 @@ import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
 export class PlaylistsController {
   constructor(private readonly playlistsService: PlaylistsService) {}
 
-  private readonly logger : Logger = new Logger(PlaylistsController.name);
+  private readonly logger: Logger = new Logger(PlaylistsController.name);
 
   @Post()
   @UseGuards(JwtAuthGuard)
