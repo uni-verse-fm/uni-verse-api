@@ -7,7 +7,7 @@ import { User } from '../../users/schemas/user.schema';
 
 export type TrackDocument = Track & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Track {
   @Transform(({ value }) => value.toString())
   _id: ObjectId;

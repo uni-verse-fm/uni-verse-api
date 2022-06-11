@@ -55,13 +55,28 @@ export class PlaylistsService {
 
   async findAllPlaylists(): Promise<PlaylistDocument[]> {
     this.logger.log('Finding all playlists');
-    return await this.playlistModel.find();
+    return await this.playlistModel.find().populate('owner');
   }
 
   async findPlaylistById(id: string): Promise<PlaylistDocument> {
     this.logger.log(`Finding playlist by id ${id}`);
     isValidId(id);
-    const playlist = await this.playlistModel.findById(id);
+    const playlist = await this.playlistModel
+      .findById(id)
+      .populate('tracks')
+      .populate({
+        path: 'tracks',
+        populate: {
+          path: 'author',
+        },
+      })
+      .populate({
+        path: 'tracks',
+        populate: {
+          path: 'feats',
+        },
+      })
+      .populate('owner');
     if (!playlist) {
       throw new NotFoundException(`Playlist with ID "${id}" not found.`);
     }
@@ -108,7 +123,7 @@ export class PlaylistsService {
     }
 
     return await this.playlistModel
-      .updateOne({ id: playlist._id }, body)
+      .updateOne({ _id: playlist._id }, body)
       .then(() => ({
         id: playlist._id.toString(),
         msg: 'Playlist updated',

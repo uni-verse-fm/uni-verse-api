@@ -52,12 +52,13 @@ export class PlaylistsController {
     return this.playlistsService.find(title);
   }
 
-  @Get('myplaylists')
+  @Get('user/:id')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Find my playlists' })
-  myPlaylists(@Request() request: IRequestWithUser) {
-    return this.playlistsService.playlistsByUserId(request.user._id);
+  @ApiOperation({ summary: 'Find playlists by user id' })
+  @UseInterceptors(ValidIdInterceptor)
+  userPlaylists(@Param('id') id: string) {
+    return this.playlistsService.playlistsByUserId(id);
   }
 
   @Get('search')

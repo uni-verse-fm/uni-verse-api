@@ -178,7 +178,9 @@ describe('PlaylistsService', () => {
       const result = await playlistService.findPlaylistById(playlist1_id);
 
       expect(result.title).toBe(my_playlist1.title);
-      expect(result.owner).toStrictEqual(user._id);
+      expect(result.owner._id).toStrictEqual(user._id);
+      expect(result.owner.email).toBe('96abdou96@gmail.com');
+      expect(result.owner.username).toBe('al/ghom');
       expect(result.tracks).toBeDefined();
     });
   });

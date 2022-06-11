@@ -304,4 +304,10 @@ export class ResourcePacksService {
         'Please finish your payment onboarding first',
       );
   }
+
+  async resourcePacksByUserId(userId: any) {
+    return await this.resourcePackModel.find({ owner: userId }).catch(() => {
+      throw new Error('Somthing went wrong');
+    });
+  }
 }

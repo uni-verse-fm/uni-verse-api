@@ -8,7 +8,7 @@ import { User } from '../../users/schemas/user.schema';
 
 export type ResourcePackDocument = ResourcePack & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class ResourcePack {
   @Transform(({ value }) => value.toString())
   _id: ObjectId;

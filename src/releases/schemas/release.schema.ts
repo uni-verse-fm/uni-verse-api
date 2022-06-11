@@ -8,7 +8,7 @@ import { User } from '../../users/schemas/user.schema';
 
 export type ReleaseDocument = Release & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Release {
   @Transform(({ value }) => value.toString())
   _id: ObjectId;

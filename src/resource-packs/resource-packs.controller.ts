@@ -105,6 +105,14 @@ export class ResourcePacksController {
     return this.resourcePacksService.findAllResourcePacks();
   }
 
+  @Get('myresourcepacks')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Find my playlists' })
+  myPlaylists(@Request() request: IRequestWithUser) {
+    return this.resourcePacksService.resourcePacksByUserId(request.user._id);
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
