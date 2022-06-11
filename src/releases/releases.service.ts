@@ -257,6 +257,12 @@ export class ReleasesService {
     return release;
   }
 
+  async releasesByUserId(userId: string) {
+    return await this.releaseModel.find({ owner: userId }).catch(() => {
+      throw new Error('Somthing went wrong');
+    });
+  }
+
   private async isReleaseUnique(title: string) {
     this.logger.log(`Checking if release "${title}" is unique`);
     const release = await this.releaseModel

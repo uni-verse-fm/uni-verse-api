@@ -93,6 +93,15 @@ export class ReleasesController {
     return this.releasesService.find(title);
   }
 
+  @Get('user/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Find releases by user id' })
+  @UseInterceptors(ValidIdInterceptor)
+  userReleases(@Param('id') id: string) {
+    return this.releasesService.releasesByUserId(id);
+  }
+
   @Get('/search')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')

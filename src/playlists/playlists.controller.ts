@@ -55,10 +55,19 @@ export class PlaylistsController {
     return this.playlistsService.find(title);
   }
 
-  @Get('/search')
+  @Get('user/:id')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Search user' })
+  @ApiOperation({ summary: 'Find playlists by user id' })
+  @UseInterceptors(ValidIdInterceptor)
+  userPlaylists(@Param('id') id: string) {
+    return this.playlistsService.playlistsByUserId(id);
+  }
+
+  @Get('search')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Search playlist' })
   searchUsers(@Query('search') search: string) {
     if (search) return this.playlistsService.searchPlaylist(search);
     return [];

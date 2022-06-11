@@ -7,10 +7,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { AuthController } from './auth.controller';
 import UsersModule from '../users/users.module';
+import { JwtRefreshTokenStrategy } from './strategies/jwt-refresh.strategy';
 
 @Module({
   imports: [ConfigModule, PassportModule, UsersModule, JwtModule.register({})],
-  providers: [AuthService, JwtStrategy, LocalStrategy],
+  providers: [AuthService, JwtStrategy, LocalStrategy, JwtRefreshTokenStrategy],
   exports: [AuthService],
   controllers: [AuthController],
 })

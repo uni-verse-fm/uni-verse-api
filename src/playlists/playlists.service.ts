@@ -34,8 +34,6 @@ export class PlaylistsService {
     owner: UserDocument,
   ): Promise<PlaylistDocument> {
     this.logger.log(`Creating playlist ${createPlaylistDto.title}`);
-    this.isPlaylistUnique(createPlaylistDto.title);
-
     const createPlaylist = {
       ...createPlaylistDto,
       owner,
@@ -57,13 +55,28 @@ export class PlaylistsService {
 
   async findAllPlaylists(): Promise<PlaylistDocument[]> {
     this.logger.log('Finding all playlists');
-    return await this.playlistModel.find();
+    return await this.playlistModel.find().populate('owner');
   }
 
   async findPlaylistById(id: string): Promise<PlaylistDocument> {
     this.logger.log(`Finding playlist by id ${id}`);
     isValidId(id);
-    const playlist = await this.playlistModel.findById(id);
+    const playlist = await this.playlistModel
+      .findById(id)
+      .populate('tracks')
+      .populate({
+        path: 'tracks',
+        populate: {
+          path: 'author',
+        },
+      })
+      .populate({
+        path: 'tracks',
+        populate: {
+          path: 'feats',
+        },
+      })
+      .populate('owner');
     if (!playlist) {
       throw new NotFoundException(`Playlist with ID "${id}" not found.`);
     }
@@ -188,6 +201,12 @@ export class PlaylistsService {
     if (playlist?.title === title) {
       throw new BadRequestException('Playlist must be unique.');
     }
+  }
+
+  async playlistsByUserId(userId: string) {
+    return await this.playlistModel.find({ owner: userId }).catch(() => {
+      throw new Error('Somthing went wrong');
+    });
   }
 
   async searchPlaylist(search: string) {

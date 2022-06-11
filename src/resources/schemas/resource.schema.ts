@@ -7,7 +7,7 @@ import { User } from '../../users/schemas/user.schema';
 
 export type ResourceDocument = Resource & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Resource {
   @Transform(({ value }) => value.toString())
   _id: ObjectId;

@@ -40,6 +40,7 @@ describe('AuthController', () => {
               username: user1.username,
               email: user1.email,
             }),
+            setCurrentRefreshToken: () => ({}),
           },
         },
       ],
@@ -71,6 +72,8 @@ describe('AuthController', () => {
         id: user._id,
         email: user.email,
         username: user.username,
+        accessToken: 'mercure23beta',
+        refreshToken: 'mercure23beta',
       };
 
       return request(app.getHttpServer())

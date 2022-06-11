@@ -8,7 +8,7 @@ import { User } from '../../users/schemas/user.schema';
 
 export type ResourcePackDocument = ResourcePack & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class ResourcePack {
   @Transform(({ value }) => value.toString())
   _id: ObjectId;
@@ -39,6 +39,9 @@ export class ResourcePack {
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Resource' }])
   @Type(() => Resource)
   resources: Resource[];
+
+  @Prop()
+  priceId: string;
 }
 
 const ResourcePackSchema = SchemaFactory.createForClass(ResourcePack);

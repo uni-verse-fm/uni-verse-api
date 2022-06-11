@@ -13,6 +13,11 @@ import { User, UserDocument } from './schemas/user.schema';
 import { PaymentsService } from '../payments/payments.service';
 import { isValidId } from '../utils/is-valid-id';
 import UsersSearchService from './users-search.service';
+import { IUpdateResponse } from './interfaces/update-response.interface';
+import { IRequestWithUser } from './interfaces/request-with-user.interface';
+import * as bcrypt from 'bcrypt';
+import { CreateUserWithGoogleDto } from './dto/create-google-user.dto';
+import { Provider } from '../auth/auth.service';
 
 @Injectable()
 export class UsersService {
@@ -29,14 +34,10 @@ export class UsersService {
     this.logger.log('Creating user');
     await this.isEmailUnique(createUserDto.email);
     await this.isUsernameUnique(createUserDto.username);
-    const stripeCustomer = await this.stripeService.createCustomer(
-      createUserDto.username,
-      createUserDto.email,
-    );
     const userWithEmptyReleases = {
       ...createUserDto,
       releases: [],
-      stripeCustomerId: stripeCustomer.id,
+      stripeAccountId: null,
     };
 
     const userToSave = new this.userModel(userWithEmptyReleases);
@@ -76,6 +77,69 @@ export class UsersService {
     };
   }
 
+  async onboardUser(request: IRequestWithUser) {
+    const id = request.user?._id;
+    const userAccountId = request.user?.stripeAccountId;
+    this.logger.log(`Onboarding user ${id}`);
+
+    const accountId =
+      userAccountId || (await this.stripeService.createAccount());
+    const donationProductId = await this.stripeService.createDonations(id);
+    await this.updateUserStripeAccountId(id, accountId);
+    await this.updateUserDonationProductId(id, donationProductId);
+
+    const user = await this.findById(id);
+    return this.stripeService.onboard(user);
+  }
+
+  async updateUserStripeAccountId(
+    id: string,
+    accountId: string,
+  ): Promise<IUpdateResponse> {
+    this.logger.log(`Updating account id for user ${id}`);
+    isValidId(id);
+    const user = await this.findById(id);
+    return await this.userModel
+      .updateOne(
+        { _id: user._id },
+        {
+          $set: { stripeAccountId: accountId },
+        },
+      )
+      .then(() => ({
+        id,
+        msg: 'user account id updated',
+      }))
+      .catch(() => {
+        this.logger.error(`Couldn't update your account id for user ${id}`);
+        throw new Error("Couldn't update your account id");
+      });
+  }
+
+  async updateUserDonationProductId(
+    id: string,
+    donationProductId: string,
+  ): Promise<IUpdateResponse> {
+    this.logger.log(`Updating donation product id for user ${id}`);
+    isValidId(id);
+    const user = await this.findById(id);
+    return await this.userModel
+      .updateOne(
+        { _id: user._id },
+        {
+          $set: { donationProductId: donationProductId },
+        },
+      )
+      .then(() => ({
+        id,
+        msg: 'user account id updated',
+      }))
+      .catch(() => {
+        this.logger.error(`Couldn't update donation product id for user ${id}`);
+        throw new Error("Couldn't update donation product id ");
+      });
+  }
+
   async findUserByUsername(username: string): Promise<UserDocument> {
     this.logger.log(`Finding user ${username}`);
     const user = await this.userModel.findOne({ username: username });
@@ -110,7 +174,7 @@ export class UsersService {
       .findOne({ email: email })
       .select('+password');
     if (!user) {
-      throw new BadRequestException("This user doesn't exist");
+      throw new NotFoundException("This user doesn't exist");
     }
     return user;
   }
@@ -170,6 +234,7 @@ export class UsersService {
   }
 
   async searchUser(search: string, meId: string) {
+    this.logger.log(`Searching user ${meId}`);
     const results = await this.usersSearchService.searchIndex(search);
     const ids = results.map((result) => result.id).filter((id) => id !== meId);
     if (!ids.length) {
@@ -180,5 +245,64 @@ export class UsersService {
         $in: ids,
       },
     });
+  }
+
+  async setCurrentRefreshToken(refreshToken: string, userId: string) {
+    this.logger.log(`Setting refresh token ${userId}`);
+    const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.userModel.updateOne(
+      { _id: userId },
+      {
+        $set: { currentHashedRefreshToken },
+      },
+    );
+  }
+
+  async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
+    this.logger.log(`Getting refresh token ${userId}`);
+    const user = await this.userModel
+      .findOne({ _id: userId })
+      .select('+currentHashedRefreshToken');
+
+    const isRefreshTokenMatching = await bcrypt.compare(
+      refreshToken,
+      user.currentHashedRefreshToken,
+    );
+
+    if (isRefreshTokenMatching) {
+      return user;
+    }
+  }
+
+  async removeRefreshToken(userId: string) {
+    return this.userModel.updateOne(
+      { _id: userId },
+      {
+        $set: { currentHashedRefreshToken: null },
+      },
+    );
+  }
+
+  async createUserWithProvider(
+    { email, username }: CreateUserWithGoogleDto,
+    provider: Provider,
+  ) {
+    this.logger.log('Creating google user');
+    await this.isEmailUnique(email);
+    await this.isUsernameUnique(username);
+    const googleUserWithEmptyReleases = {
+      email,
+      username,
+      releases: [],
+      provider,
+      stripeAccountId: null,
+    };
+
+    const userToSave = new this.userModel(googleUserWithEmptyReleases);
+
+    const user = await userToSave.save();
+    this.usersSearchService.insertIndex(user);
+
+    return user;
   }
 }

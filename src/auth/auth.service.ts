@@ -2,29 +2,56 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { CreateUserWithGoogleDto } from '../users/dto/create-google-user.dto';
+import { CreateUserWithSpotifyDto } from '../users/dto/create-spotify-user.dto';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 
+export type Provider = 'local' | 'spotify' | 'google';
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
   constructor(
-    private jwtService: JwtService,
-    private configService: ConfigService,
-    private usersService: UsersService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
   ) {}
 
-  public getCookieWithJwtToken(userId: string): string {
-    this.logger.log(`Generating JWT token for user ${userId}`);
+  public getCookieWithJwtAccessToken(userId: string) {
+    this.logger.log(`Generating JWT access token for user ${userId}`);
     const payload = { userId };
     const token = this.jwtService.sign(payload, {
-      secret: this.configService.get('JWT_SECRET'),
-      expiresIn: `${this.configService.get('JWT_EXPIRATION_TIME')}`,
+      secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+      )}`,
     });
-    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-      'JWT_EXPIRATION_TIME',
+    const cookie = `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
+      'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
     )}`;
+    return {
+      cookie,
+      token,
+    };
+  }
+
+  public getCookieWithJwtRefreshToken(userId: string) {
+    this.logger.log(`Generating JWT access token for user ${userId}`);
+    const payload = { userId };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      )}`,
+    });
+    const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
+      'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+    )}`;
+    return {
+      cookie,
+      token,
+    };
   }
 
   public async getAuthenticatedUser(
@@ -49,16 +76,88 @@ export class AuthService {
     return user;
   }
 
-  public getCookieForLogOut() {
+  public getCookiesForLogOut() {
     this.logger.log(`Generating empty JWT for logout`);
-    return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
+    return [
+      'Authentication=; HttpOnly; Path=/; Max-Age=0',
+      'Refresh=; HttpOnly; Path=/; Max-Age=0',
+    ];
   }
 
   async checkPassword(password: string, user: User): Promise<boolean> {
+    this.logger.log(`Checking password`);
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       throw new UnauthorizedException('Wrong email or password.');
     }
     return match;
+  }
+
+  async getCookiesForUser(user: User) {
+    this.logger.log(`Getting cookies for ${user._id}`);
+    const userId: string = user._id.toString();
+    const accessToken = this.getCookieWithJwtAccessToken(userId);
+    const refreshToken = this.getCookieWithJwtRefreshToken(userId);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async handleRegisteredUser(user: User) {
+    this.logger.log(`Handling registred user ${user._id}`);
+    if (user.provider !== 'google' && user.provider !== 'spotify') {
+      throw new UnauthorizedException();
+    }
+
+    const { accessToken, refreshToken } = await this.getCookiesForUser(user);
+
+    await this.usersService.setCurrentRefreshToken(
+      refreshToken.token,
+      user._id.toString(),
+    );
+    return {
+      accessToken,
+      refreshToken,
+      user,
+    };
+  }
+
+  async registerUser(
+    createUserWithGoogle: CreateUserWithGoogleDto,
+    provider: Provider,
+  ) {
+    this.logger.log(
+      `Registring ${provider} user ${createUserWithGoogle.email}`,
+    );
+    const user = await this.usersService.createUserWithProvider(
+      createUserWithGoogle,
+      provider,
+    );
+
+    return this.handleRegisteredUser(user);
+  }
+
+  async authWithProvider(
+    createUserWithGoogle: CreateUserWithGoogleDto,
+    provider: Provider,
+  ) {
+    this.logger.log(
+      `Authenticating ${provider} user ${createUserWithGoogle.email}`,
+    );
+    try {
+      const user = await this.usersService.findUserByEmail(
+        createUserWithGoogle.email,
+      );
+
+      return this.handleRegisteredUser(user);
+    } catch (error) {
+      if (error.response.statusCode !== 404) {
+        throw new Error(error);
+      }
+
+      return this.registerUser(createUserWithGoogle, provider);
+    }
   }
 }

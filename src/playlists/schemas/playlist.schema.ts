@@ -8,7 +8,7 @@ import { User } from '../../users/schemas/user.schema';
 
 export type PlaylistDocument = Playlist & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Playlist {
   @Transform(({ value }) => value.toString())
   _id: ObjectId;

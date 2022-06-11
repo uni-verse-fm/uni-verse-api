@@ -1,22 +1,17 @@
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  Max,
-  Min,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateDonateDto {
-  @IsString()
-  paymentMethodId: string;
+export enum DonationAmount {
+  Ten = 100,
+  Twenty = 200,
+  Thirty = 300,
+}
 
-  @IsNumber()
+export class DonateDto {
+  @IsEnum(DonationAmount)
   @IsNotEmpty()
-  @Min(1)
-  @Max(900)
-  amount: number;
+  amount: DonationAmount = DonationAmount.Ten;
 
-  @IsBoolean()
-  saveCard: boolean;
+  @IsString()
+  @IsOptional()
+  connectedAccountId: string;
 }

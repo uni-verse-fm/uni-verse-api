@@ -1,33 +1,191 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
-import { IDonate } from './interfaces/donate.interface';
-import { IPurchase } from './interfaces/purchase.interface';
-
-enum PaymentType {
-  Donation = 'donation',
-  Purchase = 'purchase',
-}
-
-interface IDonationMetadata {
-  paymentType: PaymentType;
-}
-
-interface IPurchaseMetadata {
-  paymentType: PaymentType;
-  targetCustomerId: string;
-  productId: string;
-}
+import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
+import { User } from '../users/schemas/user.schema';
+import { DonationAmount } from './dto/create-donate.dto';
 
 @Injectable()
 export class PaymentsService {
   private stripe: Stripe;
+  private univerDonationProductId: string;
   private readonly logger: Logger = new Logger(PaymentsService.name);
 
   constructor(private configService: ConfigService) {
     this.stripe = new Stripe(configService.get('STRIPE_SECRET_KEY'), {
       apiVersion: '2020-08-27',
     });
+    this.univerDonationProductId = configService.get(
+      'UNIVERSE_DONATION_PRODUCT_ID',
+    );
+  }
+
+  public async onboard(user: User) {
+    this.logger.log(`Onboarding user ${user._id}`);
+    try {
+      const accountLink = await this.stripe.accountLinks.create({
+        type: 'account_onboarding',
+        account: user.stripeAccountId,
+        refresh_url: `${this.configService.get('REFRESH_URL')}`,
+        return_url: `${this.configService.get('FRONTEND_URL')}`,
+      });
+      return accountLink.url;
+    } catch (err) {
+      throw new Error(`Can't onboard user on stripe due to: ${err}`);
+    }
+  }
+
+  public async refreshOnboardLink(request: IRequestWithUser) {
+    this.logger.log(`Refreshing onboarding user`);
+    const accountId = request.user?.stripeAccountId;
+    if (!accountId) throw new BadRequestException('Account id is undefined');
+    try {
+      const origin = `${request.secure ? 'https://' : 'http://'}${
+        request.headers.host
+      }`;
+      const accountLink = await this.stripe.accountLinks.create({
+        type: 'account_onboarding',
+        account: accountId,
+        refresh_url: `${origin}/payments/refresh`,
+        return_url: `${this.configService.get('FRONTEND_URL')}`,
+      });
+
+      return accountLink.url;
+    } catch (err) {
+      throw new InternalServerErrorException("Can't onboard user on stripe");
+    }
+  }
+
+  public async checkout(priceId: string, connectedAccountId?: string) {
+    try {
+      const session = await this.stripe.checkout.sessions.create({
+        line_items: [
+          {
+            price: priceId,
+            quantity: 1,
+          },
+        ],
+        mode: 'payment',
+        success_url: `${this.configService.get('FRONTEND_URL')}/Success`,
+        cancel_url: `${this.configService.get('FRONTEND_URL')}`,
+        payment_intent_data: connectedAccountId
+          ? {
+              application_fee_amount: 30,
+              transfer_data: {
+                destination: connectedAccountId,
+              },
+            }
+          : undefined,
+      });
+
+      return session.url;
+    } catch (err) {
+      throw new Error(`Can't onboard user on stripe due to: ${err}`);
+    }
+  }
+
+  public async createAccount() {
+    this.logger.log(`Creating stripe account`);
+    return await this.stripe.accounts
+      .create({
+        type: 'standard',
+      })
+      .then((response) => response.id)
+      .catch(() => {
+        this.logger.error("Can't create stripe account");
+        throw new InternalServerErrorException("Can't create stripe account");
+      });
+  }
+
+  public async deleteAccount(accountId: string) {
+    this.logger.log(`Delete account ${accountId}`);
+    return await this.stripe.accounts.del(accountId).catch(() => {
+      this.logger.error(`Can not Delete stripe account ${accountId}`);
+      throw new Error(`Can not Delete stripe account ${accountId}`);
+    });
+  }
+
+  public async createPrice(
+    name: string,
+    ownerId: string,
+    amount: number,
+    productId?: string,
+  ) {
+    this.logger.log(`Creating prices for owner: ${ownerId}`);
+    const productData = productId
+      ? { product: productId }
+      : {
+          product_data: {
+            name,
+            metadata: {
+              ownerId,
+            },
+          },
+        };
+    return await this.stripe.prices
+      .create({
+        unit_amount: amount,
+        currency: this.configService.get('STRIPE_CURRENCY'),
+        ...productData,
+        metadata: {
+          ownerId,
+        },
+      })
+      .catch(async () => {
+        productId && (await this.disableProduct(productId));
+        throw new Error("Couldn't create the price for the product");
+      });
+  }
+
+  public async createDonations(ownerId: string) {
+    this.logger.log(`Creating donations for owner: ${ownerId}`);
+    const donationAmounts = [100, 200, 300, 500];
+    return await this.stripe.products
+      .create({
+        name: `donation`,
+      })
+      .then(async (response) => {
+        await Promise.all(
+          donationAmounts.map((amount: number) =>
+            this.createPrice(
+              `${ownerId}-donation`,
+              ownerId,
+              amount,
+              response.id,
+            ),
+          ),
+        );
+
+        return response.id;
+      })
+      .catch(() => {
+        this.logger.error("Couldn't create the product");
+        throw new Error("Couldn't create the product");
+      });
+  }
+
+  public async disableProduct(productId: string) {
+    return await this.stripe.products
+      .update(productId, { active: false })
+      .catch(() => {
+        this.logger.error("Couldn't update the product");
+        throw new Error("Couldn't update the product");
+      });
+  }
+
+  public async findAccount(accountId: string) {
+    this.logger.log(`Find account ${accountId}`);
+    const response = await this.stripe.accounts.retrieve(accountId);
+    if (!response) {
+      this.logger.error(`Can not find account ${accountId}`);
+      throw new Error(`Can not find account ${accountId}`);
+    }
+    return response;
   }
 
   public async findCustomer(customerId: string) {
@@ -40,28 +198,21 @@ export class PaymentsService {
     return response;
   }
 
-  public async createCustomer(name: string, email: string) {
-    this.logger.log(`Creating customer ${name} ${email}`);
-    const response = await this.stripe.customers
-      .create(
-        {
-          name,
-          email,
-        },
-        {
-          maxNetworkRetries: 2,
-        },
-      )
+  public async findProductPrices(productId: string) {
+    this.logger.log(`Find product ${productId}`);
+    const response = await this.stripe.prices
+      .search({ query: `product: \'${productId}\'` })
       .catch((error) => {
-        this.logger.error(`Can't create payment acount due to: ${error.type}`);
-        throw new Error(error);
+        throw new Error(`Can not find product ${productId}` + error);
       });
-
     if (!response) {
-      this.logger.error(`Can not create customer ${name} ${email}`);
-      throw new Error('Somthing wrong with the payment server');
+      this.logger.error(`Can not find product ${productId} prices`);
+      throw new Error(`Can not find product ${productId} prices`);
     }
-    return response;
+    return response.data.map((price) => ({
+      id: price.id,
+      amount: price.unit_amount_decimal,
+    }));
   }
 
   public async deleteCustomer(customerId: string) {
@@ -71,90 +222,24 @@ export class PaymentsService {
     return response;
   }
 
-  public async payWithNewSource(
-    paymentPayload: IPurchase | IDonate,
-    metadata: IDonationMetadata | IPurchaseMetadata,
+  public async donate(
+    donationAmout: DonationAmount,
+    productId: string = this.univerDonationProductId,
+    connectedAccountId?: string,
   ) {
-    this.logger.log(`Creating payment with new source`);
-    const currency = this.configService.get('STRIPE_CURRENCY');
-
-    const data = {
-      customer: paymentPayload.customerId,
-      amount: paymentPayload.amount,
-      currency,
-      metadata: { ...metadata },
-    };
-
-    let response;
-    if (paymentPayload.saveCard) {
-      response = await this.stripe.paymentIntents.create({
-        ...data,
-        setup_future_usage: 'off_session',
-        automatic_payment_methods: {
-          enabled: true,
-        },
-      });
-    } else {
-      response = await this.stripe.paymentIntents.create({
-        ...data,
-        payment_method: paymentPayload.paymentMethodId,
-        confirm: true,
-      });
-    }
-
-    if (!response) {
-      this.logger.error(`Can not create payment with new source`);
-      throw new Error("Can't charge you");
-    }
-    return response;
-  }
-
-  public async payWithExistingSource(
-    amount: number,
-    customerId: string,
-    metadata: IDonationMetadata | IPurchaseMetadata,
-  ) {
-    this.logger.log(`Creating payment with existing source`);
-    const currency = this.configService.get('STRIPE_CURRENCY');
-    const response = await this.stripe.charges.create({
-      amount,
-      currency,
-      customer: customerId,
-      metadata: { ...metadata },
+    this.logger.log(`Making donation`);
+    await this.stripe.products.retrieve(productId).catch(() => {
+      throw new Error(`Product ${productId} doesn't exist`);
     });
-    if (!response) {
-      this.logger.error(`Can not create payment with existing source`);
-      throw new Error("Can't charge you");
+    const productPrice = await this.findProductPrices(productId);
+
+    const prices = productPrice.filter(
+      (price) => price.amount === donationAmout.toString(),
+    );
+    if (prices.length === 0) {
+      throw new Error(`Can not donate did you finish your onboarding ?`);
     }
-    return response;
-  }
-
-  public async donate(donatePayload: IDonate) {
-    this.logger.log(`Creating donation`);
-    const metadata: IDonationMetadata = { paymentType: PaymentType.Donation };
-    if (donatePayload.paymentMethodId)
-      return await this.payWithNewSource(donatePayload, metadata);
-    return await this.payWithExistingSource(
-      donatePayload.amount,
-      donatePayload.customerId,
-      metadata,
-    );
-  }
-
-  public async buyResourcePack(purchasePayload: IPurchase) {
-    this.logger.log(`Creating purchase`);
-    const metadata: IPurchaseMetadata = {
-      paymentType: PaymentType.Purchase,
-      targetCustomerId: purchasePayload.targetCustomerId,
-      productId: purchasePayload.productId,
-    };
-    if (purchasePayload.paymentMethodId)
-      return await this.payWithNewSource(purchasePayload, metadata);
-    return await this.payWithExistingSource(
-      purchasePayload.amount,
-      purchasePayload.customerId,
-      metadata,
-    );
+    return await this.checkout(prices[0].id, connectedAccountId);
   }
 
   public async findAllPayments(customerId: string) {
