@@ -11,10 +11,9 @@ export class TracksController {
   constructor(private readonly tracksService: TracksService) {}
 
   @Get('/search')
-  @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Search user' })
-  searchUsers(@Query('search') search: string) {
+  searchTracks(@Query('search') search: string) {
     if (search) return this.tracksService.searchTrack(search);
     return [];
   }
