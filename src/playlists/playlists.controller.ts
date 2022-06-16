@@ -65,7 +65,6 @@ export class PlaylistsController {
   }
 
   @Get('search')
-  @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Search playlist' })
   searchUsers(@Query('search') search: string) {

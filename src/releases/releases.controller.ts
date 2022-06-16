@@ -103,7 +103,6 @@ export class ReleasesController {
   }
 
   @Get('/search')
-  @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Search user' })
   searchUsers(@Query('search') search: string) {
