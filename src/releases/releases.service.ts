@@ -258,7 +258,7 @@ export class ReleasesService {
   }
 
   async releasesByUserId(userId: string) {
-    return await this.releaseModel.find({ owner: userId }).catch(() => {
+    return await this.releaseModel.find({ author: userId }).catch(() => {
       throw new Error('Somthing went wrong');
     });
   }
