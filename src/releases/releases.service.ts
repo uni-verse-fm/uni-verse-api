@@ -258,9 +258,19 @@ export class ReleasesService {
   }
 
   async releasesByUserId(userId: string) {
-    return await this.releaseModel.find({ author: userId }).catch(() => {
-      throw new Error('Somthing went wrong');
-    });
+    return await this.releaseModel
+      .find({ author: userId })
+      .populate('tracks')
+      .populate({
+        path: 'tracks',
+        populate: {
+          path: 'author',
+        },
+      })
+      .populate('author')
+      .catch(() => {
+        throw new Error('Somthing went wrong');
+      });
   }
 
   private async isReleaseUnique(title: string) {

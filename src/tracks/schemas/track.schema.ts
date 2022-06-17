@@ -12,7 +12,11 @@ export class Track {
   @Transform(({ value }) => value.toString())
   _id: ObjectId;
 
-  @Prop()
+  @Prop({
+    set: (content: string) => {
+      return content.trim();
+    },
+  })
   title: string;
 
   @Prop()
