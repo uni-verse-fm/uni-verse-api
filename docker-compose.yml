@@ -48,7 +48,7 @@ services:
       - 9000:9000
       - 9001:9001
     volumes:
-      - ./minio-data:/data
+      - minio-data:/data
     command: minio server --console-address ":9001" /data
     restart: always
     env_file:
@@ -114,6 +114,7 @@ services:
       - docker.env
 volumes:
   mongodb-data:
+  minio-data:
   grafana-storage:
   elasticsearch-data:
     driver: local
