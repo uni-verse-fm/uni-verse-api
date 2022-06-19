@@ -1,6 +1,5 @@
-import { Controller, Get, Query, UseGuards, Logger } from '@nestjs/common';
+import { Controller, Get, Query, Logger } from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TracksService } from './tracks.service';
 
 @ApiTags('tracks')
