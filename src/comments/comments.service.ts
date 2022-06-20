@@ -31,10 +31,11 @@ export class CommentsService {
   async createComment(createCommentDto: CreateCommentDto, owner: UserDocument) {
     this.logger.log(`Creating comment for ${createCommentDto.typeOfContent}`);
 
-    const contentType: TrackDocument | ResourceDocument = await this.getResource(
-      createCommentDto.typeOfContent,
-      createCommentDto.contentId,
-    );
+    const contentType: TrackDocument | ResourceDocument =
+      await this.getResource(
+        createCommentDto.typeOfContent,
+        createCommentDto.contentId,
+      );
 
     const createComment = {
       ...createCommentDto,
@@ -74,15 +75,23 @@ export class CommentsService {
     this.logger.log(`Finding comment of resource: ${resourceInfo.contentId}`);
     isValidId(resourceInfo.contentId);
 
-    const contentType: TrackDocument | ResourceDocument = await this.getResource(
+    const contentType: TrackDocument | ResourceDocument =
+      await this.getResource(
         resourceInfo.typeOfContent,
         resourceInfo.contentId,
       );
 
-    return await this.commentModel.find({ modelId: contentType._id, modelType: resourceInfo.typeOfContent }).populate('owner').catch(() => {
-        this.logger.error(`Can not find comments of resource with ID "${contentType._id}"`);
-        throw new NotFoundException(`Can not find comments of resource with ID "${contentType._id}"`);
-    });
+    return await this.commentModel
+      .find({ modelId: contentType._id, modelType: resourceInfo.typeOfContent })
+      .populate('owner')
+      .catch(() => {
+        this.logger.error(
+          `Can not find comments of resource with ID "${contentType._id}"`,
+        );
+        throw new NotFoundException(
+          `Can not find comments of resource with ID "${contentType._id}"`,
+        );
+      });
   }
 
   updateComment(

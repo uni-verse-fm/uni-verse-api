@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsString, IsEnum } from "class-validator";
-import { ModelType } from "./create-comment.dto";
+import { IsNotEmpty, IsString, IsEnum } from 'class-validator';
+import { ModelType } from './create-comment.dto';
 
 export class FindResourceCommentDto {
   @IsNotEmpty()
