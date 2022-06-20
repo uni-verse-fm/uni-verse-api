@@ -41,6 +41,7 @@ async function bootstrap() {
       'X-CSRF-Token',
       'X-Requested-With',
       'Accept',
+      'Authorization',
       'Accept-Version',
       'Content-Length',
       'Content-MD5',
