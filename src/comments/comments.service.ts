@@ -13,6 +13,7 @@ import { TracksService } from '../tracks/tracks.service';
 import { UserDocument } from '../users/schemas/user.schema';
 import { isValidId } from '../utils/is-valid-id';
 import { CreateCommentDto, ModelType } from './dto/create-comment.dto';
+import { FindResourceCommentDto } from './dto/find-resource-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment, CommentDocument } from './schemas/comment.schema';
 
@@ -30,22 +31,10 @@ export class CommentsService {
   async createComment(createCommentDto: CreateCommentDto, owner: UserDocument) {
     this.logger.log(`Creating comment for ${createCommentDto.typeOfContent}`);
 
-    let contentType: TrackDocument | ResourceDocument;
-
-    switch (createCommentDto.typeOfContent) {
-      case ModelType.Track:
-        contentType = await this.tracksService.findTrackById(
-          createCommentDto.contentId,
-        );
-        break;
-      case ModelType.Resource:
-        contentType = await this.resourcesService.findResourceById(
-          createCommentDto.contentId,
-        );
-        break;
-      default:
-        throw new BadRequestException('The type of content is not valid.');
-    }
+    const contentType: TrackDocument | ResourceDocument = await this.getResource(
+      createCommentDto.typeOfContent,
+      createCommentDto.contentId,
+    );
 
     const createComment = {
       ...createCommentDto,
@@ -81,6 +70,21 @@ export class CommentsService {
     return comment;
   }
 
+  async findResourceComments(resourceInfo: FindResourceCommentDto) {
+    this.logger.log(`Finding comment of resource: ${resourceInfo.contentId}`);
+    isValidId(resourceInfo.contentId);
+
+    const contentType: TrackDocument | ResourceDocument = await this.getResource(
+        resourceInfo.typeOfContent,
+        resourceInfo.contentId,
+      );
+
+    return await this.commentModel.find({ modelId: contentType._id, modelType: resourceInfo.typeOfContent }).populate('owner').catch(() => {
+        this.logger.error(`Can not find comments of resource with ID "${contentType._id}"`);
+        throw new NotFoundException(`Can not find comments of resource with ID "${contentType._id}"`);
+    });
+  }
+
   updateComment(
     id: string,
     _updateCommentDto: UpdateCommentDto,
@@ -114,5 +118,19 @@ export class CommentsService {
       throw new BadRequestException('You are not the owner of this comment.');
     }
     return comment;
+  }
+
+  private async getResource(
+    typeOfContent: ModelType,
+    contentId: string,
+  ): Promise<ResourceDocument | TrackDocument> {
+    switch (typeOfContent) {
+      case ModelType.Track:
+        return await this.tracksService.findTrackById(contentId);
+      case ModelType.Resource:
+        return await this.resourcesService.findResourceById(contentId);
+      default:
+        throw new BadRequestException('The type of content is not valid.');
+    }
   }
 }
