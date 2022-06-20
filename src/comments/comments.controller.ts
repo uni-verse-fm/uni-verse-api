@@ -54,7 +54,7 @@ export class CommentsController {
   @Get(':type/:id')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Find one comment by id' })
+  @ApiOperation({ summary: 'Find one resource comments' })
   @UseInterceptors(ValidIdInterceptor)
   findResourceComments(
     @Param('id') contentId: string,

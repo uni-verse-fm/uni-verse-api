@@ -67,7 +67,7 @@ export class PlaylistsController {
   @Get('search')
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Search playlist' })
-  searchUsers(@Query('search') search: string) {
+  searchPlaylists(@Query('search') search: string) {
     if (search) return this.playlistsService.searchPlaylist(search);
     return [];
   }
