@@ -13,7 +13,11 @@ export class Playlist {
   @Transform(({ value }) => value.toString())
   _id: ObjectId;
 
-  @Prop()
+  @Prop({
+    set: (content: string) => {
+      return content.trim();
+    },
+  })
   title: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })

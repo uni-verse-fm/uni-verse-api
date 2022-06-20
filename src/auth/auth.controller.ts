@@ -137,6 +137,9 @@ export class AuthController {
     );
 
     request.res.setHeader('Set-Cookie', accessTokenCookie.cookie);
-    return request.user;
+    request.res.setHeader('Authorization', accessTokenCookie.cookie);
+    return {
+      accessToken: accessTokenCookie.token,
+    };
   }
 }

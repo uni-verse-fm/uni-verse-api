@@ -15,7 +15,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
 import { CommentsService } from './comments.service';
-import { CreateCommentDto } from './dto/create-comment.dto';
+import { CreateCommentDto, ModelType } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @ApiTags('comments')
@@ -49,6 +49,21 @@ export class CommentsController {
   @UseInterceptors(ValidIdInterceptor)
   findOne(@Param('id') id: string) {
     return this.commentsService.findCommentById(id);
+  }
+
+  @Get(':type/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Find one resource comments' })
+  @UseInterceptors(ValidIdInterceptor)
+  findResourceComments(
+    @Param('id') contentId: string,
+    @Param('type') typeOfContent: ModelType,
+  ) {
+    return this.commentsService.findResourceComments({
+      contentId,
+      typeOfContent,
+    });
   }
 
   @Patch(':id')

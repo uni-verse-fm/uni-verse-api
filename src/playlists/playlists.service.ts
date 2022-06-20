@@ -77,6 +77,7 @@ export class PlaylistsService {
         },
       })
       .populate('owner');
+
     if (!playlist) {
       throw new NotFoundException(`Playlist with ID "${id}" not found.`);
     }
@@ -204,9 +205,25 @@ export class PlaylistsService {
   }
 
   async playlistsByUserId(userId: string) {
-    return await this.playlistModel.find({ owner: userId }).catch(() => {
-      throw new Error('Somthing went wrong');
-    });
+    return await this.playlistModel
+      .find({ owner: userId })
+      .populate('tracks')
+      .populate({
+        path: 'tracks',
+        populate: {
+          path: 'author',
+        },
+      })
+      .populate({
+        path: 'tracks',
+        populate: {
+          path: 'feats',
+        },
+      })
+      .populate('owner')
+      .catch(() => {
+        throw new Error('Somthing went wrong');
+      });
   }
 
   async searchPlaylist(search: string) {
