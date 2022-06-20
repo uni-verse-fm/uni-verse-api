@@ -88,6 +88,7 @@ export class AuthController {
       id: user._id,
       username: user.username,
       email: user.email,
+      accountId: user.stripeAccountId,
       accessToken: accessTokenCookie.token,
       refreshToken: refreshTokenCookie.token,
     };
