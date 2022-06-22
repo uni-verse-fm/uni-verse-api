@@ -3,14 +3,14 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
-import getLogLevels from './utils/get-log-levels';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 const API_VERSION = 0;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: getLogLevels(process.env.NODE_ENV === 'production'),
-  });
+  const app = await NestFactory.create(AppModule);
+
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   app.use(cookieParser());
   const configService = app.get<ConfigService>(ConfigService);
