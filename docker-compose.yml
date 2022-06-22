@@ -15,6 +15,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+      - log-data:/usr/src/app/logs
     restart: unless-stopped
     env_file:
       - docker.env
@@ -112,9 +113,22 @@ services:
       - elasticsearch
     env_file:
       - docker.env
+
+  filebeat:
+    user: root
+    container_name: filebeat
+    image: docker.elastic.co/beats/filebeat:8.2.0
+    volumes:
+      - log-data:/usr/share/filebeat/logs
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+    depends_on:
+      - elasticsearch
+    env_file:
+      - docker.env
+
 volumes:
   mongodb-data:
   minio-data:
   grafana-storage:
+  log-data:
   elasticsearch-data:
-    driver: local
