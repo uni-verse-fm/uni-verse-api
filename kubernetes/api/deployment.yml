@@ -25,3 +25,11 @@ spec:
         envFrom:
           - configMapRef:
               name: uni-verse-conf
+        volumeMounts:
+        - mountPath: /usr/src/app/logs
+          name: uni-verse-api-logs
+
+      volumes:
+      - name: uni-verse-api-logs
+        persistentVolumeClaim:
+          claimName:  uni-verse-api-logs
