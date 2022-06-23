@@ -24,6 +24,7 @@ import * as winston from 'winston';
 import * as path from 'path';
 
 import ecsFormat = require('@elastic/ecs-winston-format');
+import { ClientRMQ, ClientsModule, Transport } from '@nestjs/microservices';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -82,6 +83,19 @@ import ecsFormat = require('@elastic/ecs-winston-format');
         }),
       ],
     }),
+    ClientsModule.register([
+      {
+        name: 'MATH_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://rabbitmq:5672'],
+          queue: 'fp_in_queue',
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+    ]),
     AuthModule,
     UsersModule,
     ReleasesModule,
