@@ -12,6 +12,7 @@ import { MinioClientService } from '../minio-client/minio-client.service';
 import { PaymentsService } from '../payments/payments.service';
 import { SearchModule } from '../search/search.module';
 import ReleasesSearchService from './releases-search.service';
+import { RMQModule } from 'src/rmq-client/rmq-client.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import ReleasesSearchService from './releases-search.service';
     TracksModule,
     UsersModule,
     SearchModule,
+    RMQModule,
   ],
   controllers: [ReleasesController],
   providers: [

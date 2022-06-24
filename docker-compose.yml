@@ -12,6 +12,7 @@ services:
     depends_on:
       - mongodb
       - minio
+      - rabbitmq
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules

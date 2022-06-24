@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -20,6 +21,7 @@ import { BucketName } from '../minio-client/minio-client.service';
 import { ITrackResponse } from '../tracks/interfaces/track-response.interface';
 import { UpdateReleaseDto } from './dto/update-release.dto';
 import ReleasesSearchService from './releases-search.service';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 export class ReleasesService {
@@ -34,6 +36,7 @@ export class ReleasesService {
     private connection: Connection,
     private filesService: FilesService,
     private releasesSearchService: ReleasesSearchService,
+    private readonly amqpConnection: AmqpConnection,
   ) {}
 
   async createRelease(
@@ -79,6 +82,16 @@ export class ReleasesService {
             tracks: tracks.map((track) => track.id),
             coverName,
           };
+
+          tracks.forEach((t) =>
+            this.amqpConnection.publish(
+              'uni-verse-fp-in',
+              'universe.fp.in.routing.key',
+              {
+                track_url: t.fileName,
+              },
+            ),
+          );
 
           release = await this.releaseModel.create(createdRelease);
           this.releasesSearchService.insertIndex(release);

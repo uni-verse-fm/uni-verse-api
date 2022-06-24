@@ -23,8 +23,8 @@ import { utilities, WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import * as path from 'path';
 
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import ecsFormat = require('@elastic/ecs-winston-format');
-import { ClientRMQ, ClientsModule, Transport } from '@nestjs/microservices';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -49,6 +49,8 @@ import { ClientRMQ, ClientsModule, Transport } from '@nestjs/microservices';
         STRIPE_CURRENCY: Joi.string(),
         FRONTEND_URL: Joi.string(),
         PORT: Joi.number(),
+        RMQ_URL: Joi.string().required(),
+        RMQ_PORT: Joi.number().required(),
       }),
     }),
     MongooseModule.forRootAsync({
@@ -85,10 +87,10 @@ import { ClientRMQ, ClientsModule, Transport } from '@nestjs/microservices';
     }),
     ClientsModule.register([
       {
-        name: 'MATH_SERVICE',
+        name: 'UNI_VERSE_RMQ_SERVICE',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://rabbitmq:5672'],
+          urls: [`amqp://${process.env.RMQ_URL}:${process.env.RMQ_PORT}`],
           queue: 'fp_in_queue',
           queueOptions: {
             durable: false,
