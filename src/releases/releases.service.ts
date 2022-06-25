@@ -232,11 +232,13 @@ export class ReleasesService {
         id: feat._id.toString(),
         username: feat.username,
         email: feat.email,
+        profilePicture: feat.profilePicture,
       })),
       author: {
         id: release.author._id.toString(),
         username: release.author.username,
         email: release.author.email,
+        profilePicture: release.author.profilePicture,
       },
     };
   }
@@ -316,6 +318,7 @@ export class ReleasesService {
                   id: '$_id',
                   username: '$username',
                   email: '$email',
+                  profilePicture: '$profilePicture',
                 },
               },
             ],
@@ -407,6 +410,7 @@ export class ReleasesService {
                   id: '$_id',
                   username: '$username',
                   email: '$email',
+                  profilePicture: '$profilePicture',
                 },
               },
             ],
@@ -418,6 +422,7 @@ export class ReleasesService {
             id: 1,
             title: 1,
             fileName: 1,
+            coverName: 1,
             feats: {
               id: 1,
               username: 1,

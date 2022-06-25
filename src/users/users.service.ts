@@ -19,6 +19,9 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserWithGoogleDto } from './dto/create-google-user.dto';
 import { Provider } from '../auth/auth.service';
 import * as mongoose from 'mongoose';
+import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
+import { FilesService } from '../files/files.service';
+import { BucketName } from '../minio-client/minio-client.service';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +31,7 @@ export class UsersService {
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private stripeService: PaymentsService,
+    private filesService: FilesService,
     private usersSearchService: UsersSearchService,
   ) {}
 
@@ -203,6 +207,7 @@ export class UsersService {
       id: user._id.toString(),
       username: user.username,
       email: user.email,
+      profilePicture: user.profilePicture,
     };
   }
 
@@ -327,5 +332,45 @@ export class UsersService {
       .catch(() => {
         throw new Error("Can't change password");
       });
+  }
+
+  async changeImage(file: SimpleCreateFileDto, user: User) {
+    return await this.filesService
+      .createFile(file, BucketName.Images)
+      .then(
+        async (fileName) =>
+          await this.userModel
+            .updateOne(user, { profilePicture: fileName })
+            .then(() => ({
+              id: user._id.toString(),
+              message: 'Profile picture changed',
+            }))
+            .catch(() => {
+              throw new Error("Can't change profile picture");
+            }),
+      )
+      .then(async () => {
+        user.profilePicture &&
+          (await this.filesService
+            .removeFile(user.profilePicture, BucketName.Images)
+            .then());
+      })
+      .catch(() => {
+        this.logger.error(
+          `Couldn't change Profile picture ${file.originalFileName}`,
+        );
+        throw new Error("Couldn't change Profile picture");
+      });
+  }
+
+  async missingIndexManager(user: User) {
+    this.logger.log(`Missing index manager ${user.email}`);
+    const response = await this.usersSearchService.existIndex(user.email);
+    if (!response) {
+      await this.usersSearchService.insertIndex(user).catch(() => {
+        this.logger.error(`Couldn't create index for ${user.email}`);
+        throw new Error("Couldn't create index");
+      });
+    }
   }
 }

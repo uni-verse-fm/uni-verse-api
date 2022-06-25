@@ -12,7 +12,13 @@ import { AdminJwtStrategy } from './strategies/admin-jwt.strategy';
 
 @Module({
   imports: [ConfigModule, PassportModule, UsersModule, JwtModule.register({})],
-  providers: [AuthService, AdminJwtStrategy, JwtStrategy, LocalStrategy, JwtRefreshTokenStrategy],
+  providers: [
+    AuthService,
+    AdminJwtStrategy,
+    JwtStrategy,
+    LocalStrategy,
+    JwtRefreshTokenStrategy,
+  ],
   exports: [AuthService],
   controllers: [AuthController],
 })

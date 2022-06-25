@@ -1,5 +1,13 @@
 import { JwtAuthGuard } from './../auth/guards/jwt-auth.guard';
-import { Controller, Get, Patch, Param, UseGuards, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Param,
+  UseGuards,
+  Post,
+  Body,
+} from '@nestjs/common';
 import { ViewsService } from './views.service';
 import { AdminJwtAuthGuard } from '../auth/guards/admin-jwt-auth.guard';
 import { ApiExcludeController } from '@nestjs/swagger';

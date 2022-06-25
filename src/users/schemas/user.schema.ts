@@ -30,6 +30,9 @@ export class User {
   stripeAccountId: string = null;
 
   @Prop()
+  profilePicture: string = null;
+
+  @Prop()
   donationProductId: string = null;
 
   @Prop()

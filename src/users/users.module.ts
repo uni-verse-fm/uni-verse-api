@@ -1,3 +1,4 @@
+import { FilesModule } from './../files/files.module';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersController } from './users.controller';
@@ -11,6 +12,7 @@ import UsersSearchService from './users-search.service';
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     SearchModule,
+    FilesModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, PaymentsService, UsersSearchService],

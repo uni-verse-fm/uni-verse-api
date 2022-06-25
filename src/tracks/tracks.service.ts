@@ -170,11 +170,13 @@ export class TracksService {
         id: feat._id.toString(),
         username: feat.username,
         email: feat.email,
+        profilePicture: feat.profilePicture,
       })),
       author: {
         id: track.author._id.toString(),
         username: track.author.username,
         email: track.author.email,
+        profilePicture: track.author.profilePicture,
       },
     };
   }
@@ -224,7 +226,12 @@ export class TracksService {
               },
             },
             {
-              $project: { id: '$_id', username: '$username', email: '$email' },
+              $project: {
+                id: '$_id',
+                username: '$username',
+                email: '$email',
+                profilePicture: '$profilePicture',
+              },
             },
           ],
           as: 'author',
@@ -249,7 +256,11 @@ export class TracksService {
               },
             },
             {
-              $project: { id: '$_id', title: '$title' },
+              $project: {
+                id: '$_id',
+                title: '$title',
+                coverName: '$coverName',
+              },
             },
           ],
           as: 'release',

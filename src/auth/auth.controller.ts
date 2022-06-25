@@ -22,6 +22,7 @@ import { CreateUserWithGoogleDto } from '../users/dto/create-google-user.dto';
 import { Request as ExpressRequest } from 'express';
 import { CreateUserWithSpotifyDto } from '../users/dto/create-spotify-user.dto';
 import { ConfigService } from '@nestjs/config';
+import { AdminJwtAuthGuard } from './guards/admin-jwt-auth.guard';
 
 @ApiTags('authentication')
 @Controller('auth')
@@ -39,6 +40,7 @@ export class AuthController {
   }
 
   @Post('google')
+  @UseGuards(AdminJwtAuthGuard)
   @ApiOperation({ summary: 'Register with google' })
   async authWithGoogle(
     @Body() createUserWithGoogle: CreateUserWithGoogleDto,
@@ -56,6 +58,7 @@ export class AuthController {
   }
 
   @Post('spotify')
+  @UseGuards(AdminJwtAuthGuard)
   @ApiOperation({ summary: 'Register with spotify' })
   async authWithSpotify(
     @Body() createUserWithSpotify: CreateUserWithSpotifyDto,
@@ -93,6 +96,7 @@ export class AuthController {
       id: user._id,
       username: user.username,
       email: user.email,
+      profilePicture: user.profilePicture,
       accountId: user.stripeAccountId,
       accessToken: accessTokenCookie.token,
       refreshToken: refreshTokenCookie.token,
@@ -108,7 +112,7 @@ export class AuthController {
         accessTokenCookie.cookie,
         refreshTokenCookie.cookie,
       ]);
-
+      await this.usersService.missingIndexManager(user);
       response.setHeader('Authorization', accessTokenCookie.cookie);
     }
 

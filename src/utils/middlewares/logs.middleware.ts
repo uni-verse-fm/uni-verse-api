@@ -10,7 +10,7 @@ class LogsMiddleware implements NestMiddleware {
       const { method, originalUrl } = request;
       const { statusCode, statusMessage } = response;
 
-      if(originalUrl === '/metrics') return;
+      if (originalUrl === '/metrics') return;
 
       const message = `${method} ${originalUrl} ${statusCode} ${statusMessage}`;
 

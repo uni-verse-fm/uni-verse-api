@@ -34,7 +34,7 @@ export class Track {
 const TrackSchema = SchemaFactory.createForClass(Track);
 
 TrackSchema.set('toJSON', {
-  transform: function (doc, ret, options) {
+  transform: function (doc, ret) {
     ret.id = ret._id;
     delete ret._id;
     delete ret.__v;

@@ -254,6 +254,7 @@ export class ResourcePacksService {
         id: resourcePack.author._id.toString(),
         username: resourcePack.author.username,
         email: resourcePack.author.email,
+        profilePicture: resourcePack.author.profilePicture,
       },
     };
   }

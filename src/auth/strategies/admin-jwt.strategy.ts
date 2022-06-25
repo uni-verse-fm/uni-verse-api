@@ -22,8 +22,7 @@ export class AdminJwtStrategy extends PassportStrategy(Strategy, 'admin-jwt') {
           return request?.headers?.authorization
             ? AES.decrypt(
                 request?.headers?.authorization as string,
-                configService
-                  .get('UNIVERSE_PRIVATE_KEY')
+                configService.get('UNIVERSE_PRIVATE_KEY'),
               ).toString(enc.Utf8)
             : undefined;
         },
@@ -32,7 +31,9 @@ export class AdminJwtStrategy extends PassportStrategy(Strategy, 'admin-jwt') {
     });
   }
 
-  async validate(payload: TokenPayload): Promise<User & { accessToken: string }> {
+  async validate(
+    payload: TokenPayload,
+  ): Promise<User & { accessToken: string }> {
     this.logger.log(`Validating admin ${payload.userId}`);
     return await this.authService.getAuthenticatedAdminById(payload.userId);
   }

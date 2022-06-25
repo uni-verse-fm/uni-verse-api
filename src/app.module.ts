@@ -85,8 +85,8 @@ import DailyRotateFile = require('winston-daily-rotate-file');
           datePattern: 'YYYY-MM-DD-HH',
           maxSize: '20m',
           maxFiles: '3d',
-        }).on('rotate', (oldFilename, newFilename) => {
-            fs.unlinkSync("../logs/" + oldFilename);
+        }).on('rotate', (oldFilename) => {
+          fs.unlinkSync(oldFilename);
         }),
       ],
     }),

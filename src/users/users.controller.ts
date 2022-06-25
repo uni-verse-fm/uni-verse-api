@@ -10,6 +10,7 @@ import {
   Post,
   Res,
   Body,
+  UploadedFile,
 } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
 import { UsersService } from './users.service';
@@ -23,6 +24,8 @@ import {
 } from '@nestjs/swagger';
 import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -92,5 +95,24 @@ export class UsersController {
   @ApiCookieAuth('Set-Cookie')
   remove(@Request() request: IRequestWithUser) {
     return this.usersService.removeUser(request.user.id);
+  }
+
+  @Post('upload')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Delete a user' })
+  @ApiCookieAuth('Set-Cookie')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadProfilePicture(
+    @UploadedFile() file: Express.Multer.File,
+    @Request() request: IRequestWithUser,
+  ) {
+    const simpleCreateFile: SimpleCreateFileDto = {
+      originalFileName: file.originalname,
+      buffer: file.buffer,
+      size: file.size,
+      mimetype: file.mimetype,
+    };
+    return this.usersService.changeImage(simpleCreateFile, request.user);
   }
 }

@@ -40,6 +40,7 @@ describe('AuthController', () => {
               username: user1.username,
               email: user1.email,
             }),
+            missingIndexManager: () => undefined,
             setCurrentRefreshToken: () => ({}),
           },
         },
