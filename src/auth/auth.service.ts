@@ -17,18 +17,18 @@ export class AuthService {
     private readonly usersService: UsersService,
   ) {}
 
-  public getCookieWithJwtAccessToken(userId: string) {
+  public getCookieWithJwtAccessToken(userId: string, expires?: string) {
     this.logger.log(`Generating JWT access token for user ${userId}`);
     const payload = { userId };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
-      expiresIn: `${this.configService.get(
-        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-      )}`,
+      expiresIn: `${
+        expires || this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME')
+      }`,
     });
-    const cookie = `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-      'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-    )}`;
+    const cookie = `Authentication=${token}; HttpOnly; Path=/; Max-Age=${
+      expires || this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME')
+    }`;
     return {
       cookie,
       token,
@@ -69,10 +69,29 @@ export class AuthService {
   public async getAuthenticatedUserById(id: string): Promise<User> {
     this.logger.log(`Get authenticated user ${id}`);
     const user = await this.usersService.findById(id);
-    if (!user) {
-      throw new UnauthorizedException("User doesn't exist");
+    if (!user || user.username === 'admin') {
+      throw new UnauthorizedException(
+        "User either doesn't exist or trying to access as Admin",
+      );
     }
     return user;
+  }
+
+  public async getAuthenticatedAdminById(
+    id: string,
+  ): Promise<User & { accessToken: string }> {
+    this.logger.log(`Get authenticated admin ${id}`);
+    const admin = await this.usersService.findById(id);
+    if (!admin || admin.username !== 'admin') {
+      throw new UnauthorizedException("Admin with this username doesn't exist");
+    }
+    return {
+      ...admin,
+      accessToken: this.getCookieWithJwtAccessToken(
+        admin._id.toString(),
+        this.configService.get('ADMIN_TOKEN_EXPIRATION_TIME'),
+      ).token,
+    };
   }
 
   public getCookiesForLogOut() {

@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   Post,
   Res,
+  Body,
 } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
 import { UsersService } from './users.service';
@@ -21,6 +22,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -58,6 +60,20 @@ export class UsersController {
   ) {
     const onboardUrl = await this.usersService.onboardUser(request);
     return response.json({ onboardUrl });
+  }
+
+  @Post('/password')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Change password' })
+  async changePassword(
+    @Body() changePassword: ChangePasswordDto,
+    @Request() request: IRequestWithUser,
+  ) {
+    return await this.usersService.changePassword(
+      changePassword.password,
+      request.user,
+    );
   }
 
   @Get(':id')

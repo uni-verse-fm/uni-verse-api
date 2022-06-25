@@ -17,6 +17,7 @@ import { BucketName } from '../minio-client/minio-client.service';
 import { isValidId } from '../utils/is-valid-id';
 import { Readable } from 'stream';
 import TracksSearchService from './tracks-search.service';
+import * as mongoose from 'mongoose';
 
 type StreamTrackResponse = {
   fileName: string;
@@ -190,12 +191,26 @@ export class TracksService {
     this.logger.log(`Searching for track`);
 
     const results = await this.tracksSearchService.searchIndex(search);
-    const ids = results.map((result) => result.id);
+    const ids = results.map((result) => new mongoose.Types.ObjectId(result.id));
     if (!ids.length) {
       return [];
     }
-
     return this.trackModel.aggregate([
+      {
+        $match: {
+          _id: {
+            $in: ids,
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'views',
+          localField: '_id',
+          foreignField: 'track',
+          as: 'viewsDocs',
+        },
+      },
       {
         $lookup: {
           from: 'users',
@@ -250,6 +265,7 @@ export class TracksService {
             username: 1,
             email: 1,
           },
+          views: { $size: '$viewsDocs' },
           release: { $arrayElemAt: ['$release', 0] },
           author: { $arrayElemAt: ['$author', 0] },
         },

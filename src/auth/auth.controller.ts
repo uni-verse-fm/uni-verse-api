@@ -21,6 +21,7 @@ import JwtRefreshGuard from './guards/jwt-refresh.guard';
 import { CreateUserWithGoogleDto } from '../users/dto/create-google-user.dto';
 import { Request as ExpressRequest } from 'express';
 import { CreateUserWithSpotifyDto } from '../users/dto/create-spotify-user.dto';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('authentication')
 @Controller('auth')
@@ -28,6 +29,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Post('register')
@@ -79,6 +81,9 @@ export class AuthController {
 
     const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
       user.id,
+      user.username === 'admin'
+        ? this.configService.get('ADMIN_TOKEN_EXPIRATION_TIME')
+        : undefined,
     );
     const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(
       user.id,
@@ -98,12 +103,15 @@ export class AuthController {
       user.id,
     );
 
-    response.setHeader('Set-Cookie', [
-      accessTokenCookie.cookie,
-      refreshTokenCookie.cookie,
-    ]);
+    if (user.username !== 'admin') {
+      response.setHeader('Set-Cookie', [
+        accessTokenCookie.cookie,
+        refreshTokenCookie.cookie,
+      ]);
 
-    response.setHeader('Authorization', accessTokenCookie.cookie);
+      response.setHeader('Authorization', accessTokenCookie.cookie);
+    }
+
     return response.send(simplifiedUser);
   }
 
@@ -133,8 +141,11 @@ export class AuthController {
   @Get('refresh')
   @ApiOperation({ summary: 'Refresh access token' })
   refresh(@Req() request: IRequestWithUser) {
+    const { user } = request;
+
     const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
-      request.user.id,
+      user.id,
+      user.username === 'admin' ? '10s' : undefined,
     );
 
     request.res.setHeader('Set-Cookie', accessTokenCookie.cookie);

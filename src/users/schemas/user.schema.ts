@@ -1,8 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId, Document } from 'mongoose';
-import { Release } from '../../releases/schemas/release.schema';
-import { Transform, Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { Provider } from '../../auth/auth.service';
 
 export type UserDocument = User & Document;
@@ -26,9 +25,6 @@ export class User {
 
   @Prop({ select: false })
   password: string;
-
-  @Type(() => Release)
-  releases: Release[] = [];
 
   @Prop()
   stripeAccountId: string = null;

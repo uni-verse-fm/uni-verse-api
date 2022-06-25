@@ -18,6 +18,7 @@ import { IRequestWithUser } from './interfaces/request-with-user.interface';
 import * as bcrypt from 'bcrypt';
 import { CreateUserWithGoogleDto } from './dto/create-google-user.dto';
 import { Provider } from '../auth/auth.service';
+import * as mongoose from 'mongoose';
 
 @Injectable()
 export class UsersService {
@@ -36,7 +37,6 @@ export class UsersService {
     await this.isUsernameUnique(createUserDto.username);
     const userWithEmptyReleases = {
       ...createUserDto,
-      releases: [],
       stripeAccountId: null,
     };
 
@@ -236,15 +236,22 @@ export class UsersService {
   async searchUser(search: string, meId: string) {
     this.logger.log(`Searching user ${meId}`);
     const results = await this.usersSearchService.searchIndex(search);
-    const ids = results.map((result) => result.id).filter((id) => id !== meId);
+    const ids = results
+      .filter((user) => user.id !== meId && user.username !== 'admin')
+      .map((result) => new mongoose.Types.ObjectId(result.id));
     if (!ids.length) {
       return [];
     }
-    return this.userModel.find({
-      _id: {
-        $in: ids,
-      },
-    });
+    return this.userModel
+      .find({
+        _id: {
+          $in: ids,
+        },
+      })
+      .catch(() => {
+        this.logger.error(`Couldn't search user ${search}`);
+        throw new Error("Couldn't search user");
+      });
   }
 
   async setCurrentRefreshToken(refreshToken: string, userId: string) {
@@ -304,5 +311,21 @@ export class UsersService {
     this.usersSearchService.insertIndex(user);
 
     return user;
+  }
+
+  async changePassword(password: string, user: User) {
+    this.logger.log(`Changing password ${user.username}`);
+
+    const hashed = await bcrypt.hash(password, 10);
+
+    return await this.userModel
+      .updateOne(user, { password: hashed })
+      .then(() => ({
+        id: user._id.toString(),
+        message: 'Password changed',
+      }))
+      .catch(() => {
+        throw new Error("Can't change password");
+      });
   }
 }

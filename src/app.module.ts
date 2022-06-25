@@ -20,10 +20,13 @@ import { MetricsModule } from './metrics/metrics.module';
 import { SearchModule } from './search/search.module';
 import LogsMiddleware from './utils/middlewares/logs.middleware';
 import { utilities, WinstonModule } from 'nest-winston';
+import { ViewsModule } from './views/views.module';
 import * as winston from 'winston';
 import * as path from 'path';
+import * as fs from 'fs';
 
 import ecsFormat = require('@elastic/ecs-winston-format');
+import DailyRotateFile = require('winston-daily-rotate-file');
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -76,9 +79,14 @@ import ecsFormat = require('@elastic/ecs-winston-format');
             utilities.format.nestLike('Uni Verse Fm', { prettyPrint: true }),
           ),
         }),
-        new winston.transports.File({
-          filename: 'universe-api.log',
+        new DailyRotateFile({
+          filename: 'universe-api-%DATE%.log',
           dirname: path.join(__dirname, '../logs'),
+          datePattern: 'YYYY-MM-DD-HH',
+          maxSize: '20m',
+          maxFiles: '3d',
+        }).on('rotate', (oldFilename, newFilename) => {
+            fs.unlinkSync("../logs/" + oldFilename);
         }),
       ],
     }),
@@ -97,6 +105,7 @@ import ecsFormat = require('@elastic/ecs-winston-format');
     PrometheusModule,
     MetricsModule,
     SearchModule,
+    ViewsModule,
   ],
   controllers: [WelcomeController],
   providers: [],
