@@ -164,18 +164,38 @@ export class AuthService {
     this.logger.log(
       `Authenticating ${provider} user ${createUserWithGoogle.email}`,
     );
-    try {
-      const user = await this.usersService.findUserByEmail(
-        createUserWithGoogle.email,
-      );
 
-      return this.handleRegisteredUser(user);
-    } catch (error) {
-      if (error.response.statusCode !== 404) {
-        throw new Error(error);
-      }
+    return await this.usersService
+      .findUserByEmail(createUserWithGoogle.email)
+      .then(async (user) => await this.handleRegisteredUser(user))
+      .catch(async (error) => {
+        this.logger.error(`Error can't autheticate`);
+        if (error.response.statusCode !== 404) {
+          throw new Error(error);
+        }
 
-      return this.registerUser(createUserWithGoogle, provider);
-    }
+        return await this.registerUser(createUserWithGoogle, provider).catch(
+          (error) => {
+            this.logger.error(`Error can't autheticate`);
+            throw new Error(error);
+          },
+        );
+      });
+  }
+
+  public buildLoginResponse(
+    user: User,
+    accessToken: string,
+    refreshToken: string,
+  ) {
+    return {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      profilePicture: user.profilePicture,
+      accountId: user.stripeAccountId,
+      accessToken,
+      refreshToken,
+    };
   }
 }

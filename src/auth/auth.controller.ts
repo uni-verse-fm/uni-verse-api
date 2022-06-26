@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Logger,
   Post,
   Req,
   Request,
@@ -19,7 +20,6 @@ import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import JwtRefreshGuard from './guards/jwt-refresh.guard';
 import { CreateUserWithGoogleDto } from '../users/dto/create-google-user.dto';
-import { Request as ExpressRequest } from 'express';
 import { CreateUserWithSpotifyDto } from '../users/dto/create-spotify-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { AdminJwtAuthGuard } from './guards/admin-jwt-auth.guard';
@@ -27,6 +27,8 @@ import { AdminJwtAuthGuard } from './guards/admin-jwt-auth.guard';
 @ApiTags('authentication')
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
@@ -44,17 +46,20 @@ export class AuthController {
   @ApiOperation({ summary: 'Register with google' })
   async authWithGoogle(
     @Body() createUserWithGoogle: CreateUserWithGoogleDto,
-    @Req() request: ExpressRequest,
+    @Res() response: Response,
   ) {
     const { accessToken, refreshToken, user } =
       await this.authService.authWithProvider(createUserWithGoogle, 'google');
 
-    request.res.setHeader('Set-Cookie', [
-      accessToken.cookie,
-      refreshToken.cookie,
-    ]);
+    response.setHeader('Set-Cookie', [accessToken.cookie, refreshToken.cookie]);
 
-    return user;
+    return response.send(
+      this.authService.buildLoginResponse(
+        user,
+        accessToken.token,
+        refreshToken.token,
+      ),
+    );
   }
 
   @Post('spotify')
@@ -62,17 +67,20 @@ export class AuthController {
   @ApiOperation({ summary: 'Register with spotify' })
   async authWithSpotify(
     @Body() createUserWithSpotify: CreateUserWithSpotifyDto,
-    @Req() request: ExpressRequest,
+    @Res() response: Response,
   ) {
     const { accessToken, refreshToken, user } =
       await this.authService.authWithProvider(createUserWithSpotify, 'spotify');
 
-    request.res.setHeader('Set-Cookie', [
-      accessToken.cookie,
-      refreshToken.cookie,
-    ]);
+    response.setHeader('Set-Cookie', [accessToken.cookie, refreshToken.cookie]);
 
-    return user;
+    return response.send(
+      this.authService.buildLoginResponse(
+        user,
+        accessToken.token,
+        refreshToken.token,
+      ),
+    );
   }
 
   @UseGuards(LocalAuthGuard)
@@ -92,16 +100,6 @@ export class AuthController {
       user.id,
     );
 
-    const simplifiedUser = {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      profilePicture: user.profilePicture,
-      accountId: user.stripeAccountId,
-      accessToken: accessTokenCookie.token,
-      refreshToken: refreshTokenCookie.token,
-    };
-
     await this.usersService.setCurrentRefreshToken(
       refreshTokenCookie.token,
       user.id,
@@ -116,7 +114,13 @@ export class AuthController {
       response.setHeader('Authorization', accessTokenCookie.cookie);
     }
 
-    return response.send(simplifiedUser);
+    return response.send(
+      this.authService.buildLoginResponse(
+        user,
+        accessTokenCookie.token,
+        refreshTokenCookie.token,
+      ),
+    );
   }
 
   @UseGuards(JwtAuthGuard)
