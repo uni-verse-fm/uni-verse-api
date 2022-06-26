@@ -1,11 +1,13 @@
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { FilesService } from '../files/files.service';
 import * as data from '../test-utils/data/mock_data.json';
 import {
   closeInMongodConnection,
   rootMongooseTestModule,
 } from '../test-utils/in-memory/mongoose.helper.test';
+import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 import { data2list } from '../test-utils/mocks/standard-mock.service.test';
 import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.test';
@@ -33,6 +35,8 @@ describe('UsersService', () => {
         ConfigModule,
         PaymentServiceMock,
         UserSearchServiceMock,
+        FilesService,
+        MinioServiceMock,
       ],
     }).compile();
     userService = module.get<UsersService>(UsersService);

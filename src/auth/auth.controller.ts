@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Logger,
   Post,
   Req,
   Request,
@@ -19,15 +20,19 @@ import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import JwtRefreshGuard from './guards/jwt-refresh.guard';
 import { CreateUserWithGoogleDto } from '../users/dto/create-google-user.dto';
-import { Request as ExpressRequest } from 'express';
 import { CreateUserWithSpotifyDto } from '../users/dto/create-spotify-user.dto';
+import { ConfigService } from '@nestjs/config';
+import { AdminJwtAuthGuard } from './guards/admin-jwt-auth.guard';
 
 @ApiTags('authentication')
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Post('register')
@@ -37,37 +42,45 @@ export class AuthController {
   }
 
   @Post('google')
+  @UseGuards(AdminJwtAuthGuard)
   @ApiOperation({ summary: 'Register with google' })
   async authWithGoogle(
     @Body() createUserWithGoogle: CreateUserWithGoogleDto,
-    @Req() request: ExpressRequest,
+    @Res() response: Response,
   ) {
     const { accessToken, refreshToken, user } =
       await this.authService.authWithProvider(createUserWithGoogle, 'google');
 
-    request.res.setHeader('Set-Cookie', [
-      accessToken.cookie,
-      refreshToken.cookie,
-    ]);
+    response.setHeader('Set-Cookie', [accessToken.cookie, refreshToken.cookie]);
 
-    return user;
+    return response.send(
+      this.authService.buildLoginResponse(
+        user,
+        accessToken.token,
+        refreshToken.token,
+      ),
+    );
   }
 
   @Post('spotify')
+  @UseGuards(AdminJwtAuthGuard)
   @ApiOperation({ summary: 'Register with spotify' })
   async authWithSpotify(
     @Body() createUserWithSpotify: CreateUserWithSpotifyDto,
-    @Req() request: ExpressRequest,
+    @Res() response: Response,
   ) {
     const { accessToken, refreshToken, user } =
       await this.authService.authWithProvider(createUserWithSpotify, 'spotify');
 
-    request.res.setHeader('Set-Cookie', [
-      accessToken.cookie,
-      refreshToken.cookie,
-    ]);
+    response.setHeader('Set-Cookie', [accessToken.cookie, refreshToken.cookie]);
 
-    return user;
+    return response.send(
+      this.authService.buildLoginResponse(
+        user,
+        accessToken.token,
+        refreshToken.token,
+      ),
+    );
   }
 
   @UseGuards(LocalAuthGuard)
@@ -79,32 +92,35 @@ export class AuthController {
 
     const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
       user.id,
+      user.username === 'admin'
+        ? this.configService.get('ADMIN_TOKEN_EXPIRATION_TIME')
+        : undefined,
     );
     const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(
       user.id,
     );
-
-    const simplifiedUser = {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      accountId: user.stripeAccountId,
-      accessToken: accessTokenCookie.token,
-      refreshToken: refreshTokenCookie.token,
-    };
 
     await this.usersService.setCurrentRefreshToken(
       refreshTokenCookie.token,
       user.id,
     );
 
-    response.setHeader('Set-Cookie', [
-      accessTokenCookie.cookie,
-      refreshTokenCookie.cookie,
-    ]);
+    if (user.username !== 'admin') {
+      response.setHeader('Set-Cookie', [
+        accessTokenCookie.cookie,
+        refreshTokenCookie.cookie,
+      ]);
+      await this.usersService.missingIndexManager(user);
+      response.setHeader('Authorization', accessTokenCookie.cookie);
+    }
 
-    response.setHeader('Authorization', accessTokenCookie.cookie);
-    return response.send(simplifiedUser);
+    return response.send(
+      this.authService.buildLoginResponse(
+        user,
+        accessTokenCookie.token,
+        refreshTokenCookie.token,
+      ),
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -133,8 +149,11 @@ export class AuthController {
   @Get('refresh')
   @ApiOperation({ summary: 'Refresh access token' })
   refresh(@Req() request: IRequestWithUser) {
+    const { user } = request;
+
     const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
-      request.user.id,
+      user.id,
+      user.username === 'admin' ? '10s' : undefined,
     );
 
     request.res.setHeader('Set-Cookie', accessTokenCookie.cookie);

@@ -17,18 +17,18 @@ export class AuthService {
     private readonly usersService: UsersService,
   ) {}
 
-  public getCookieWithJwtAccessToken(userId: string) {
+  public getCookieWithJwtAccessToken(userId: string, expires?: string) {
     this.logger.log(`Generating JWT access token for user ${userId}`);
     const payload = { userId };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
-      expiresIn: `${this.configService.get(
-        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-      )}`,
+      expiresIn: `${
+        expires || this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME')
+      }`,
     });
-    const cookie = `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-      'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-    )}`;
+    const cookie = `Authentication=${token}; HttpOnly; Path=/; Max-Age=${
+      expires || this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME')
+    }`;
     return {
       cookie,
       token,
@@ -69,10 +69,29 @@ export class AuthService {
   public async getAuthenticatedUserById(id: string): Promise<User> {
     this.logger.log(`Get authenticated user ${id}`);
     const user = await this.usersService.findById(id);
-    if (!user) {
-      throw new UnauthorizedException("User doesn't exist");
+    if (!user || user.username === 'admin') {
+      throw new UnauthorizedException(
+        "User either doesn't exist or trying to access as Admin",
+      );
     }
     return user;
+  }
+
+  public async getAuthenticatedAdminById(
+    id: string,
+  ): Promise<User & { accessToken: string }> {
+    this.logger.log(`Get authenticated admin ${id}`);
+    const admin = await this.usersService.findById(id);
+    if (!admin || admin.username !== 'admin') {
+      throw new UnauthorizedException("Admin with this username doesn't exist");
+    }
+    return {
+      ...admin,
+      accessToken: this.getCookieWithJwtAccessToken(
+        admin._id.toString(),
+        this.configService.get('ADMIN_TOKEN_EXPIRATION_TIME'),
+      ).token,
+    };
   }
 
   public getCookiesForLogOut() {
@@ -145,18 +164,38 @@ export class AuthService {
     this.logger.log(
       `Authenticating ${provider} user ${createUserWithGoogle.email}`,
     );
-    try {
-      const user = await this.usersService.findUserByEmail(
-        createUserWithGoogle.email,
-      );
 
-      return this.handleRegisteredUser(user);
-    } catch (error) {
-      if (error.response.statusCode !== 404) {
-        throw new Error(error);
-      }
+    return await this.usersService
+      .findUserByEmail(createUserWithGoogle.email)
+      .then(async (user) => await this.handleRegisteredUser(user))
+      .catch(async (error) => {
+        this.logger.error(`Error can't autheticate`);
+        if (error.response.statusCode !== 404) {
+          throw new Error(error);
+        }
 
-      return this.registerUser(createUserWithGoogle, provider);
-    }
+        return await this.registerUser(createUserWithGoogle, provider).catch(
+          (error) => {
+            this.logger.error(`Error can't autheticate`);
+            throw new Error(error);
+          },
+        );
+      });
+  }
+
+  public buildLoginResponse(
+    user: User,
+    accessToken: string,
+    refreshToken: string,
+  ) {
+    return {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      profilePicture: user.profilePicture,
+      accountId: user.stripeAccountId,
+      accessToken,
+      refreshToken,
+    };
   }
 }

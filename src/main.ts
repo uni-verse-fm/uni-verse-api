@@ -4,12 +4,14 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { ValidationPipe } from '@nestjs/common';
 
 const API_VERSION = 0;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   app.use(cookieParser());

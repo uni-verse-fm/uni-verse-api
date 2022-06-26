@@ -127,6 +127,7 @@ describe('ReleasesService', () => {
           email: feat.email,
           id: feat._id,
           username: feat.username,
+          profilePicture: undefined,
         }));
 
         const create_release = {
@@ -143,11 +144,13 @@ describe('ReleasesService', () => {
             id: author._id.toString(),
             username: author.username,
             email: author.email,
+            profilePicture: undefined,
           },
           feats: feats_info.map((feat) => ({
             id: feat.id.toString(),
             username: feat.username,
             email: feat.email,
+            profilePicture: feat.profilePicture,
           })),
         };
 

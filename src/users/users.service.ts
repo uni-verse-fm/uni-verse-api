@@ -18,6 +18,10 @@ import { IRequestWithUser } from './interfaces/request-with-user.interface';
 import * as bcrypt from 'bcrypt';
 import { CreateUserWithGoogleDto } from './dto/create-google-user.dto';
 import { Provider } from '../auth/auth.service';
+import * as mongoose from 'mongoose';
+import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
+import { FilesService } from '../files/files.service';
+import { BucketName } from '../minio-client/minio-client.service';
 
 @Injectable()
 export class UsersService {
@@ -27,6 +31,7 @@ export class UsersService {
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private stripeService: PaymentsService,
+    private filesService: FilesService,
     private usersSearchService: UsersSearchService,
   ) {}
 
@@ -36,7 +41,6 @@ export class UsersService {
     await this.isUsernameUnique(createUserDto.username);
     const userWithEmptyReleases = {
       ...createUserDto,
-      releases: [],
       stripeAccountId: null,
     };
 
@@ -203,6 +207,7 @@ export class UsersService {
       id: user._id.toString(),
       username: user.username,
       email: user.email,
+      profilePicture: user.profilePicture,
     };
   }
 
@@ -236,15 +241,22 @@ export class UsersService {
   async searchUser(search: string, meId: string) {
     this.logger.log(`Searching user ${meId}`);
     const results = await this.usersSearchService.searchIndex(search);
-    const ids = results.map((result) => result.id).filter((id) => id !== meId);
+    const ids = results
+      .filter((user) => user.id !== meId && user.username !== 'admin')
+      .map((result) => new mongoose.Types.ObjectId(result.id));
     if (!ids.length) {
       return [];
     }
-    return this.userModel.find({
-      _id: {
-        $in: ids,
-      },
-    });
+    return this.userModel
+      .find({
+        _id: {
+          $in: ids,
+        },
+      })
+      .catch(() => {
+        this.logger.error(`Couldn't search user ${search}`);
+        throw new Error("Couldn't search user");
+      });
   }
 
   async setCurrentRefreshToken(refreshToken: string, userId: string) {
@@ -304,5 +316,62 @@ export class UsersService {
     this.usersSearchService.insertIndex(user);
 
     return user;
+  }
+
+  async changePassword(password: string, user: User) {
+    this.logger.log(`Changing password ${user.username}`);
+
+    const hashed = await bcrypt.hash(password, 10);
+
+    return await this.userModel
+      .updateOne(user, { password: hashed })
+      .then(() => ({
+        id: user._id.toString(),
+        message: 'Password changed',
+      }))
+      .catch(() => {
+        throw new Error("Can't change password");
+      });
+  }
+
+  async changeImage(file: SimpleCreateFileDto, user: User) {
+    this.logger.log(`Changing image ${user.username}`);
+    return await this.filesService
+      .createFile(file, BucketName.Images)
+      .then(
+        async (fileName) =>
+          await this.userModel
+            .updateOne(user, { profilePicture: fileName })
+            .then(() => ({
+              id: user._id.toString(),
+              message: 'Profile picture changed',
+            }))
+            .catch(() => {
+              throw new Error("Can't change profile picture");
+            }),
+      )
+      .then(async () => {
+        user.profilePicture &&
+          (await this.filesService
+            .removeFile(user.profilePicture, BucketName.Images)
+            .then());
+      })
+      .catch(() => {
+        this.logger.error(
+          `Couldn't change Profile picture ${file.originalFileName}`,
+        );
+        throw new Error("Couldn't change Profile picture");
+      });
+  }
+
+  async missingIndexManager(user: User) {
+    this.logger.log(`Missing index manager ${user.email}`);
+    const response = await this.usersSearchService.existIndex(user.email);
+    if (!response) {
+      await this.usersSearchService.insertIndex(user).catch(() => {
+        this.logger.error(`Couldn't create index for ${user.email}`);
+        throw new Error("Couldn't create index");
+      });
+    }
   }
 }

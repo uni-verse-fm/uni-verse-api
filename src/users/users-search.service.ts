@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { ISearchService } from '../search/interfaces/search.service.interface';
 import IUserSearchBody from './interfaces/user-search-body.interface';
-import { UserDocument } from './schemas/user.schema';
+import { User, UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export default class UsersSearchService
@@ -13,7 +13,7 @@ export default class UsersSearchService
 
   constructor(private readonly elasticsearchService: ElasticsearchService) {}
 
-  async insertIndex(user: UserDocument) {
+  async insertIndex(user: User | UserDocument) {
     this.logger.log(`Inserting user ID "${user._id}"`);
     return await this.elasticsearchService.index<IUserSearchBody>({
       index: this.index,
@@ -81,6 +81,20 @@ export default class UsersSearchService
           },
         },
         script: script,
+      },
+    });
+  }
+
+  async existIndex(email: string) {
+    this.logger.log(`Verifying if user "${email}" index exists`);
+    return await this.elasticsearchService.search<IUserSearchBody>({
+      index: this.index,
+      body: {
+        query: {
+          term: {
+            email: email,
+          },
+        },
       },
     });
   }

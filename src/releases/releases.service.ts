@@ -20,6 +20,7 @@ import { BucketName } from '../minio-client/minio-client.service';
 import { ITrackResponse } from '../tracks/interfaces/track-response.interface';
 import { UpdateReleaseDto } from './dto/update-release.dto';
 import ReleasesSearchService from './releases-search.service';
+import * as mongoose from 'mongoose';
 
 @Injectable()
 export class ReleasesService {
@@ -231,11 +232,13 @@ export class ReleasesService {
         id: feat._id.toString(),
         username: feat.username,
         email: feat.email,
+        profilePicture: feat.profilePicture,
       })),
       author: {
         id: release.author._id.toString(),
         username: release.author.username,
         email: release.author.email,
+        profilePicture: release.author.profilePicture,
       },
     };
   }
@@ -258,18 +261,180 @@ export class ReleasesService {
   }
 
   async releasesByUserId(userId: string) {
+    this.logger.log(`Finding releases by user id "${userId}"`);
     return await this.releaseModel
-      .find({ author: userId })
-      .populate('tracks')
-      .populate({
-        path: 'tracks',
-        populate: {
-          path: 'author',
+      .aggregate([
+        {
+          $match: { author: new mongoose.Types.ObjectId(userId) },
         },
-      })
-      .populate('author')
+        {
+          $lookup: {
+            from: 'tracks',
+            let: { tracks: '$feats' },
+            pipeline: [
+              {
+                $lookup: {
+                  from: 'users',
+                  localField: 'feats',
+                  foreignField: '_id',
+                  as: 'feats',
+                },
+              },
+              {
+                $lookup: {
+                  from: 'views',
+                  localField: '_id',
+                  foreignField: 'track',
+                  as: 'viewsDocs',
+                },
+              },
+              {
+                $project: {
+                  id: '$_id',
+                  title: '$title',
+                  feats: '$feats',
+                  author: '$author',
+                  views: { $size: '$viewsDocs' },
+                },
+              },
+            ],
+            as: 'tracks',
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            let: { user_id: '$author' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ['$$user_id', '$_id'],
+                  },
+                },
+              },
+              {
+                $project: {
+                  id: '$_id',
+                  username: '$username',
+                  email: '$email',
+                  profilePicture: '$profilePicture',
+                },
+              },
+            ],
+            as: 'author',
+          },
+        },
+        {
+          $project: {
+            id: 1,
+            title: 1,
+            fileName: 1,
+            feats: {
+              id: 1,
+              username: 1,
+              email: 1,
+            },
+            tracks: 1,
+            author: { $arrayElemAt: ['$author', 0] },
+          },
+        },
+      ])
       .catch(() => {
         throw new Error('Somthing went wrong');
+      });
+  }
+
+  async searchRelease(search: string) {
+    const results = await this.releasesSearchService.searchIndex(search);
+    const ids = results.map((result) => new mongoose.Types.ObjectId(result.id));
+    if (!ids.length) {
+      return [];
+    }
+    return await this.releaseModel
+      .aggregate([
+        {
+          $match: {
+            _id: {
+              $in: ids,
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: 'tracks',
+            pipeline: [
+              {
+                $lookup: {
+                  from: 'users',
+                  localField: 'feats',
+                  foreignField: '_id',
+                  as: 'feats',
+                },
+              },
+              {
+                $lookup: {
+                  from: 'views',
+                  localField: '_id',
+                  foreignField: 'track',
+                  as: 'viewsDocs',
+                },
+              },
+              {
+                $project: {
+                  id: '$_id',
+                  title: '$title',
+                  feats: '$feats',
+                  author: '$author',
+                  views: { $size: '$viewsDocs' },
+                },
+              },
+            ],
+            as: 'tracks',
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            let: { user_id: '$author' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ['$$user_id', '$_id'],
+                  },
+                },
+              },
+              {
+                $project: {
+                  id: '$_id',
+                  username: '$username',
+                  email: '$email',
+                  profilePicture: '$profilePicture',
+                },
+              },
+            ],
+            as: 'author',
+          },
+        },
+        {
+          $project: {
+            id: 1,
+            title: 1,
+            fileName: 1,
+            coverName: 1,
+            feats: {
+              id: 1,
+              username: 1,
+              email: 1,
+            },
+            tracks: 1,
+            author: { $arrayElemAt: ['$author', 0] },
+          },
+        },
+      ])
+      .catch((error) => {
+        throw new Error('Somthing went wrong ' + error);
       });
   }
 
@@ -282,34 +447,5 @@ export class ReleasesService {
       this.logger.error('Release must be unique.');
       throw new BadRequestException('Release must be unique.');
     }
-  }
-
-  async searchRelease(search: string) {
-    const results = await this.releasesSearchService.searchIndex(search);
-    const ids = results.map((result) => result.id);
-    if (!ids.length) {
-      return [];
-    }
-    return this.releaseModel
-      .find({
-        _id: {
-          $in: ids,
-        },
-      })
-      .populate('tracks')
-      .populate({
-        path: 'tracks',
-        populate: {
-          path: 'author',
-        },
-      })
-      .populate({
-        path: 'tracks',
-        populate: {
-          path: 'feats',
-        },
-      })
-      .populate('author')
-      .populate('feats');
   }
 }
