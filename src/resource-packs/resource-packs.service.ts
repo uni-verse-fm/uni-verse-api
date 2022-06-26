@@ -294,10 +294,10 @@ export class ResourcePacksService {
   private async isValidAccount(user: User, accessType: AccessType) {
     this.logger.log('Checking if resource pack is unique');
 
-    if(accessType === AccessType.Free) {
-        return
+    if (accessType === AccessType.Free) {
+      return;
     }
-    
+
     if (!user.stripeAccountId) {
       throw new BadRequestException('Please do the payment onboarding first');
     }
