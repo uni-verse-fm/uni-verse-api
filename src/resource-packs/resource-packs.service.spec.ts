@@ -136,6 +136,7 @@ describe('ResourcePacksService', () => {
           id: users[0].id,
           username: users[0].username,
           email: users[0].email,
+          profilePicture: undefined,
         },
       };
 
@@ -172,6 +173,7 @@ describe('ResourcePacksService', () => {
           id: users[0].id,
           username: users[0].username,
           email: users[0].email,
+          profilePicture: undefined,
         },
       };
 

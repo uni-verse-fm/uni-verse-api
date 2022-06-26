@@ -18,6 +18,7 @@ import { isValidId } from '../utils/is-valid-id';
 import { Readable } from 'stream';
 import TracksSearchService from './tracks-search.service';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import * as mongoose from 'mongoose';
 
 type StreamTrackResponse = {
   fileName: string;
@@ -88,7 +89,7 @@ export class TracksService {
         'uni-verse-fp-in',
         'universe.fp.in.routing.key',
         {
-          track_url
+          track_url,
         },
       );
     }, 2000);
@@ -186,11 +187,13 @@ export class TracksService {
         id: feat._id.toString(),
         username: feat.username,
         email: feat.email,
+        profilePicture: feat.profilePicture,
       })),
       author: {
         id: track.author._id.toString(),
         username: track.author.username,
         email: track.author.email,
+        profilePicture: track.author.profilePicture,
       },
     };
   }
@@ -207,12 +210,26 @@ export class TracksService {
     this.logger.log(`Searching for track`);
 
     const results = await this.tracksSearchService.searchIndex(search);
-    const ids = results.map((result) => result.id);
+    const ids = results.map((result) => new mongoose.Types.ObjectId(result.id));
     if (!ids.length) {
       return [];
     }
-
     return this.trackModel.aggregate([
+      {
+        $match: {
+          _id: {
+            $in: ids,
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'views',
+          localField: '_id',
+          foreignField: 'track',
+          as: 'viewsDocs',
+        },
+      },
       {
         $lookup: {
           from: 'users',
@@ -226,7 +243,12 @@ export class TracksService {
               },
             },
             {
-              $project: { id: '$_id', username: '$username', email: '$email' },
+              $project: {
+                id: '$_id',
+                username: '$username',
+                email: '$email',
+                profilePicture: '$profilePicture',
+              },
             },
           ],
           as: 'author',
@@ -251,7 +273,11 @@ export class TracksService {
               },
             },
             {
-              $project: { id: '$_id', title: '$title' },
+              $project: {
+                id: '$_id',
+                title: '$title',
+                coverName: '$coverName',
+              },
             },
           ],
           as: 'release',
@@ -267,6 +293,7 @@ export class TracksService {
             username: 1,
             email: 1,
           },
+          views: { $size: '$viewsDocs' },
           release: { $arrayElemAt: ['$release', 0] },
           author: { $arrayElemAt: ['$author', 0] },
         },

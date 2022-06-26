@@ -120,6 +120,7 @@ describe('TracksService', () => {
             id: feat._id.toString(),
             username: feat.username,
             email: feat.email,
+            profilePicture: undefined,
           })),
         );
         expect(result.title).toBe(track.title);
