@@ -335,6 +335,7 @@ export class UsersService {
   }
 
   async changeImage(file: SimpleCreateFileDto, user: User) {
+    this.logger.log(`Changing image ${user.username}`);
     return await this.filesService
       .createFile(file, BucketName.Images)
       .then(

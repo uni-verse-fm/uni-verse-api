@@ -31,15 +31,15 @@ export class ViewsController {
     return this.viewsService.findViewsByUserId(id);
   }
 
-  @Patch(':id')
+  @Get(':id')
   @UseGuards(JwtAuthGuard)
   countViewsByTrackId(@Param('id') id: string) {
     return this.viewsService.countViewsByTrackId(id);
   }
 
-  @Patch(':id/:startDate/:endDate')
+  @Get(':id/:startDate/:endDate')
   @UseGuards(JwtAuthGuard)
-  findViewByDate(@Param() params: PeriodViewsDto) {
+  countViewsByDate(@Param() params: PeriodViewsDto) {
     return this.viewsService.periodCountViewsByTrackId(params);
   }
 }
