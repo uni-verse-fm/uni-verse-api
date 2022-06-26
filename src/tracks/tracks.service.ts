@@ -17,6 +17,7 @@ import { BucketName } from '../minio-client/minio-client.service';
 import { isValidId } from '../utils/is-valid-id';
 import { Readable } from 'stream';
 import TracksSearchService from './tracks-search.service';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 type StreamTrackResponse = {
   fileName: string;
@@ -32,6 +33,7 @@ export class TracksService {
     private filesService: FilesService,
     private usersService: UsersService,
     private tracksSearchService: TracksSearchService,
+    private readonly amqpConnection: AmqpConnection,
   ) {}
 
   async createTrack(
@@ -64,6 +66,8 @@ export class TracksService {
     const createdTrack = await newTrack.save({ session });
     this.tracksSearchService.insertIndex(createdTrack);
 
+    this.NotifyFpWorker(result);
+
     return this.buildTrackInfo(createdTrack);
   }
 
@@ -75,6 +79,19 @@ export class TracksService {
     return await Promise.all(
       tracks.map((track) => this.createTrack(track, session)),
     );
+  }
+
+  NotifyFpWorker(track_url: string) {
+    // gotta wait for file to be available
+    setTimeout(() => {
+      this.amqpConnection.publish(
+        'uni-verse-fp-in',
+        'universe.fp.in.routing.key',
+        {
+          track_url
+        },
+      );
+    }, 2000);
   }
 
   async findAllTracks() {
