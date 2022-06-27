@@ -14,6 +14,7 @@ import { UserDocument } from '../users/schemas/user.schema';
 import { isValidId } from '../utils/is-valid-id';
 import { CreateCommentDto, ModelType } from './dto/create-comment.dto';
 import { FindResourceCommentDto } from './dto/find-resource-comment.dto';
+import { HotCommentsDto } from './dto/hot-comments.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment, CommentDocument } from './schemas/comment.schema';
 
@@ -141,5 +142,108 @@ export class CommentsService {
       default:
         throw new BadRequestException('The type of content is not valid.');
     }
+  }
+
+  async hotTracksComments(params: HotCommentsDto) {
+    this.logger.log(
+      `Finding hot comments between ${params.startDate} and ${params.endDate}`,
+    );
+    const startDate = new Date(params.startDate);
+    const endDate = new Date(params.endDate);
+
+    if (params.startDate > params.endDate)
+      throw new Error('Start date must be before end date');
+
+    return await this.commentModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate, $lt: endDate },
+          modelType: ModelType.Track,
+        },
+      },
+      { $group: { _id: '$modelId', comments: { $sum: 1 } } },
+      {
+        $lookup: {
+          from: 'tracks',
+          localField: '_id',
+          foreignField: '_id',
+          pipeline: [
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'feats',
+                foreignField: '_id',
+                as: 'feats',
+              },
+            },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'author',
+                foreignField: '_id',
+                pipeline: [
+                  {
+                    $project: {
+                      id: '$_id',
+                      username: '$username',
+                      email: '$email',
+                      profilePicture: '$profilePicture',
+                    },
+                  },
+                ],
+                as: 'author',
+              },
+            },
+            {
+              $lookup: {
+                from: 'releases',
+                let: { track_id: '$_id' },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: ['$$track_id', '$tracks'],
+                    },
+                  },
+                  {
+                    $project: {
+                      id: '$_id',
+                      title: '$title',
+                      coverName: '$coverName',
+                    },
+                  },
+                ],
+                as: 'release',
+              },
+            },
+            {
+              $project: {
+                id: '$_id',
+                title: '$title',
+                feats: '$feats',
+                fileName: '$fileName',
+                author: { $first: '$author' },
+                release: { $first: '$release' },
+                createdAt: '$createdAt',
+              },
+            },
+          ],
+          as: 'track',
+        },
+      },
+      {
+        $project: {
+          id: '$_id',
+          title: { $first: '$track.title' },
+          author: { $first: '$track.author' },
+          fileName: { $first: '$track.fileName' },
+          feats: { $first: '$track.feats' },
+          release: { $first: '$track.release' },
+          comments: { $sum: '$comments' },
+          createdAt: { $first: '$track.createdAt' },
+        },
+      },
+      { $sort: { comments: -1 } },
+      { $limit: params.limit },
+    ]);
   }
 }
