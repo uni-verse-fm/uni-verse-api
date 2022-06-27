@@ -228,8 +228,8 @@ export class PaymentsService {
     connectedAccountId?: string,
   ) {
     this.logger.log(`Making donation`);
-    await this.stripe.products.retrieve(productId).catch(() => {
-      throw new Error(`Product ${productId} doesn't exist`);
+    await this.stripe.products.retrieve(productId).catch((error) => {
+      throw new InternalServerErrorException(error);
     });
     const productPrice = await this.findProductPrices(productId);
 
