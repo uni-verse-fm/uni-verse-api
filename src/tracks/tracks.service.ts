@@ -216,15 +216,9 @@ export class TracksService {
       {
         $lookup: {
           from: 'users',
-          let: { user_id: '$author' },
+          localField: 'author',
+          foreignField: '_id',
           pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ['$$user_id', '$_id'],
-                },
-              },
-            },
             {
               $project: {
                 id: '$_id',
