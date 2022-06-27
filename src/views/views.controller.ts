@@ -24,9 +24,14 @@ export class ViewsController {
     return this.viewsService.countViewsByTrackId(id);
   }
 
-  @Get('/stats/:limit/:startDate/:endDate')
-  mostHot(@Param() params: HotViewsDto) {
-    return this.viewsService.hotViews(params);
+  @Get('tracks/:limit/:startDate/:endDate')
+  hotTracks(@Param() params: HotViewsDto) {
+    return this.viewsService.hotTracks(params);
+  }
+
+  @Get('releases/:limit/:startDate/:endDate')
+  hotReleases(@Param() params: HotViewsDto) {
+    return this.viewsService.hotReleases(params);
   }
 
   @Get(':id/:startDate/:endDate')
