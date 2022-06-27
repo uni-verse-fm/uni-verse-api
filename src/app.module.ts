@@ -28,6 +28,7 @@ import * as fs from 'fs';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import ecsFormat = require('@elastic/ecs-winston-format');
 import DailyRotateFile = require('winston-daily-rotate-file');
+import { FpSearchesModule } from './fp-searches/fp-searches.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -122,6 +123,7 @@ import DailyRotateFile = require('winston-daily-rotate-file');
     MetricsModule,
     SearchModule,
     ViewsModule,
+    FpSearchesModule,
   ],
   controllers: [WelcomeController],
   providers: [],

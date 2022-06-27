@@ -82,7 +82,7 @@ export class TracksService {
     );
   }
 
-  NotifyFpWorker(track_url: string) {
+  private NotifyFpWorker(track_url: string) {
     // gotta wait for file to be available
     setTimeout(() => {
       this.amqpConnection.publish(
