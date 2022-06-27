@@ -229,7 +229,7 @@ export class PaymentsService {
   ) {
     this.logger.log(`Making donation`);
     await this.stripe.products.retrieve(productId).catch((error) => {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.code + ' ' + error.message);
     });
     const productPrice = await this.findProductPrices(productId);
 
