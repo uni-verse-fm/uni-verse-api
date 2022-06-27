@@ -16,6 +16,7 @@ import { IRequestWithUser } from '../users/interfaces/request-with-user.interfac
 import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto, ModelType } from './dto/create-comment.dto';
+import { HotCommentsDto } from './dto/hot-comments.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @ApiTags('comments')
@@ -89,5 +90,10 @@ export class CommentsController {
   @UseInterceptors(ValidIdInterceptor)
   remove(@Param('id') id: string, @Request() request: IRequestWithUser) {
     return this.commentsService.removeComment(id, request.user);
+  }
+
+  @Get('/tracks/:limit/:startDate/:endDate')
+  mostHot(@Param() params: HotCommentsDto) {
+    return this.commentsService.hotTracksComments(params);
   }
 }

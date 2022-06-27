@@ -1,7 +1,15 @@
-import { IsMongoId, IsNotEmpty } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateViewDto {
   @IsMongoId()
   @IsNotEmpty()
-  trackId: string;
+  track: string;
+
+  @IsMongoId()
+  @IsOptional()
+  release: string;
+
+  @IsMongoId()
+  @IsOptional()
+  user?: string;
 }
