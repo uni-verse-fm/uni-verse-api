@@ -1,4 +1,3 @@
-import { number, string } from '@hapi/joi';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Transform, Type } from 'class-transformer';
 import { ObjectId } from 'mongodb';

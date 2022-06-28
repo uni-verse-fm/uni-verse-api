@@ -9,6 +9,10 @@ import { Module } from '@nestjs/common';
           name: 'uni-verse-fp-in',
           type: 'direct',
         },
+        {
+          name: 'uni-verse-fp-search',
+          type: 'direct',
+        },
       ],
       uri: 'amqp://guest:guest@rabbitmq:5672',
       connectionInitOptions: { wait: false },

@@ -123,6 +123,18 @@ export class TracksService {
     return track;
   }
 
+  async findTrackByFilename(fileName: string): Promise<TrackDocument> {
+    this.logger.log(`Finding track by filename ${fileName}`);
+    const track = await this.trackModel.findOne({ fileName });
+    if (!track) {
+      throw new BadRequestException(
+        `Track with filename "${fileName}" doesn't exist.`,
+      );
+    }
+
+    return track;
+  }
+
   async findTrackByTitle(title: string): Promise<TrackDocument> {
     this.logger.log(`Finding track by title ${title}`);
     const track = await this.trackModel.findOne({ title });

@@ -135,14 +135,28 @@ services:
   #   env_file:
   #     - docker.env
 
-  worker:
-    container_name: uni_verse_worker
+  search-worker:
+    container_name: uni_verse_search_worker
+    image: registry.qtmsheep.com/vagahbond/uni-verse/worker:latest
+    volumes:
+      - ../uni-verse-worker:/usr/src/app
+      - olaf-data:/root/.olaf/db
+    restart: unless-stopped
+    environment:
+      - TASK=search
+    env_file:
+      - docker.env
+
+  register-worker:
+    container_name: uni_verse_register_worker
     image: registry.qtmsheep.com/vagahbond/uni-verse/worker:latest
     volumes:
       - ../uni-verse-worker:/usr/src/app
       - olaf-data:/root/.olaf/db
 
     restart: unless-stopped
+    environment:
+      - TASK=register
     env_file:
       - docker.env
 

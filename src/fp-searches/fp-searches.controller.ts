@@ -3,7 +3,10 @@ import {
   Post,
   UploadedFile,
   UseInterceptors,
-  Request
+  Request,
+  Patch,
+  Param,
+  Body,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -15,6 +18,8 @@ import {
 import { Logger } from 'mongodb';
 import { SimpleCreateFileDto } from 'src/files/dto/simple-create-file.dto';
 import { IRequestWithUser } from 'src/users/interfaces/request-with-user.interface';
+import { ValidIdInterceptor } from 'src/utils/interceptors/valid-id.interceptor';
+import { UpdateFpSearchDto } from './dto/update-fp-search.dto';
 import { FpSearchesService } from './fp-searches.service';
 
 @ApiTags('fp-searches')
@@ -44,5 +49,17 @@ export class FpSearchesController {
       simpleCreateExtract,
       request?.user,
     );
+  }
+
+  @Patch(':id')
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'INTERNAL: updates a fingerprint search.' })
+  @UseInterceptors(ValidIdInterceptor)
+  update(
+    @Param('id') id: string,
+    @Body() updateFpSearchDto: UpdateFpSearchDto,
+    // @Request() request: IRequestWithUser,
+  ) {
+    return this.fpSearchService.updateFpSearch(id, updateFpSearchDto);
   }
 }

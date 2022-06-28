@@ -8,6 +8,9 @@ import { UserDocument } from 'src/users/schemas/user.schema';
 import { BucketName } from 'src/minio-client/minio-client.service';
 import { IFpSearchResponse } from './interfaces/fp-search-response.interface';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { isValidId } from 'src/utils/is-valid-id';
+import { UpdateFpSearchDto } from './dto/update-fp-search.dto';
+import { TracksService } from 'src/tracks/tracks.service';
 
 @Injectable()
 export class FpSearchesService {
@@ -20,6 +23,7 @@ export class FpSearchesService {
     private connection: Connection,
     private fileservice: FilesService,
     private readonly amqpConnection: AmqpConnection,
+    private readonly trackService: TracksService,
   ) {}
 
   async createFpSearch(file: SimpleCreateFileDto, author?: UserDocument) {
@@ -27,7 +31,7 @@ export class FpSearchesService {
 
     const session = await this.connection.startSession();
     try {
-      let fpSearch;
+      let fpSearch: FpSearchDocument;
       const createdResponse = await session
         .withTransaction(async () => {
           const filename = await this.fileservice.createFile(
@@ -42,23 +46,55 @@ export class FpSearchesService {
 
           fpSearch = await this.fpSearchModel.create(createdFpSearch);
         })
-        .then(() => this.buildSearchInfo(fpSearch));
+        .then(() => this.buildSearchInfo(fpSearch))
+        .finally(() =>
+          setTimeout(
+            () =>
+              this.NotifyFpWorker(fpSearch.filename, fpSearch._id.toString()),
+            2000,
+          ),
+        );
 
       return createdResponse;
     } catch (error) {
       this.logger.error(`Can't do fingerprint search due to : ${error}`);
     } finally {
       session.endSession();
-      this.NotifyFpWorker;
     }
   }
 
-  private NotifyFpWorker(extract_url: string) {
+  async updateFpSearch(id: string, _updateSearchDto: UpdateFpSearchDto) {
+    this.logger.log(`Updating search ${id}`);
+    isValidId(id);
+    const search = await this.fpSearchModel.findById(id);
+    const track = await this.trackService.findTrackByFilename(
+      _updateSearchDto.foundTrackFileName,
+    );
+    // secure in case the user is identified ?
+
+    return await this.fpSearchModel
+      .updateOne(
+        {
+          _id: search._id.toString(),
+        },
+        {
+          foundTrack: track,
+          takenTime: _updateSearchDto.takenTime,
+        }
+      )
+      .then(() => ({
+        id: search._id.toString(),
+        msg: 'Search updated',
+      }));
+  }
+
+  private NotifyFpWorker(extractUrl: string, searchId: string) {
     this.amqpConnection.publish(
       'uni-verse-fp-search',
       'universe.fp.search.routing.key',
       {
-        extract_url,
+        extract_url: extractUrl,
+        search_id: searchId,
       },
     );
   }
