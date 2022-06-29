@@ -94,19 +94,6 @@ import { FpSearchesModule } from './fp-searches/fp-searches.module';
         }),
       ],
     }),
-    ClientsModule.register([
-      {
-        name: 'UNI_VERSE_RMQ_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-          urls: [`amqp://${process.env.RMQ_URL}:${process.env.RMQ_PORT}`],
-          queue: 'fp_in_queue',
-          queueOptions: {
-            durable: false,
-          },
-        },
-      },
-    ]),
     AuthModule,
     UsersModule,
     ReleasesModule,

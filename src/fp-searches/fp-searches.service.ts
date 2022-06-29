@@ -80,7 +80,7 @@ export class FpSearchesService {
         {
           foundTrack: track,
           takenTime: _updateSearchDto.takenTime,
-        }
+        },
       )
       .then(() => ({
         id: search._id.toString(),

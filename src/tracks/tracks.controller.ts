@@ -1,4 +1,12 @@
-import { Controller, Get, Query, Logger, UseInterceptors, UploadedFile, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  Logger,
+  UseInterceptors,
+  UploadedFile,
+  Body,
+} from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TracksService } from './tracks.service';
 

@@ -14,7 +14,7 @@ import { Module } from '@nestjs/common';
           type: 'direct',
         },
       ],
-      uri: 'amqp://guest:guest@rabbitmq:5672',
+      uri: `amqp://${process.env.RMQ_USER}:${process.env.RMQ_PASSWORD}@${process.env.RMQ_URL}:${process.env.RMQ_PORT}`,
       connectionInitOptions: { wait: false },
     }),
   ],
