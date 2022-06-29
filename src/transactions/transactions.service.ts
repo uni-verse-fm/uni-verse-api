@@ -1,0 +1,109 @@
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import * as mongoose from 'mongoose';
+import {
+  CreateTransaction,
+  TransactionType,
+} from './interfaces/create-transaction.interface';
+import { Transaction, TransactionDocument } from './schemas/transaction.schema';
+
+@Injectable()
+export class TransactionsService {
+  private readonly logger = new Logger(TransactionsService.name);
+
+  constructor(
+    @InjectModel(Transaction.name)
+    private transactionModel: Model<TransactionDocument>,
+  ) {}
+
+  async createTransaction(createTransaction: CreateTransaction) {
+    this.logger.log(
+      `Creating ${createTransaction.type} of ${createTransaction.product}`,
+    );
+
+    const transcation = new this.transactionModel(createTransaction);
+
+    try {
+      const savedTransaction = await transcation.save();
+      return savedTransaction;
+    } catch (err) {
+      this.logger.error(`Can not create transaction due to: ${err}`);
+      throw new BadRequestException(err.message);
+    }
+  }
+
+  async findUserTransaction(
+    userId: string,
+    type: TransactionType,
+    destUserId?: string,
+    productId?: string,
+  ) {
+    this.logger.log(`Finding user ${userId} transaction of ${productId}`);
+
+    const query = destUserId
+      ? { user: userId, product: productId, type }
+      : { user: userId, destUser: destUserId, type };
+    return await this.transactionModel.find(query).catch(() => {
+      this.logger.error(
+        `Can not find trasactions of product with ID "${productId}"`,
+      );
+      throw new NotFoundException(
+        `Can not find trasactions of product with ID "${productId}"`,
+      );
+    });
+  }
+
+  async findUserTransactions(userId: string) {
+    this.logger.log(`Finding user ${userId} transactions`);
+
+    return await this.transactionModel.find({ user: userId }).catch(() => {
+      this.logger.error(`Can not find trasactions of user with ID "${userId}"`);
+      throw new NotFoundException(
+        `Can not find trasactions of user with ID "${userId}"`,
+      );
+    });
+  }
+
+  async isUserTheOwner(userId: string, productId: string) {
+    this.logger.log(`Finding user ${userId} transactions`);
+    return this.findUserTransaction(
+      userId,
+      TransactionType.Purchase,
+      undefined,
+      productId,
+    )
+      .then((response) => (response.length > 0 ? true : false))
+      .catch((error) => {
+        throw new NotFoundException(error.message);
+      });
+  }
+
+  async countSumOfDonations(userId: string, destUserId: string) {
+    this.logger.log(`Finding sum of ${userId} donations`);
+
+    return await this.transactionModel
+      .aggregate([
+        {
+          $match: {
+            user: new mongoose.Types.ObjectId(userId),
+            destUser: new mongoose.Types.ObjectId(destUserId),
+            type: TransactionType.Donation,
+          },
+        },
+        { $group: { _id: null, sum_val: { $sum: '$amount' } } },
+      ])
+      .then((response: [{ _id: any; sum_val: number }]) => response[0].sum_val)
+      .catch(() => {
+        this.logger.error(`Can not find donations of user with ID "${userId}"`);
+        throw new NotFoundException(
+          `Can not find donations of user with ID "${userId}"`,
+        );
+      });
+  }
+}

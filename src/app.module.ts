@@ -21,6 +21,7 @@ import { SearchModule } from './search/search.module';
 import LogsMiddleware from './utils/middlewares/logs.middleware';
 import { utilities, WinstonModule } from 'nest-winston';
 import { ViewsModule } from './views/views.module';
+import { TransactionsModule } from './transactions/transactions.module';
 import * as winston from 'winston';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -107,6 +108,7 @@ import DailyRotateFile = require('winston-daily-rotate-file');
     MetricsModule,
     SearchModule,
     ViewsModule,
+    TransactionsModule,
   ],
   controllers: [WelcomeController],
   providers: [],
