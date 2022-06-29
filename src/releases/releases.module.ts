@@ -26,10 +26,7 @@ import ReleasesSearchService from './releases-search.service';
     FilesModule,
   ],
   controllers: [ReleasesController],
-  providers: [
-    ReleasesService,
-    ReleasesSearchService,
-  ],
+  providers: [ReleasesService, ReleasesSearchService],
   exports: [ReleasesService, ReleasesSearchService],
 })
 class ReleasesModule {}

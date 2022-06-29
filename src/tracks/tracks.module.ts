@@ -8,7 +8,6 @@ import { TracksController } from './tracks.controller';
 import UsersModule from '../users/users.module';
 import TracksSearchService from './tracks-search.service';
 import { SearchModule } from '../search/search.module';
-import { PaymentsModule } from '../payments/payments.module';
 
 @Module({
   imports: [
@@ -21,10 +20,7 @@ import { PaymentsModule } from '../payments/payments.module';
     FilesModule,
   ],
   controllers: [TracksController],
-  providers: [
-    TracksService,
-    TracksSearchService,
-  ],
+  providers: [TracksService, TracksSearchService],
   exports: [TracksService, TracksSearchService],
 })
 export class TracksModule {}

@@ -107,9 +107,7 @@ export class TransactionsService {
       });
   }
 
-  async removeTransaction(
-    id: string,
-  ) {
+  async removeTransaction(id: string) {
     this.logger.log(`Removing transaction ${id}`);
     const transaction = await this.transactionModel.findById(id);
     await transaction.remove();

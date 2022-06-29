@@ -14,9 +14,7 @@ import { Resource, ResourceSchema } from './schemas/resource.schema';
     FilesModule,
   ],
   controllers: [],
-  providers: [
-    ResourcesService,
-  ],
+  providers: [ResourcesService],
   exports: [ResourcesService],
 })
 export class ResourcesModule {}

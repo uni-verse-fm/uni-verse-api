@@ -15,7 +15,7 @@ import {
     MongooseModule.forFeature([
       { name: Transaction.name, schema: TransactionSchema },
     ]),
-    TransactionsModule
+    TransactionsModule,
   ],
   controllers: [PaymentsController],
   providers: [PaymentsService],

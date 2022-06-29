@@ -17,9 +17,12 @@ export class Transaction {
   @Type(() => User)
   user: User;
 
-  @Prop({ type: String, enum: [TransactionType.Donation, TransactionType.Purchase] })
+  @Prop({
+    type: String,
+    enum: [TransactionType.Donation, TransactionType.Purchase],
+  })
   type: TransactionType;
-  
+
   @Prop()
   product: string;
 

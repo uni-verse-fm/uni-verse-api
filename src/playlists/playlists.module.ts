@@ -19,10 +19,7 @@ import PlaylistsSearchService from './playlists-search.service';
     SearchModule,
   ],
   controllers: [PlaylistsController],
-  providers: [
-    PlaylistsService,
-    PlaylistsSearchService,
-  ],
+  providers: [PlaylistsService, PlaylistsSearchService],
   exports: [PlaylistsService, PlaylistsSearchService],
 })
 export class PlaylistsModule {}
