@@ -105,7 +105,7 @@ export class ReleasesController {
   @Get('/search')
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Search user' })
-  searchUsers(@Query('search') search: string) {
+  searchReleases(@Query('search') search: string) {
     if (search) return this.releasesService.searchRelease(search);
     return [];
   }

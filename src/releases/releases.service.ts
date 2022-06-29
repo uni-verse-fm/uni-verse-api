@@ -292,6 +292,7 @@ export class ReleasesService {
                 $project: {
                   id: '$_id',
                   title: '$title',
+                  fileName: '$fileName',
                   feats: '$feats',
                   author: '$author',
                   views: { $size: '$viewsDocs' },
@@ -384,6 +385,7 @@ export class ReleasesService {
                 $project: {
                   id: '$_id',
                   title: '$title',
+                  fileName: '$fileName',
                   feats: '$feats',
                   author: '$author',
                   views: { $size: '$viewsDocs' },

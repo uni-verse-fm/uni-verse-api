@@ -10,6 +10,7 @@ import { IRequestWithUser } from '../users/interfaces/request-with-user.interfac
 import { User } from '../users/schemas/user.schema';
 import { DonationAmount } from './dto/create-donate.dto';
 
+const DonationAmounts = [1000, 2000, 3000, 5000, 10000];
 @Injectable()
 export class PaymentsService {
   private stripe: Stripe;
@@ -31,7 +32,7 @@ export class PaymentsService {
       const accountLink = await this.stripe.accountLinks.create({
         type: 'account_onboarding',
         account: user.stripeAccountId,
-        refresh_url: `${this.configService.get('REFRESH_URL')}`,
+        refresh_url: `${this.configService.get('ONBOARD_REFRESH_URL')}`,
         return_url: `${this.configService.get('FRONTEND_URL')}`,
       });
       return accountLink.url;
@@ -43,15 +44,12 @@ export class PaymentsService {
   public async refreshOnboardLink(request: IRequestWithUser) {
     this.logger.log(`Refreshing onboarding user`);
     const accountId = request.user?.stripeAccountId;
-    if (!accountId) throw new BadRequestException('Account id is undefined');
+    if (!accountId) throw new BadRequestException('Account id is undefined you should onboard first');
     try {
-      const origin = `${request.secure ? 'https://' : 'http://'}${
-        request.headers.host
-      }`;
       const accountLink = await this.stripe.accountLinks.create({
         type: 'account_onboarding',
         account: accountId,
-        refresh_url: `${origin}/payments/refresh`,
+        refresh_url: `${this.configService.get('ONBOARD_REFRESH_URL')}`,
         return_url: `${this.configService.get('FRONTEND_URL')}`,
       });
 
@@ -144,14 +142,13 @@ export class PaymentsService {
 
   public async createDonations(ownerId: string) {
     this.logger.log(`Creating donations for owner: ${ownerId}`);
-    const donationAmounts = [100, 200, 300, 500];
     return await this.stripe.products
       .create({
         name: `donation`,
       })
       .then(async (response) => {
         await Promise.all(
-          donationAmounts.map((amount: number) =>
+            DonationAmounts.map((amount: number) =>
             this.createPrice(
               `${ownerId}-donation`,
               ownerId,

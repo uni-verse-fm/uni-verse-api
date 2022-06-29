@@ -62,13 +62,6 @@ async function bootstrap() {
   app.enableCors(corsConfig);
   await app.listen(configService.get('PORT') || 3000);
 
-  console.log(
-    `UNIVERSE_DONATION_PRODUCT_ID ${configService.get(
-      'UNIVERSE_DONATION_PRODUCT_ID',
-    )}`,
-  );
-  console.log(`STRIPE_CURRENCY ${configService.get('STRIPE_CURRENCY')}`);
-
   console.log(`Turnnig 💫 on port ${configService.get('PORT') || 3000}`);
 }
 bootstrap();
