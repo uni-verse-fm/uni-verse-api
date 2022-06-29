@@ -330,7 +330,7 @@ export class ReleasesService {
           $project: {
             id: 1,
             title: 1,
-            fileName: 1,
+            coverName: 1,
             feats: {
               id: 1,
               username: 1,
@@ -423,7 +423,6 @@ export class ReleasesService {
           $project: {
             id: 1,
             title: 1,
-            fileName: 1,
             coverName: 1,
             feats: {
               id: 1,
