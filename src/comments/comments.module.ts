@@ -1,3 +1,4 @@
+import { ResourcesModule } from './../resources/resources.module';
 import { Module } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CommentsController } from './comments.controller';
@@ -6,10 +7,6 @@ import { CommentSchema, Comment } from './schemas/comment.schema';
 import { Track, TrackSchema } from '../tracks/schemas/track.schema';
 import { Resource, ResourceSchema } from '../resources/schemas/resource.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
-import { ResourcesService } from '../resources/resources.service';
-import { MinioClientService } from '../minio-client/minio-client.service';
-import { FilesService } from '../files/files.service';
-import { PaymentsService } from '../payments/payments.service';
 import UsersModule from '../users/users.module';
 import { TracksModule } from '../tracks/tracks.module';
 import { SearchModule } from '../search/search.module';
@@ -24,15 +21,12 @@ import { SearchModule } from '../search/search.module';
     ]),
     UsersModule,
     TracksModule,
+    ResourcesModule,
     SearchModule,
   ],
   controllers: [CommentsController],
   providers: [
     CommentsService,
-    ResourcesService,
-    MinioClientService,
-    FilesService,
-    PaymentsService,
   ],
   exports: [CommentsService],
 })

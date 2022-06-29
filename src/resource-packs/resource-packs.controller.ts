@@ -109,7 +109,7 @@ export class ResourcePacksController {
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find my playlists' })
-  myPlaylists(@Request() request: IRequestWithUser) {
+  myResourcePacks(@Request() request: IRequestWithUser) {
     return this.resourcePacksService.resourcePacksByUserId(request.user._id);
   }
 

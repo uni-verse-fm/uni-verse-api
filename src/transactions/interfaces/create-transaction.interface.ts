@@ -6,7 +6,7 @@ export enum TransactionType {
 export class CreateTransaction {
     user: string;
     product: string;
-    amount: number;
+    amount?: number;
     type: TransactionType;
     destUser: string;
 }

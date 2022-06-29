@@ -31,18 +31,23 @@ export class PaymentsController {
   ) {
     const donateUrl = await this.paymentsService.donate(
       donate.amount,
-      request.user.donationProductId,
+      donate.donationProductId,
+      request.user.id,
       donate.connectedAccountId,
     );
     return response.json({ donateUrl });
   }
 
-  @Post('/checkout')
+  @Post('/purshase')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Make a purshase' })
-  checkout(@Body() checkout: CheckoutDto) {
-    return this.paymentsService.checkout(
+  checkout(
+    @Body() checkout: CheckoutDto,
+    @Request() request: IRequestWithUser,
+  ) {
+    return this.paymentsService.purshase(
+      request.user.id,
       checkout.priceId,
       checkout.connectedAccountId,
     );

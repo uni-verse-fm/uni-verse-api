@@ -15,5 +15,9 @@ export class DonateDto {
 
   @IsString()
   @IsOptional()
+  donationProductId: string;
+
+  @IsString()
+  @IsOptional()
   connectedAccountId: string;
 }

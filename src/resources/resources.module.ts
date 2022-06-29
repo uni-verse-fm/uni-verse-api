@@ -1,10 +1,7 @@
+import { FilesModule } from './../files/files.module';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { FilesService } from '../files/files.service';
-import { MinioClientService } from '../minio-client/minio-client.service';
-import { PaymentsService } from '../payments/payments.service';
 import { User, UserSchema } from '../users/schemas/user.schema';
-import UsersModule from '../users/users.module';
 import { ResourcesService } from './resources.service';
 import { Resource, ResourceSchema } from './schemas/resource.schema';
 
@@ -14,14 +11,11 @@ import { Resource, ResourceSchema } from './schemas/resource.schema';
       { name: Resource.name, schema: ResourceSchema },
       { name: User.name, schema: UserSchema },
     ]),
-    UsersModule,
+    FilesModule,
   ],
   controllers: [],
   providers: [
     ResourcesService,
-    FilesService,
-    MinioClientService,
-    PaymentsService,
   ],
   exports: [ResourcesService],
 })

@@ -31,7 +31,7 @@ export class TransactionsService {
 
     try {
       const savedTransaction = await transcation.save();
-      return savedTransaction;
+      return savedTransaction._id;
     } catch (err) {
       this.logger.error(`Can not create transaction due to: ${err}`);
       throw new BadRequestException(err.message);
@@ -105,5 +105,14 @@ export class TransactionsService {
           `Can not find donations of user with ID "${userId}"`,
         );
       });
+  }
+
+  async removeTransaction(
+    id: string,
+  ) {
+    this.logger.log(`Removing transaction ${id}`);
+    const transaction = await this.transactionModel.findById(id);
+    await transaction.remove();
+    return transaction._id;
   }
 }
