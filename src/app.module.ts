@@ -49,6 +49,7 @@ import DailyRotateFile = require('winston-daily-rotate-file');
         JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.string().required(),
         UNIVERSE_DONATION_PRODUCT_ID: Joi.string().required(),
         STRIPE_SECRET_KEY: Joi.string().required(),
+        STRIPE_WEBHOOK_SECRET: Joi.string().required(),
         ONBOARD_REFRESH_URL: Joi.string().required(),
         STRIPE_CURRENCY: Joi.string().required(),
         FRONTEND_URL: Joi.string().required(),

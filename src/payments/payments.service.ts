@@ -305,4 +305,36 @@ export class PaymentsService {
     );
     return `This action returns all payments`;
   }
+
+  public async handleWebHook(body: string, sig: any) {
+    const endpointSecret = this.configService.get('STRIPE_WEBHOOK_SECRET');
+
+    let event: Stripe.Event;
+
+    try {
+      event = this.stripe.webhooks.constructEvent(body, sig, endpointSecret);
+    } catch (err) {
+      throw new BadRequestException(`Webhook Error: ${err.message}`);
+    }
+    const session: any = event.data.object;
+
+    switch (event.type) {
+      case 'checkout.session.async_payment_failed':
+        await this.transactionService.removeTransaction(
+          session.client_reference_id,
+        );
+        throw new BadRequestException(`Checkout failed`);
+      case 'checkout.session.expired':
+        await this.transactionService.removeTransaction(
+          session.client_reference_id,
+        );
+        throw new BadRequestException(`Checkout failed`);
+      case 'checkout.session.completed':
+        this.logger.log(`Checkout completed`);
+        return;
+      default:
+        this.logger.log(`Unhandled event type ${event.type}`);
+        return;
+    }
+  }
 }
