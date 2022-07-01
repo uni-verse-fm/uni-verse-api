@@ -18,7 +18,7 @@ export class FilesService {
     callBack?: (filename: string) => void,
   ): Promise<string> {
     this.logger.log(`Creating file ${createFileDto.originalFileName}`);
-    const res =  await this.minioClient.upload(createFileDto, bucketName);
+    const res = await this.minioClient.upload(createFileDto, bucketName);
     callBack && callBack(res);
     return res;
   }
