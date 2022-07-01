@@ -8,6 +8,7 @@ import { TracksController } from './tracks.controller';
 import UsersModule from '../users/users.module';
 import TracksSearchService from './tracks-search.service';
 import { SearchModule } from '../search/search.module';
+import { RMQModule } from 'src/rmq-client/rmq-client.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SearchModule } from '../search/search.module';
     UsersModule,
     SearchModule,
     FilesModule,
+    RMQModule,
   ],
   controllers: [TracksController],
   providers: [TracksService, TracksSearchService],
