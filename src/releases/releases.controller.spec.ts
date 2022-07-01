@@ -29,6 +29,7 @@ import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 import { ReleasesSearchServiceMock } from '../test-utils/mocks/releases-search.service.test';
 import { ReleasesServiceMock } from '../test-utils/mocks/releases.service.test';
 import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
+import { AmqpConnectionMock } from '../test-utils/mocks/rabbit.connection.test';
 
 const release = data.releases.black_album;
 const releases = data2list(data.releases);
@@ -90,6 +91,7 @@ describe('ReleasesController', () => {
         UserSearchServiceMock,
         ReleasesSearchServiceMock,
         TrackSearchServiceMock,
+        AmqpConnectionMock,
       ],
     })
       .overrideGuard(JwtAuthGuard)

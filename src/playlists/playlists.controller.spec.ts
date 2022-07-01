@@ -26,6 +26,7 @@ import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
 import { PlaylistsSearchServiceMock } from '../test-utils/mocks/playlists-search.service.test';
 import { PlaylistsServiceMock } from '../test-utils/mocks/playlists.service.test';
+import { AmqpConnectionMock } from '../test-utils/mocks/rabbit.connection.test';
 
 const playlists = data2list(data.playlists);
 
@@ -57,6 +58,7 @@ describe('PlaylistsController', () => {
         PlaylistsServiceMock,
         MinioServiceMock,
         PaymentServiceMock,
+        AmqpConnectionMock,
         {
           provide: getModelToken(User.name),
           useValue: new RepoMockModel(data.users, 4, 2),

@@ -20,6 +20,7 @@ import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 import { ITrackResponse } from '../tracks/interfaces/track-response.interface';
 import { PlaylistsSearchServiceMock } from '../test-utils/mocks/playlists-search.service.test';
 import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
+import { AmqpConnectionMock } from '../test-utils/mocks/rabbit.connection.test';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -70,6 +71,7 @@ describe('PlaylistsService', () => {
         UserSearchServiceMock,
         PlaylistsSearchServiceMock,
         TrackSearchServiceMock,
+        AmqpConnectionMock,
       ],
     }).compile();
 

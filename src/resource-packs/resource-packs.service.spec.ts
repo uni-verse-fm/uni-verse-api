@@ -21,6 +21,7 @@ import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
 import { AccessType } from './dto/create-resource-pack.dto';
+import { PacksSearchServiceMock } from '../test-utils/mocks/packs-search.service.test';
 
 const resource_packs = data2list(data.resource_packs);
 
@@ -63,6 +64,7 @@ describe('ResourcePacksService', () => {
         MinioServiceMock,
         PaymentServiceMock,
         UserSearchServiceMock,
+        PacksSearchServiceMock,
       ],
     }).compile();
 

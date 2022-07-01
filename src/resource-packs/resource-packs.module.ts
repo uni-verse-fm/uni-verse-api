@@ -1,3 +1,5 @@
+import { FilesModule } from './../files/files.module';
+import { PaymentsModule } from './../payments/payments.module';
 import { Module } from '@nestjs/common';
 import { ResourcePacksService } from './resource-packs.service';
 import { ResourcePacksController } from './resource-packs.controller';
@@ -8,11 +10,8 @@ import {
 } from './schemas/resource-pack.schema';
 import { Resource, ResourceSchema } from '../resources/schemas/resource.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
-import { ResourcesService } from '../resources/resources.service';
 import { ResourcesModule } from '../resources/resources.module';
-import { FilesService } from '../files/files.service';
-import { MinioClientService } from '../minio-client/minio-client.service';
-import { PaymentsService } from '../payments/payments.service';
+import PacksSearchService from './packs-search.service';
 
 @Module({
   imports: [
@@ -22,15 +21,11 @@ import { PaymentsService } from '../payments/payments.service';
       { name: User.name, schema: UserSchema },
     ]),
     ResourcesModule,
+    PaymentsModule,
+    FilesModule,
   ],
   controllers: [ResourcePacksController],
-  providers: [
-    ResourcePacksService,
-    ResourcesService,
-    FilesService,
-    MinioClientService,
-    PaymentsService,
-  ],
-  exports: [ResourcePacksService],
+  providers: [ResourcePacksService, PacksSearchService],
+  exports: [ResourcePacksService, PacksSearchService],
 })
 export class ResourcePacksModule {}

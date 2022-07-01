@@ -1,10 +1,10 @@
+import { PaymentsModule } from './../payments/payments.module';
 import { FilesModule } from './../files/files.module';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User, UserSchema } from './schemas/user.schema';
-import { PaymentsService } from '../payments/payments.service';
 import { SearchModule } from '../search/search.module';
 import UsersSearchService from './users-search.service';
 
@@ -13,9 +13,10 @@ import UsersSearchService from './users-search.service';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     SearchModule,
     FilesModule,
+    PaymentsModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService, PaymentsService, UsersSearchService],
+  providers: [UsersService, UsersSearchService],
   exports: [UsersService, UsersSearchService],
 })
 class UsersModule {}
