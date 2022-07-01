@@ -27,6 +27,8 @@ import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { AmqpConnectionMock } from '../test-utils/mocks/rabbit.connection.test';
 
 const owner = data.users.abdou;
 
@@ -96,6 +98,7 @@ describe('CommentsController', () => {
             }),
           },
         },
+        AmqpConnectionMock,
         MinioServiceMock,
         PaymentServiceMock,
         {
