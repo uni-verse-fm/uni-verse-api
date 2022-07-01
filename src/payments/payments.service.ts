@@ -306,16 +306,7 @@ export class PaymentsService {
     return `This action returns all payments`;
   }
 
-  public async handleWebHook(body: string, sig: any) {
-    const endpointSecret = this.configService.get('STRIPE_WEBHOOK_SECRET');
-
-    let event: Stripe.Event;
-
-    try {
-      event = this.stripe.webhooks.constructEvent(body, sig, endpointSecret);
-    } catch (err) {
-      throw new BadRequestException(`Webhook Error: ${err.message}`);
-    }
+  public async handleWebHook(event: Stripe.Event) {
     const session: any = event.data.object;
 
     switch (event.type) {
@@ -323,20 +314,26 @@ export class PaymentsService {
         await this.transactionService.removeTransaction(
           session.client_reference_id,
         );
-        throw new BadRequestException(`Checkout failed`);
       case 'checkout.session.expired':
         await this.transactionService.removeTransaction(
           session.client_reference_id,
         );
-        throw new BadRequestException(`Checkout failed`);
       case 'checkout.session.completed':
         await this.transactionService.activateTransaction(
           session.client_reference_id,
         );
-        return;
       default:
         this.logger.log(`Unhandled event type ${event.type}`);
-        return;
     }
+  }
+
+  public async constructEventFromPayload(signature: string, payload: Buffer) {
+    const webhookSecret = this.configService.get('STRIPE_WEBHOOK_SECRET');
+
+    return this.stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      webhookSecret,
+    );
   }
 }

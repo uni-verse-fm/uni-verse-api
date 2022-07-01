@@ -5,8 +5,10 @@ import {
   Body,
   UseGuards,
   Request,
+  Headers,
   Res,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiCookieAuth,
@@ -19,6 +21,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 import { CheckoutDto } from './dto/checkout.dto';
 import { DonateDto } from './dto/create-donate.dto';
+import RequestWithRawBody from './interfaces/request-with-raw-body.interface';
 import { PaymentsService } from './payments.service';
 
 @ApiTags('payments')
@@ -81,9 +84,17 @@ export class PaymentsController {
 
   @Post('/webhook')
   @ApiExcludeEndpoint()
-  stripeWebHook(@Req() request: ExpressRequest, @Res() response: Response) {
-    const sig = request.headers['stripe-signature'];
-    this.paymentsService.handleWebHook(request.body, sig);
-    return response.send();
+  async stripeWebHook(
+    @Headers('stripe-signature') signature: string,
+    @Req() request: RequestWithRawBody,
+  ) {
+    if (!signature) {
+      throw new BadRequestException('Missing stripe-signature header');
+    }
+    const event = await this.paymentsService.constructEventFromPayload(
+      signature,
+      request.rawBody,
+    );
+    return await this.paymentsService.handleWebHook(event);
   }
 }

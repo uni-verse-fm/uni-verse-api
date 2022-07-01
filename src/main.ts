@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ValidationPipe } from '@nestjs/common';
+import rawBodyMiddleware from './utils/middlewares/raw-body.middleware';
 
 const API_VERSION = 0;
 
@@ -14,7 +15,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
-  app.use(cookieParser());
+  app.use([cookieParser(), rawBodyMiddleware()]);
   const configService = app.get<ConfigService>(ConfigService);
 
   const config = new DocumentBuilder()
