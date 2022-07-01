@@ -1,6 +1,6 @@
-interface IPlaylistSearchBody {
+interface IReleaseSearchBody {
   id: string;
   title: string;
 }
 
-export default IPlaylistSearchBody;
+export default IReleaseSearchBody;

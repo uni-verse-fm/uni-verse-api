@@ -25,6 +25,8 @@ import { buildSimpleFile } from '../utils/buildSimpleFile';
 import { BucketName } from '../minio-client/minio-client.service';
 import { FilesService } from '../files/files.service';
 import { PaymentsService } from '../payments/payments.service';
+import * as mongoose from 'mongoose';
+import PacksSearchService from './packs-search.service';
 
 @Injectable()
 export class ResourcePacksService {
@@ -38,6 +40,7 @@ export class ResourcePacksService {
     private connection: Connection,
     private filesService: FilesService,
     private stripeService: PaymentsService,
+    private packsSearchService: PacksSearchService,
   ) {}
 
   async createResourcePack(
@@ -106,6 +109,7 @@ export class ResourcePacksService {
           resourcePack = await this.resourcePackModel.create(
             createdResourcePack,
           );
+          this.packsSearchService.insertIndex(resourcePack);
         })
         .then(() => this.buildResourcePackInfo(resourcePack));
       return createResponse;
@@ -234,6 +238,8 @@ export class ResourcePacksService {
           title: resourcePack.title,
           msg: 'ResourcePack deleted',
         }));
+      this.packsSearchService.deleteIndex(id);
+
       return removeResponse;
     } catch (error) {
       this.logger.error(`Can not remove resource pack due to: ${error}`);
@@ -312,8 +318,150 @@ export class ResourcePacksService {
   }
 
   async resourcePacksByUserId(userId: any) {
-    return await this.resourcePackModel.find({ owner: userId }).catch(() => {
-      throw new Error('Somthing went wrong');
-    });
+    this.logger.log(`Finding releases by user id "${userId}"`);
+    return await this.resourcePackModel
+      .aggregate([
+        {
+          $match: { author: new mongoose.Types.ObjectId(userId) },
+        },
+        {
+          $lookup: {
+            from: 'resources',
+            localField: 'resources',
+            foreignField: '_id',
+            pipeline: [
+              {
+                $project: {
+                  id: '$_id',
+                  title: '$title',
+                  fileName: '$fileName',
+                  previewFileName: '$previewFileName',
+                  author: '$author',
+                },
+              },
+            ],
+            as: 'resources',
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            let: { user_id: '$author' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ['$$user_id', '$_id'],
+                  },
+                },
+              },
+              {
+                $project: {
+                  id: '$_id',
+                  username: '$username',
+                  email: '$email',
+                  stripeAccountId: '$stripeAccountId',
+                  donationProductId: '$donationProductId',
+                  profilePicture: '$profilePicture',
+                },
+              },
+            ],
+            as: 'author',
+          },
+        },
+        {
+          $project: {
+            id: '$_id',
+            title: 1,
+            coverName: 1,
+            productId: 1,
+            accessType: 1,
+            amount: 1,
+            resources: 1,
+            author: { $arrayElemAt: ['$author', 0] },
+          },
+        },
+      ])
+      .catch(() => {
+        throw new Error('Somthing went wrong');
+      });
+  }
+
+  async searchPacks(search: string) {
+    const results = await this.packsSearchService.searchIndex(search);
+    const ids = results.map((result) => new mongoose.Types.ObjectId(result.id));
+    if (!ids.length) {
+      return [];
+    }
+    return await this.resourcePackModel
+      .aggregate([
+        {
+          $match: {
+            _id: {
+              $in: ids,
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: 'resources',
+            localField: 'resources',
+            foreignField: '_id',
+            pipeline: [
+              {
+                $project: {
+                  id: '$_id',
+                  title: '$title',
+                  fileName: '$fileName',
+                  previewFileName: '$previewFileName',
+                  author: '$author',
+                },
+              },
+            ],
+            as: 'resources',
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            let: { user_id: '$author' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ['$$user_id', '$_id'],
+                  },
+                },
+              },
+              {
+                $project: {
+                  id: '$_id',
+                  username: '$username',
+                  email: '$email',
+                  stripeAccountId: '$stripeAccountId',
+                  donationProductId: '$donationProductId',
+                  profilePicture: '$profilePicture',
+                },
+              },
+            ],
+            as: 'author',
+          },
+        },
+        {
+          $project: {
+            id: '$_id',
+            title: 1,
+            coverName: 1,
+            productId: 1,
+            accessType: 1,
+            amount: 1,
+            resources: 1,
+            author: { $arrayElemAt: ['$author', 0] },
+          },
+        },
+      ])
+      .catch(() => {
+        throw new Error('Somthing went wrong');
+      });
   }
 }

@@ -11,6 +11,7 @@ import {
 import { Resource, ResourceSchema } from '../resources/schemas/resource.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { ResourcesModule } from '../resources/resources.module';
+import PacksSearchService from './packs-search.service';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { ResourcesModule } from '../resources/resources.module';
     FilesModule,
   ],
   controllers: [ResourcePacksController],
-  providers: [ResourcePacksService],
-  exports: [ResourcePacksService],
+  providers: [ResourcePacksService, PacksSearchService],
+  exports: [ResourcePacksService, PacksSearchService],
 })
 export class ResourcePacksModule {}

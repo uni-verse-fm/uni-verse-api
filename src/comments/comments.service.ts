@@ -187,6 +187,8 @@ export class CommentsService {
                       id: '$_id',
                       username: '$username',
                       email: '$email',
+                      stripeAccountId: '$stripeAccountId',
+                      donationProductId: '$donationProductId',
                       profilePicture: '$profilePicture',
                     },
                   },

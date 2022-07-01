@@ -330,7 +330,9 @@ export class PaymentsService {
         );
         throw new BadRequestException(`Checkout failed`);
       case 'checkout.session.completed':
-        this.logger.log(`Checkout completed`);
+        await this.transactionService.activateTransaction(
+          session.client_reference_id,
+        );
         return;
       default:
         this.logger.log(`Unhandled event type ${event.type}`);

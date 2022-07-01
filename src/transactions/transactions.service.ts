@@ -27,7 +27,10 @@ export class TransactionsService {
       `Creating ${createTransaction.type} of ${createTransaction.product}`,
     );
 
-    const transcation = new this.transactionModel(createTransaction);
+    const transcation = new this.transactionModel({
+      ...createTransaction,
+      enabled: false,
+    });
 
     try {
       const savedTransaction = await transcation.save();
@@ -38,6 +41,17 @@ export class TransactionsService {
     }
   }
 
+  async activateTransaction(id: string) {
+    this.logger.log(`Enabling transaction ${id}`);
+
+    return await this.transactionModel
+      .updateOne({ _id: id }, { enabled: true })
+      .catch(() => {
+        this.logger.error(`Can not enable transaction ${id}`);
+        throw new NotFoundException(`Can not enable transaction ${id}`);
+      });
+  }
+
   async findUserTransaction(
     userId: string,
     type: TransactionType,
@@ -46,9 +60,15 @@ export class TransactionsService {
   ) {
     this.logger.log(`Finding user ${userId} transaction of ${productId}`);
 
+    const shared = {
+      user: userId,
+      type,
+      enabled: true,
+    };
+
     const query = destUserId
-      ? { user: userId, product: productId, type }
-      : { user: userId, destUser: destUserId, type };
+      ? { ...shared, product: productId }
+      : { ...shared, destUser: destUserId };
     return await this.transactionModel.find(query).catch(() => {
       this.logger.error(
         `Can not find trasactions of product with ID "${productId}"`,
@@ -62,12 +82,16 @@ export class TransactionsService {
   async findUserTransactions(userId: string) {
     this.logger.log(`Finding user ${userId} transactions`);
 
-    return await this.transactionModel.find({ user: userId }).catch(() => {
-      this.logger.error(`Can not find trasactions of user with ID "${userId}"`);
-      throw new NotFoundException(
-        `Can not find trasactions of user with ID "${userId}"`,
-      );
-    });
+    return await this.transactionModel
+      .find({ user: userId, enabled: true })
+      .catch(() => {
+        this.logger.error(
+          `Can not find trasactions of user with ID "${userId}"`,
+        );
+        throw new NotFoundException(
+          `Can not find trasactions of user with ID "${userId}"`,
+        );
+      });
   }
 
   async isUserTheOwner(userId: string, productId: string) {
@@ -94,6 +118,7 @@ export class TransactionsService {
             user: new mongoose.Types.ObjectId(userId),
             destUser: new mongoose.Types.ObjectId(destUserId),
             type: TransactionType.Donation,
+            enabled: true,
           },
         },
         { $group: { _id: null, sum_val: { $sum: '$amount' } } },
