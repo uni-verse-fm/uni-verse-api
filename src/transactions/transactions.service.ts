@@ -134,10 +134,12 @@ export class TransactionsService {
 
   async removeTransaction(id: string) {
     this.logger.log(`Removing transaction ${id}`);
-    const transaction = await this.transactionModel.findById(id);
-    await transaction.remove().catch(() => {
-      throw new BadRequestException(`Checkout failed`);
-    });
-    return transaction._id;
+    if (id) {
+      const transaction = await this.transactionModel.findById(id);
+      await transaction.remove().catch(() => {
+        throw new BadRequestException(`Can't remove transaction ${id}`);
+      });
+      return transaction._id;
+    }
   }
 }

@@ -307,6 +307,7 @@ export class PaymentsService {
   }
 
   public async handleWebHook(event: Stripe.Event) {
+    this.logger.log(`Handeling stripe event ${event.type}`);
     const session: any = event.data.object;
 
     switch (event.type) {
@@ -328,6 +329,7 @@ export class PaymentsService {
   }
 
   public async constructEventFromPayload(signature: string, payload: Buffer) {
+    this.logger.log(`Constructing stripe event with signature ${signature}`);
     const webhookSecret = this.configService.get('STRIPE_WEBHOOK_SECRET');
 
     return this.stripe.webhooks.constructEvent(

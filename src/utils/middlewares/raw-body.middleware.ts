@@ -9,6 +9,7 @@ function rawBodyMiddleware() {
       response: Response,
       buffer: Buffer,
     ) => {
+      console.log('Raw Body Middleware');
       if (request.url === '/webhook' && Buffer.isBuffer(buffer)) {
         request.rawBody = Buffer.from(buffer);
       }

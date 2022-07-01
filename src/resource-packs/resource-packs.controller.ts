@@ -11,6 +11,7 @@ import {
   UseGuards,
   UseInterceptors,
   Logger,
+  Query,
 } from '@nestjs/common';
 import { ResourcePacksService } from './resource-packs.service';
 import { UpdateResourcePackDto } from './dto/update-resource-pack.dto';
@@ -147,5 +148,13 @@ export class ResourcePacksController {
   @UseInterceptors(ValidIdInterceptor)
   remove(@Param('id') id: string, @Request() request: IRequestWithUser) {
     return this.resourcePacksService.removeResourcePack(id, request.user);
+  }
+
+  @Get('search')
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Search resource-packs' })
+  searchResourcePacks(@Query('search') search: string) {
+    if (search) return this.resourcePacksService.searchPacks(search);
+    return [];
   }
 }
