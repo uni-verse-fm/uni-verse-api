@@ -17,6 +17,7 @@ import { BucketName } from '../minio-client/minio-client.service';
 import { isValidId } from '../utils/is-valid-id';
 import { Readable } from 'stream';
 import TracksSearchService from './tracks-search.service';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import * as mongoose from 'mongoose';
 
 type StreamTrackResponse = {
@@ -33,6 +34,7 @@ export class TracksService {
     private filesService: FilesService,
     private usersService: UsersService,
     private tracksSearchService: TracksSearchService,
+    private readonly amqpConnection: AmqpConnection,
   ) {}
 
   async createTrack(
@@ -65,6 +67,8 @@ export class TracksService {
     const createdTrack = await newTrack.save({ session });
     this.tracksSearchService.insertIndex(createdTrack);
 
+    this.NotifyFpWorker(result);
+
     return this.buildTrackInfo(createdTrack);
   }
 
@@ -76,6 +80,19 @@ export class TracksService {
     return await Promise.all(
       tracks.map((track) => this.createTrack(track, session)),
     );
+  }
+
+  private NotifyFpWorker(track_url: string) {
+    // gotta wait for file to be available
+    setTimeout(() => {
+      this.amqpConnection.publish(
+        'uni-verse-fp-in',
+        'universe.fp.in.routing.key',
+        {
+          track_url,
+        },
+      );
+    }, 2000);
   }
 
   async findAllTracks() {
@@ -103,6 +120,18 @@ export class TracksService {
     if (!track) {
       throw new BadRequestException(`Track with ID "${id}" doesn't exist`);
     }
+    return track;
+  }
+
+  async findTrackByFilename(fileName: string): Promise<TrackDocument> {
+    this.logger.log(`Finding track by filename ${fileName}`);
+    const track = await this.trackModel.findOne({ fileName });
+    if (!track) {
+      throw new BadRequestException(
+        `Track with filename "${fileName}" doesn't exist.`,
+      );
+    }
+
     return track;
   }
 

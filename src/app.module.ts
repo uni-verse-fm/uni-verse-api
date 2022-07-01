@@ -25,8 +25,10 @@ import * as winston from 'winston';
 import * as path from 'path';
 import * as fs from 'fs';
 
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import ecsFormat = require('@elastic/ecs-winston-format');
 import DailyRotateFile = require('winston-daily-rotate-file');
+import { FpSearchesModule } from './fp-searches/fp-searches.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -52,6 +54,8 @@ import DailyRotateFile = require('winston-daily-rotate-file');
         STRIPE_CURRENCY: Joi.string().required(),
         FRONTEND_URL: Joi.string().required(),
         PORT: Joi.number(),
+        RMQ_URL: Joi.string().required(),
+        RMQ_PORT: Joi.number().required(),
       }),
     }),
     MongooseModule.forRootAsync({
@@ -91,6 +95,19 @@ import DailyRotateFile = require('winston-daily-rotate-file');
         }),
       ],
     }),
+    ClientsModule.register([
+      {
+        name: 'UNI_VERSE_RMQ_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: [`amqp://${process.env.RMQ_URL}:${process.env.RMQ_PORT}`],
+          queue: 'fp_in_queue',
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+    ]),
     AuthModule,
     UsersModule,
     ReleasesModule,
@@ -107,6 +124,7 @@ import DailyRotateFile = require('winston-daily-rotate-file');
     MetricsModule,
     SearchModule,
     ViewsModule,
+    FpSearchesModule,
   ],
   controllers: [WelcomeController],
   providers: [],
