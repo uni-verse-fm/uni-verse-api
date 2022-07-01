@@ -12,6 +12,7 @@ import { Resource, ResourceSchema } from '../resources/schemas/resource.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { ResourcesModule } from '../resources/resources.module';
 import PacksSearchService from './packs-search.service';
+import { SearchModule } from '../search/search.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import PacksSearchService from './packs-search.service';
       { name: User.name, schema: UserSchema },
     ]),
     ResourcesModule,
+    SearchModule,
     PaymentsModule,
     FilesModule,
   ],
