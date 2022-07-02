@@ -32,6 +32,14 @@ export class Resource {
 
 const ResourceSchema = SchemaFactory.createForClass(Resource);
 
+ResourceSchema.set('toJSON', {
+  transform: function (doc, ret) {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  },
+});
+
 ResourceSchema.index({ title: 'text' });
 
 export { ResourceSchema };

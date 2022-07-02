@@ -3,6 +3,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  StreamableFile,
 } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Model, Connection } from 'mongoose';
@@ -12,7 +13,6 @@ import {
   AccessType,
   CreateResourcePackDto,
 } from './dto/create-resource-pack.dto';
-import { UpdateResourcePackDto } from './dto/update-resource-pack.dto';
 import {
   ResourcePack,
   ResourcePackDocument,
@@ -27,6 +27,7 @@ import { FilesService } from '../files/files.service';
 import { PaymentsService } from '../payments/payments.service';
 import * as mongoose from 'mongoose';
 import PacksSearchService from './packs-search.service';
+import { TransactionsService } from '../transactions/transactions.service';
 
 @Injectable()
 export class ResourcePacksService {
@@ -41,6 +42,7 @@ export class ResourcePacksService {
     private filesService: FilesService,
     private stripeService: PaymentsService,
     private packsSearchService: PacksSearchService,
+    private transactionService: TransactionsService,
   ) {}
 
   async createResourcePack(
@@ -180,11 +182,18 @@ export class ResourcePacksService {
   }
 
   async findResourcePackById(id: string): Promise<ResourcePackDocument> {
-    this.logger.log('Finding resource pack by id');
+    this.logger.log(`Finding resource pack by id "${id}"`);
     isValidId(id);
     const resourcePack = await this.resourcePackModel
       .findById(id)
-      .populate('resources');
+      //.populate('resources')
+      //   .populate({
+      //     path: 'resources',
+      //     populate: {
+      //       path: 'author',
+      //     },
+      //   })
+      .populate('author');
     if (!resourcePack) {
       this.logger.error(`Resource pack with id ${id} not found`);
       throw new BadRequestException(`Resource pack with ID "${id}" not found.`);
@@ -202,16 +211,6 @@ export class ResourcePacksService {
       );
     }
     return resourcePack;
-  }
-
-  async updateResourcePack(
-    id: string,
-    _updateResourcePackDto: UpdateResourcePackDto,
-    _owner: UserDocument,
-  ) {
-    this.logger.log('Updating resource pack');
-    isValidId(id);
-    return `This action updates a #${id} resource pack`;
   }
 
   async removeResourcePack(id: string, owner: UserDocument) {
@@ -269,6 +268,7 @@ export class ResourcePacksService {
 
   private async isUserTheOwnerOfResourcePack(id: string, owner: UserDocument) {
     this.logger.log('Checking if user is the owner of resource pack');
+    isValidId(id);
     const resourcePack = await this.findResourcePackById(id);
     if (!resourcePack) {
       throw new NotFoundException('Somthing wrong with the server');
@@ -465,5 +465,77 @@ export class ResourcePacksService {
       .catch(() => {
         throw new Error('Somthing went wrong');
       });
+  }
+
+  async downloadResource(
+    userId: any,
+    packId: string,
+    resourceId?: string,
+    destId?: string,
+  ) {
+    const resourcePack = await this.findResourcePackById(packId);
+    await this.checkAccessiblity(
+      AccessType[resourcePack.accessType],
+      userId,
+      resourcePack.productId,
+      destId,
+      resourcePack.amount,
+    );
+
+    if (resourceId) {
+      const resource = resourcePack.resources.filter(
+        (resource) => resource._id.toString() === resourceId,
+      );
+      return await this.filesService.findFileByName(
+        resource[0].fileName,
+        BucketName.Resources,
+      );
+    }
+
+    const fileNames = resourcePack.resources.map(
+      (resource) => resource.fileName,
+    );
+
+    const fileZip = await this.filesService
+      .getFilesZip(fileNames, BucketName.Resources)
+      .catch(() => {
+        throw new Error('Method not implemented.');
+      });
+
+    return new StreamableFile(fileZip);
+  }
+
+  async checkAccessiblity(
+    accessType: AccessType,
+    userId: string,
+    prodId?: string,
+    destId?: string,
+    amount = 0,
+  ) {
+    switch (accessType) {
+      case AccessType.Free:
+        return true;
+      case AccessType.Donation:
+        if (!destId)
+          throw new Error(
+            'You must include the destination user to download this resource',
+          );
+        const sum = await this.transactionService.countSumOfDonations(
+          userId,
+          destId,
+        );
+        if (sum < amount) throw new Error('You do not have enough money');
+        return true;
+      case AccessType.Paid:
+        if (!prodId) throw new Error('You must include the product id');
+        const response = await this.transactionService.isUserTheOwner(
+          userId,
+          prodId,
+        );
+        if (!response)
+          throw new Error('You do not have access to this resource');
+      default:
+        throw new Error('Unhandled type of access');
+    }
   }
 }

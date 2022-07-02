@@ -15,7 +15,6 @@ import { isValidId } from '../utils/is-valid-id';
 import { CreateCommentDto, ModelType } from './dto/create-comment.dto';
 import { FindResourceCommentDto } from './dto/find-resource-comment.dto';
 import { HotCommentsDto } from './dto/hot-comments.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment, CommentDocument } from './schemas/comment.schema';
 
 @Injectable()
@@ -93,16 +92,6 @@ export class CommentsService {
           `Can not find comments of resource with ID "${contentType._id}"`,
         );
       });
-  }
-
-  updateComment(
-    id: string,
-    _updateCommentDto: UpdateCommentDto,
-    _owner: UserDocument,
-  ) {
-    isValidId(id);
-    this.logger.log(`Updating comment by id: ${id}`);
-    return `This action updates a #${id} comment`;
   }
 
   async removeComment(id: string, owner: UserDocument) {

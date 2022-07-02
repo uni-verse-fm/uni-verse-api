@@ -13,6 +13,10 @@ export enum BucketName {
   Extracts = 'extracts',
 }
 
+export interface ReadableFile {
+  fileName: string;
+  readable: Readable;
+}
 @Injectable()
 export class MinioClientService {
   private readonly logger: Logger = new Logger(MinioClientService.name);
@@ -85,6 +89,21 @@ export class MinioClientService {
     } catch (error) {
       throw new BadRequestException('An error occured when getting file!');
     }
+  }
+
+  async getFiles(
+    fileNames: string[],
+    bucketName: BucketName,
+  ): Promise<ReadableFile[]> {
+    this.logger.log(`Getting files`);
+    const readables = await Promise.all(
+      fileNames.map((fileName) => this.getFile(fileName, bucketName)),
+    );
+    const files: ReadableFile[] = fileNames.map((fileName, index) => ({
+      fileName,
+      readable: readables[index],
+    }));
+    return files;
   }
 
   async delete(objetName: string, bucketName: BucketName) {

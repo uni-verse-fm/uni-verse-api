@@ -18,7 +18,6 @@ import { buildSimpleFile } from '../utils/buildSimpleFile';
 import { FilesService } from '../files/files.service';
 import { BucketName } from '../minio-client/minio-client.service';
 import { ITrackResponse } from '../tracks/interfaces/track-response.interface';
-import { UpdateReleaseDto } from './dto/update-release.dto';
 import ReleasesSearchService from './releases-search.service';
 import * as mongoose from 'mongoose';
 
@@ -175,16 +174,6 @@ export class ReleasesService {
       throw new BadRequestException(`Release with title ${title} not found.`);
     }
     return release;
-  }
-
-  async updateRelease(
-    id: string,
-    _updateReleaseDto: UpdateReleaseDto,
-    _owner: UserDocument,
-  ) {
-    this.logger.log(`Updating release "${id}"`);
-    isValidId(id);
-    return `This action updates a #${id} release`;
   }
 
   async removeRelease(id: string, owner: UserDocument) {

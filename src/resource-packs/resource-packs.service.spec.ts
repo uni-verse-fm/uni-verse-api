@@ -22,9 +22,15 @@ import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 import { FileMimeType } from '../files/dto/simple-create-file.dto';
 import { AccessType } from './dto/create-resource-pack.dto';
 import { PacksSearchServiceMock } from '../test-utils/mocks/packs-search.service.test';
+import { TransactionsService } from '../transactions/transactions.service';
+import {
+  Transaction,
+  TransactionSchema,
+} from '../transactions/schemas/transaction.schema';
 
 const resource_packs = data2list(data.resource_packs);
 
+const resource_pack = data.resource_packs.resource_pack1;
 const abdou_user = data.create_users.abdou;
 const yoni_user = data.create_users.yoni;
 
@@ -54,6 +60,10 @@ describe('ResourcePacksService', () => {
             name: User.name,
             schema: UserSchema,
           },
+          {
+            name: Transaction.name,
+            schema: TransactionSchema,
+          },
         ]),
       ],
       providers: [
@@ -61,6 +71,7 @@ describe('ResourcePacksService', () => {
         ResourcesService,
         FilesService,
         UsersService,
+        TransactionsService,
         MinioServiceMock,
         PaymentServiceMock,
         UserSearchServiceMock,
@@ -120,19 +131,18 @@ describe('ResourcePacksService', () => {
       ...file,
       buffer: Buffer.from(JSON.parse(JSON.stringify(file.buffer))),
     }));
-    const resouce_pack_1 = data.create_resource_packs.resource_pack1;
     it('should return first resource pack infos', async () => {
-      const resources = data2list(resouce_pack_1.resources);
+      const resources = data2list(resource_pack.resources);
 
       const create_resource_pack = {
-        ...resouce_pack_1,
+        ...resource_pack,
         accessType: AccessType.Free,
         resources,
       };
 
       const expected = {
-        title: resouce_pack_1.title,
-        description: resouce_pack_1.description,
+        title: resource_pack.title,
+        description: resource_pack.description,
         coverName,
         author: {
           id: users[0].id,
@@ -237,7 +247,7 @@ describe('ResourcePacksService', () => {
       expect(result.title).toBe(title);
       expect(result.description).toBe(description);
       expect(result.coverName).toBe(coverName);
-      expect(result.author).toStrictEqual(abdou._id);
+      expect(result.author._id).toStrictEqual(abdou._id);
       expect(result.resources).toBeDefined();
     });
   });
@@ -255,7 +265,9 @@ describe('ResourcePacksService', () => {
       expect(result.title).toBe(title);
       expect(result.description).toBe(description);
       expect(result.coverName).toBe(coverName);
-      expect(result.author).toStrictEqual(abdou._id);
+      expect(result.author.username).toBe(abdou.username);
+      expect(result.author.email).toBe(abdou.email);
+      expect(result.author._id).toStrictEqual(abdou._id);
       expect(result.resources).toBeDefined();
     });
   });

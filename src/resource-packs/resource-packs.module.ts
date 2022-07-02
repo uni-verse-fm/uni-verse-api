@@ -13,6 +13,7 @@ import { User, UserSchema } from '../users/schemas/user.schema';
 import { ResourcesModule } from '../resources/resources.module';
 import PacksSearchService from './packs-search.service';
 import { SearchModule } from '../search/search.module';
+import { TransactionsModule } from '../transactions/transactions.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SearchModule } from '../search/search.module';
     SearchModule,
     PaymentsModule,
     FilesModule,
+    TransactionsModule,
   ],
   controllers: [ResourcePacksController],
   providers: [ResourcePacksService, PacksSearchService],

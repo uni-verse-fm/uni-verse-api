@@ -45,6 +45,6 @@ export class Release {
 
 const ReleaseSchema = SchemaFactory.createForClass(Release);
 
-ReleaseSchema.index({ title: 'text', description: 'text' });
+ReleaseSchema.index({ title: 'text' });
 
 export { ReleaseSchema };

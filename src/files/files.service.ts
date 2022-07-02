@@ -2,9 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   BucketName,
   MinioClientService,
+  ReadableFile,
 } from '../minio-client/minio-client.service';
 import { SimpleCreateFileDto } from './dto/simple-create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
+import AdmZip from 'adm-zip';
 
 @Injectable()
 export class FilesService {
@@ -38,8 +39,19 @@ export class FilesService {
     return await this.minioClient.getFile(fileName, bucketName);
   }
 
-  updateFile(id: string, _updateFileDto: UpdateFileDto) {
-    this.logger.log(`Updating file ${id}`);
-    return `This action updates a #${id} file`;
+  async getFilesZip(fileNames: string[], bucketName: BucketName) {
+    this.logger.log(`Getting files zip`);
+    const files = await this.minioClient.getFiles(fileNames, bucketName);
+
+    const zip = new AdmZip();
+    const chunks = [];
+
+    files.forEach(async (readableFile: ReadableFile) => {
+      for await (const chunk of readableFile.readable) {
+        chunks.push(chunk);
+      }
+      zip.addFile(readableFile.fileName, Buffer.concat(chunks));
+    });
+    return zip.toBuffer();
   }
 }
