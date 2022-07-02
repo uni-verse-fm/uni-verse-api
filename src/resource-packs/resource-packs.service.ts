@@ -182,7 +182,9 @@ export class ResourcePacksService {
   async findResourcePackById(id: string): Promise<ResourcePackDocument> {
     this.logger.log('Finding resource pack by id');
     isValidId(id);
-    const resourcePack = await this.resourcePackModel.findById(id);
+    const resourcePack = await this.resourcePackModel
+      .findById(id)
+      .populate('resources');
     if (!resourcePack) {
       this.logger.error(`Resource pack with id ${id} not found`);
       throw new BadRequestException(`Resource pack with ID "${id}" not found.`);
