@@ -28,9 +28,8 @@ import {
   TransactionSchema,
 } from '../transactions/schemas/transaction.schema';
 
-const resource_packs = data2list(data.resource_packs);
-
-const resource_pack = data.resource_packs.resource_pack1;
+const resource_pack1 = data.create_resource_packs.resource_pack1;
+const resource_pack2 = data.create_resource_packs.resource_pack2;
 const abdou_user = data.create_users.abdou;
 const yoni_user = data.create_users.yoni;
 
@@ -132,17 +131,17 @@ describe('ResourcePacksService', () => {
       buffer: Buffer.from(JSON.parse(JSON.stringify(file.buffer))),
     }));
     it('should return first resource pack infos', async () => {
-      const resources = data2list(resource_pack.resources);
+      const resources = data2list(resource_pack1.resources);
 
       const create_resource_pack = {
-        ...resource_pack,
+        ...resource_pack1,
         accessType: AccessType.Free,
         resources,
       };
 
       const expected = {
-        title: resource_pack.title,
-        description: resource_pack.description,
+        title: resource_pack1.title,
+        description: resource_pack1.description,
         coverName,
         author: {
           id: users[0].id,
@@ -167,19 +166,18 @@ describe('ResourcePacksService', () => {
       ...file,
       buffer: Buffer.from(JSON.parse(JSON.stringify(file.buffer))),
     }));
-    const resouce_pack_2 = data.create_resource_packs.resource_pack2;
     it('should return second resource pack infos', async () => {
-      const resources = data2list(resouce_pack_2.resources);
+      const resources = data2list(resource_pack2.resources);
 
       const create_resource_pack = {
-        ...resouce_pack_2,
+        ...resource_pack2,
         accessType: AccessType.Free,
         resources,
       };
 
       const expected = {
-        title: resouce_pack_2.title,
-        description: resouce_pack_2.description,
+        title: resource_pack2.title,
+        description: resource_pack2.description,
         coverName,
         author: {
           id: users[0].id,
@@ -205,15 +203,15 @@ describe('ResourcePacksService', () => {
 
     it('should return a list of resource packs', async () => {
       const expected1 = {
-        title: resource_packs[0].title,
-        description: resource_packs[0].description,
+        title: resource_pack1.title,
+        description: resource_pack1.description,
         coverName,
         author: abdou._id.toString(),
       };
 
       const expected2 = {
-        title: resource_packs[1].title,
-        description: resource_packs[1].description,
+        title: resource_pack2.title,
+        description: resource_pack2.description,
         coverName,
         author: yoni._id.toString(),
       };
@@ -239,7 +237,7 @@ describe('ResourcePacksService', () => {
       const title = 'resource pack 1';
 
       const result = await resourcePacksService.findResourcePackByTitle(
-        data.resource_packs.resource_pack1.title,
+        resource_pack1.title,
       );
 
       resourcePackId = result._id.toString();

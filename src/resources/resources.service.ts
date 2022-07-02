@@ -115,7 +115,7 @@ export class ResourcesService {
     this.logger.log(`Removing ${resources.length} resources`);
     return await Promise.all(
       resources.map((resource) =>
-        this.removeResource(resource.toString(), session),
+        this.removeResource(resource._id.toString(), session),
       ),
     );
   }

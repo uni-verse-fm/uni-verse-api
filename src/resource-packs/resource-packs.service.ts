@@ -186,14 +186,15 @@ export class ResourcePacksService {
     isValidId(id);
     const resourcePack = await this.resourcePackModel
       .findById(id)
-      //.populate('resources')
-      //   .populate({
-      //     path: 'resources',
-      //     populate: {
-      //       path: 'author',
-      //     },
-      //   })
+      .populate('resources')
+      .populate({
+        path: 'resources',
+        populate: {
+          path: 'author',
+        },
+      })
       .populate('author');
+
     if (!resourcePack) {
       this.logger.error(`Resource pack with id ${id} not found`);
       throw new BadRequestException(`Resource pack with ID "${id}" not found.`);
@@ -227,6 +228,7 @@ export class ResourcePacksService {
             resourcePack.resources,
             session,
           );
+
           await this.filesService.removeFile(
             resourcePack.coverName,
             BucketName.Images,
