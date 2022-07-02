@@ -11,6 +11,7 @@ function rawBodyMiddleware() {
     ) => {
       console.log('Raw Body Middleware');
       if (request.url === '/webhook' && Buffer.isBuffer(buffer)) {
+        console.debug('Raw Body Middleware' + buffer.toString());
         request.rawBody = Buffer.from(buffer);
       }
       return true;

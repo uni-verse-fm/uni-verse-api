@@ -9,6 +9,7 @@ import {
   Res,
   Req,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import {
   ApiCookieAuth,
@@ -16,7 +17,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Request as ExpressRequest, Response } from 'express';
+import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 import { CheckoutDto } from './dto/checkout.dto';
@@ -27,6 +28,7 @@ import { PaymentsService } from './payments.service';
 @ApiTags('payments')
 @Controller('payments')
 export class PaymentsController {
+  private readonly logger: Logger = new Logger(PaymentsController.name);
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Post('/donate')
@@ -91,6 +93,11 @@ export class PaymentsController {
     if (!signature) {
       throw new BadRequestException('Missing stripe-signature header');
     }
+    this.logger.debug(
+      `signature: ${signature}\n body: ${
+        request.rawBody
+      }\n request: ${JSON.stringify(request)}`,
+    );
     const event = await this.paymentsService.constructEventFromPayload(
       signature,
       request.rawBody,
