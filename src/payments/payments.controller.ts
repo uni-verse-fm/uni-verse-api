@@ -94,11 +94,7 @@ export class PaymentsController {
     if (!signature) {
       throw new BadRequestException('Missing stripe-signature header');
     }
-    this.logger.debug(
-      `signature: ${signature}\n body: ${
-        request.rawBody
-      }\n request: ${JSON.stringify(request)}`,
-    );
+    this.logger.log(`signature: ${signature}\n body: ${request.rawBody}`);
     const event = await this.paymentsService.constructEventFromPayload(
       signature,
       request.rawBody,
