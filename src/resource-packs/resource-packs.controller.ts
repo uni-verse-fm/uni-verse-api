@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Request,
@@ -14,7 +13,6 @@ import {
   Query,
 } from '@nestjs/common';
 import { ResourcePacksService } from './resource-packs.service';
-import { UpdateResourcePackDto } from './dto/update-resource-pack.dto';
 import {
   ApiConsumes,
   ApiCookieAuth,
@@ -114,6 +112,24 @@ export class ResourcePacksController {
     return this.resourcePacksService.resourcePacksByUserId(id);
   }
 
+  @Get('download/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Find resource packs' })
+  async downloadResource(
+    @Param('id') packId: string,
+    @Query('resource') resourceId: string,
+    @Query('destId') destId: string,
+    @Request() request: IRequestWithUser,
+  ) {
+    return await this.resourcePacksService.downloadResource(
+      request.user.id,
+      packId,
+      resourceId,
+      destId,
+    );
+  }
+
   @Get('search')
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Search resource-packs' })
@@ -129,23 +145,6 @@ export class ResourcePacksController {
   @UseInterceptors(ValidIdInterceptor)
   findOne(@Param('id') id: string) {
     return this.resourcePacksService.findResourcePackById(id);
-  }
-
-  @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Update a resource pack' })
-  @UseInterceptors(ValidIdInterceptor)
-  update(
-    @Param('id') id: string,
-    @Body() updateResourcePackDto: UpdateResourcePackDto,
-    @Request() request: IRequestWithUser,
-  ) {
-    return this.resourcePacksService.updateResourcePack(
-      id,
-      updateResourcePackDto,
-      request.user,
-    );
   }
 
   @Delete(':id')

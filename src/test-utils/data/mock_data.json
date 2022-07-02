@@ -244,17 +244,21 @@
       "author": "000000000000000000000000",
       "resources": [
         {
+          "_id": "000000000000000000000000",
           "title": "resource 1",
           "originalFileName": "resource_1",
           "author": {
+            "_id": "000000000000000000000002",
             "username": "abdou",
             "email": "96abdou96@gmail.com"
           }
         },
         {
+          "_id": "000000000000000000000001",
           "title": "resource 2",
           "originalFileName": "resource_2",
           "author": {
+            "_id": "000000000000000000000002",
             "username": "abdou",
             "email": "96abdou96@gmail.com"
           }
@@ -269,6 +273,7 @@
       "author": "000000000000000000000002",
       "resources": [
         {
+          "_id": "000000000000000000000003",
           "title": "resource 3",
           "originalFileName": "resource_3",
           "author": {

@@ -5,7 +5,6 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
   Query,
   UploadedFiles,
@@ -17,7 +16,6 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 import { ReleaseFormDataParserInterceptor } from '../utils/interceptors/create-release.interceptor';
-import { UpdateReleaseDto } from './dto/update-release.dto';
 import { ReleasesService } from './releases.service';
 import {
   ApiConsumes,
@@ -124,23 +122,6 @@ export class ReleasesController {
   @ApiCookieAuth('Set-Cookie')
   convertRelease(@Body() body: CreateReleaseDto) {
     return JSON.stringify(body).replace(/ /g, '');
-  }
-
-  @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Update a release' })
-  @UseInterceptors(ValidIdInterceptor)
-  updateRelease(
-    @Param('id') id: string,
-    @Body() updateReleaseDto: UpdateReleaseDto,
-    @Request() request: IRequestWithUser,
-  ) {
-    return this.releasesService.updateRelease(
-      id,
-      updateReleaseDto,
-      request.user,
-    );
   }
 
   @Delete(':id')
