@@ -109,7 +109,7 @@ export class ResourcePacksService {
           resourcePack = await this.resourcePackModel.create(
             createdResourcePack,
           );
-          this.packsSearchService.insertIndex(resourcePack);
+          await this.packsSearchService.insertIndex(resourcePack);
         })
         .then(() => this.buildResourcePackInfo(resourcePack));
       return createResponse;

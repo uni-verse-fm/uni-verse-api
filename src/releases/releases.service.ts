@@ -82,7 +82,7 @@ export class ReleasesService {
           };
 
           release = await this.releaseModel.create(createdRelease);
-          this.releasesSearchService.insertIndex(release);
+          await this.releasesSearchService.insertIndex(release);
         })
         .then(() => this.buildReleaseInfo(release, feats));
       return createResponse;

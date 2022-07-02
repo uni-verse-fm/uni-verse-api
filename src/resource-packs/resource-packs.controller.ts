@@ -52,7 +52,7 @@ export class ResourcePacksController {
     ]),
     ResourcePackFormDataParserInterceptor,
   )
-  create(
+  createResourcePack(
     @UploadedFiles()
     files: {
       resources: Express.Multer.File[];
@@ -114,6 +114,14 @@ export class ResourcePacksController {
     return this.resourcePacksService.resourcePacksByUserId(id);
   }
 
+  @Get('search')
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Search resource-packs' })
+  searchResourcePacks(@Query('search') search: string) {
+    if (search) return this.resourcePacksService.searchPacks(search);
+    return [];
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
@@ -148,13 +156,5 @@ export class ResourcePacksController {
   @UseInterceptors(ValidIdInterceptor)
   remove(@Param('id') id: string, @Request() request: IRequestWithUser) {
     return this.resourcePacksService.removeResourcePack(id, request.user);
-  }
-
-  @Get('search')
-  @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Search resource-packs' })
-  searchResourcePacks(@Query('search') search: string) {
-    if (search) return this.resourcePacksService.searchPacks(search);
-    return [];
   }
 }

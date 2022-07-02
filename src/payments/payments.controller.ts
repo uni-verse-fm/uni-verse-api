@@ -100,6 +100,6 @@ export class PaymentsController {
     );
     return await this.paymentsService
       .handleWebHook(event)
-      .then(() => response.send(200));
+      .then(() => response.sendStatus(200));
   }
 }

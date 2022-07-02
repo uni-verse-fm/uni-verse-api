@@ -9,12 +9,7 @@ function rawBodyMiddleware() {
       response: Response,
       buffer: Buffer,
     ) => {
-      console.log('Raw Body Middleware');
-      console.log(
-        `url:  + ${request.url}\n buffer: ${buffer.toString()}`,
-      );
       if (request.url === '/payments/webhook' && Buffer.isBuffer(buffer)) {
-        console.log('Raw Body Middleware' + buffer.toString());
         request.rawBody = Buffer.from(buffer);
       }
       return true;
