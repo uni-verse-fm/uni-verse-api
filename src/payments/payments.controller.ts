@@ -89,6 +89,7 @@ export class PaymentsController {
   async stripeWebHook(
     @Headers('stripe-signature') signature: string,
     @Req() request: RequestWithRawBody,
+    @Res() response: Response,
   ) {
     if (!signature) {
       throw new BadRequestException('Missing stripe-signature header');
@@ -102,6 +103,8 @@ export class PaymentsController {
       signature,
       request.rawBody,
     );
-    return await this.paymentsService.handleWebHook(event);
+    return await this.paymentsService
+      .handleWebHook(event)
+      .then(() => response.send(200));
   }
 }
