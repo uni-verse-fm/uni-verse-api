@@ -16,6 +16,7 @@ import { UserSearchServiceMock } from '../test-utils/mocks/users-search.service.
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
+import { RmqServiceMock } from 'src/test-utils/mocks/rmq.service.test';
 
 const users = data.users;
 const tracks = data.tracks;
@@ -66,6 +67,7 @@ describe('TracksService', () => {
         FilesService,
         UsersService,
         MinioServiceMock,
+        RmqServiceMock,
         PaymentServiceMock,
         UserSearchServiceMock,
         TrackSearchServiceMock,

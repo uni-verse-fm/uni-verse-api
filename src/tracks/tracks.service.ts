@@ -34,7 +34,7 @@ export class TracksService {
     private filesService: FilesService,
     private usersService: UsersService,
     private tracksSearchService: TracksSearchService,
-    private readonly amqpConnection: AmqpConnection,
+    private amqpConnection: AmqpConnection,
   ) {}
 
   async createTrack(
