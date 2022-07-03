@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { Injectable } from '@nestjs/common';
 import { Registry, collectDefaultMetrics, Histogram, Gauge } from 'prom-client';
 

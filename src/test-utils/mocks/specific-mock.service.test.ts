@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { Track } from '../../tracks/schemas/track.schema';
 import * as data from '../data/mock_data.json';
 import { data2list } from './standard-mock.service.test';

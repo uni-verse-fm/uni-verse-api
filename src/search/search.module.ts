@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';

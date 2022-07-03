@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import {
   BadRequestException,
   Injectable,
@@ -311,7 +313,7 @@ export class PaymentsService {
   public async handleWebHook(event: Stripe.Event) {
     this.logger.log(`Handeling stripe event ${event.type}`);
     const session: any = event.data.object;
-    this.logger.log("entry " + JSON.stringify(session))
+    this.logger.log('entry ' + JSON.stringify(session));
 
     switch (event.type) {
       case 'checkout.session.async_payment_failed':
@@ -323,7 +325,7 @@ export class PaymentsService {
           session.client_reference_id,
         );
       case 'checkout.session.completed':
-        this.logger.log(JSON.stringify(session))
+        this.logger.log(JSON.stringify(session));
         await this.transactionService.activateTransaction(
           session.client_reference_id,
         );

@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { ApiBody } from '@nestjs/swagger';
 
 export const ApiMultiFileWithMetadata =

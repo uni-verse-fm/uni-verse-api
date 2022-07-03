@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { JwtAuthGuard } from './../auth/guards/jwt-auth.guard';
 import { Controller, Get, Param, UseGuards, Post, Body } from '@nestjs/common';
 import { ViewsService } from './views.service';

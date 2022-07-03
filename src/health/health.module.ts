@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { TerminusModule } from '@nestjs/terminus';

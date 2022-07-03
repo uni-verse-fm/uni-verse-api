@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { SimpleCreateFileDto } from '../files/dto/simple-create-file.dto';
 import * as crypto from 'crypto';

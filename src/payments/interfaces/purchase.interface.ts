@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 export interface IPurchase {
   customerId: string;
   amount: number;

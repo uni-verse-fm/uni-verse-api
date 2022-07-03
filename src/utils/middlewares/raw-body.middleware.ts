@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { Response } from 'express';
 import { json } from 'body-parser';
 import RequestWithRawBody from '../../payments/interfaces/request-with-raw-body.interface';

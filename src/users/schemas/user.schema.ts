@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import * as bcrypt from 'bcrypt';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId, Document } from 'mongoose';

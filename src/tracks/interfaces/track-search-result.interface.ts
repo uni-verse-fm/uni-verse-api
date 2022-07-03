@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import ITrackSearchBody from '../../users/interfaces/user-search-body.interface';
 
 interface ITrackSearchResult {

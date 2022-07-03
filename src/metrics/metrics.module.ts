@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { Module } from '@nestjs/common';
 import { MetricsService } from './metrics.service';
 import { MetricsController } from './metrics.controller';

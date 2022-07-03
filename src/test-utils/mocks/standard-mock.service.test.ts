@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 export const data2list = (data: object) =>
   Object.entries(data).map((item) => item[1]);
 

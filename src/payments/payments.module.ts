@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { TransactionsModule } from './../transactions/transactions.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';

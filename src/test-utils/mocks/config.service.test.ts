@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { ConfigService } from '@nestjs/config';
 
 export const ConfigServiceMock = {

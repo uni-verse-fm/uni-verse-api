@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import {
   BadRequestException,
   Injectable,
@@ -538,7 +540,7 @@ export class ResourcePacksService {
         if (!response)
           throw new Error('You do not have access to this resource');
       default:
-        throw new Error('Unhandled type of access');
+        throw new Error(`Unhandled type of access ${accessType}`);
     }
   }
 }

@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { HealthIndicatorResult, HttpHealthIndicator } from '@nestjs/terminus';
 import { PrometheusService } from '../../prometheus/prometheus.service';
 import { HealthIndicator } from '../interfaces/health-indicator.interface';

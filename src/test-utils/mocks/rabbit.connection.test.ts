@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 export const AmqpConnectionMock = {

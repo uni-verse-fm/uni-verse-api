@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { FilesService } from './files.service';

@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { HealthIndicatorResult } from '@nestjs/terminus';
 
 export interface HealthIndicator {

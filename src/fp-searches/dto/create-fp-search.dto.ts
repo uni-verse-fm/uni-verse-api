@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 import AuthorDto from 'src/users/dto/author.dto';
 

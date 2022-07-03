@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { Injectable, Logger } from '@nestjs/common';
 import {
   HealthCheck,

@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { Type } from 'class-transformer';
 import { IsDateString, IsInt, IsNotEmpty, Max, Min } from 'class-validator';
 

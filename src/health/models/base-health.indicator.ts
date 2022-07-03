@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { HealthIndicator, HealthIndicatorResult } from '@nestjs/terminus';
 import {
   PrometheusHistogram,
