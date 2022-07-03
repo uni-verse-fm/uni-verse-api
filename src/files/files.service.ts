@@ -7,6 +7,10 @@ import {
 import { SimpleCreateFileDto } from './dto/simple-create-file.dto';
 import AdmZip = require('adm-zip');
 
+interface BufferFile {
+  fileName: string;
+  buffer: Buffer;
+}
 @Injectable()
 export class FilesService {
   private readonly logger = new Logger(FilesService.name);
@@ -46,6 +50,19 @@ export class FilesService {
     return buffer;
   }
 
+  async buildBuffer(readableFile: ReadableFile): Promise<BufferFile> {
+    const chunks = [];
+    var dataLen = 0;
+    for await (const chunk of readableFile.readable) {
+      chunks.push(chunk);
+      dataLen += chunk.length;
+    }
+    return {
+      fileName: readableFile.fileName,
+      buffer: Buffer.concat(chunks),
+    };
+  }
+
   async getFilesZip(fileNames: string[], bucketName: BucketName) {
     this.logger.log(`Getting files zip`);
     const files = await this.minioClient
@@ -54,21 +71,18 @@ export class FilesService {
         throw new Error("Can't get files");
       });
 
-    try {
-      const zip = new AdmZip();
-      files.forEach(async (readableFile: ReadableFile) => {
-        const chunks = [];
-        var dataLen = 0;
-        for await (const chunk of readableFile.readable) {
-          chunks.push(chunk);
-          dataLen += chunk.length;
-        }
-        zip.addFile(readableFile.fileName, Buffer.concat(chunks));
+    const zip = new AdmZip();
+    return await Promise.all(
+      files.map((readableFile: ReadableFile) => this.buildBuffer(readableFile)),
+    )
+      .then((bufferFiles) =>
+        bufferFiles.forEach((bufferFile) =>
+          zip.addFile(bufferFile.fileName, bufferFile.buffer),
+        ),
+      )
+      .then(() => zip.toBuffer())
+      .catch((error) => {
+        throw new Error(error);
       });
-      const buffer = zip.toBuffer();
-      return buffer;
-    } catch (error) {
-      throw new Error(error);
-    }
   }
 }
