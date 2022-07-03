@@ -52,10 +52,8 @@ export class FilesService {
 
   async buildBuffer(readableFile: ReadableFile): Promise<BufferFile> {
     const chunks = [];
-    var dataLen = 0;
     for await (const chunk of readableFile.readable) {
       chunks.push(chunk);
-      dataLen += chunk.length;
     }
     return {
       fileName: readableFile.fileName,

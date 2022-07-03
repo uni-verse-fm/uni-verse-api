@@ -96,10 +96,12 @@ export class MinioClientService {
   ): Promise<ReadableFile[]> {
     this.logger.log(`Getting files`);
     const readables = await Promise.all(
-      fileNames.map((fileName) => this.getFile(fileName, bucketName).then((readable) => ({
-        fileName,
-        readable,
-      }))),
+      fileNames.map((fileName) =>
+        this.getFile(fileName, bucketName).then((readable) => ({
+          fileName,
+          readable,
+        })),
+      ),
     );
     this.logger.log('Got files');
     return readables;
