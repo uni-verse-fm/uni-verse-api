@@ -22,6 +22,7 @@ import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 import { ITrackResponse } from '../tracks/interfaces/track-response.interface';
 import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
+import { AmqpConnectionMock } from '../test-utils/mocks/rabbit.connection.test';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -81,6 +82,7 @@ describe('CommentsService', () => {
         PaymentServiceMock,
         UserSearchServiceMock,
         TrackSearchServiceMock,
+        AmqpConnectionMock,
       ],
     }).compile();
 

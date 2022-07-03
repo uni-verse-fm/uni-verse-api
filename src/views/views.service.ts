@@ -128,6 +128,8 @@ export class ViewsService {
                       id: '$_id',
                       username: '$username',
                       email: '$email',
+                      stripeAccountId: '$stripeAccountId',
+                      donationProductId: '$donationProductId',
                       profilePicture: '$profilePicture',
                     },
                   },

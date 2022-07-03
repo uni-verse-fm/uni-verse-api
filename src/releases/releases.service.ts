@@ -18,7 +18,6 @@ import { buildSimpleFile } from '../utils/buildSimpleFile';
 import { FilesService } from '../files/files.service';
 import { BucketName } from '../minio-client/minio-client.service';
 import { ITrackResponse } from '../tracks/interfaces/track-response.interface';
-import { UpdateReleaseDto } from './dto/update-release.dto';
 import ReleasesSearchService from './releases-search.service';
 import * as mongoose from 'mongoose';
 
@@ -82,7 +81,7 @@ export class ReleasesService {
           };
 
           release = await this.releaseModel.create(createdRelease);
-          this.releasesSearchService.insertIndex(release);
+          await this.releasesSearchService.insertIndex(release);
         })
         .then(() => this.buildReleaseInfo(release, feats));
       return createResponse;
@@ -175,16 +174,6 @@ export class ReleasesService {
       throw new BadRequestException(`Release with title ${title} not found.`);
     }
     return release;
-  }
-
-  async updateRelease(
-    id: string,
-    _updateReleaseDto: UpdateReleaseDto,
-    _owner: UserDocument,
-  ) {
-    this.logger.log(`Updating release "${id}"`);
-    isValidId(id);
-    return `This action updates a #${id} release`;
   }
 
   async removeRelease(id: string, owner: UserDocument) {
@@ -292,6 +281,7 @@ export class ReleasesService {
                 $project: {
                   id: '$_id',
                   title: '$title',
+                  fileName: '$fileName',
                   feats: '$feats',
                   author: '$author',
                   views: { $size: '$viewsDocs' },
@@ -318,6 +308,8 @@ export class ReleasesService {
                   id: '$_id',
                   username: '$username',
                   email: '$email',
+                  stripeAccountId: '$stripeAccountId',
+                  donationProductId: '$donationProductId',
                   profilePicture: '$profilePicture',
                 },
               },
@@ -329,7 +321,7 @@ export class ReleasesService {
           $project: {
             id: 1,
             title: 1,
-            fileName: 1,
+            coverName: 1,
             feats: {
               id: 1,
               username: 1,
@@ -384,6 +376,7 @@ export class ReleasesService {
                 $project: {
                   id: '$_id',
                   title: '$title',
+                  fileName: '$fileName',
                   feats: '$feats',
                   author: '$author',
                   views: { $size: '$viewsDocs' },
@@ -410,6 +403,8 @@ export class ReleasesService {
                   id: '$_id',
                   username: '$username',
                   email: '$email',
+                  stripeAccountId: '$stripeAccountId',
+                  donationProductId: '$donationProductId',
                   profilePicture: '$profilePicture',
                 },
               },
@@ -421,7 +416,6 @@ export class ReleasesService {
           $project: {
             id: 1,
             title: 1,
-            fileName: 1,
             coverName: 1,
             feats: {
               id: 1,

@@ -34,6 +34,9 @@ export class ResourcePack {
   accessType: string;
 
   @Prop()
+  productId?: string;
+
+  @Prop()
   amount?: number;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })

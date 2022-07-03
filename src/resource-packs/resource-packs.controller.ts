@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Request,
@@ -11,9 +10,9 @@ import {
   UseGuards,
   UseInterceptors,
   Logger,
+  Query,
 } from '@nestjs/common';
 import { ResourcePacksService } from './resource-packs.service';
-import { UpdateResourcePackDto } from './dto/update-resource-pack.dto';
 import {
   ApiConsumes,
   ApiCookieAuth,
@@ -51,7 +50,7 @@ export class ResourcePacksController {
     ]),
     ResourcePackFormDataParserInterceptor,
   )
-  create(
+  createResourcePack(
     @UploadedFiles()
     files: {
       resources: Express.Multer.File[];
@@ -105,12 +104,38 @@ export class ResourcePacksController {
     return this.resourcePacksService.findAllResourcePacks();
   }
 
-  @Get('myresourcepacks')
+  @Get('user/:id')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Find my playlists' })
-  myPlaylists(@Request() request: IRequestWithUser) {
-    return this.resourcePacksService.resourcePacksByUserId(request.user._id);
+  @ApiOperation({ summary: 'Find resource packs' })
+  userResourcePacks(@Param('id') id: string) {
+    return this.resourcePacksService.resourcePacksByUserId(id);
+  }
+
+  @Get('download/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Find resource packs' })
+  async downloadResource(
+    @Param('id') packId: string,
+    @Query('resource') resourceId: string,
+    @Query('destId') destId: string,
+    @Request() request: IRequestWithUser,
+  ) {
+    return await this.resourcePacksService.downloadResource(
+      request.user.id,
+      packId,
+      resourceId,
+      destId,
+    );
+  }
+
+  @Get('search')
+  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Search resource-packs' })
+  searchResourcePacks(@Query('search') search: string) {
+    if (search) return this.resourcePacksService.searchPacks(search);
+    return [];
   }
 
   @Get(':id')
@@ -120,23 +145,6 @@ export class ResourcePacksController {
   @UseInterceptors(ValidIdInterceptor)
   findOne(@Param('id') id: string) {
     return this.resourcePacksService.findResourcePackById(id);
-  }
-
-  @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Update a resource pack' })
-  @UseInterceptors(ValidIdInterceptor)
-  update(
-    @Param('id') id: string,
-    @Body() updateResourcePackDto: UpdateResourcePackDto,
-    @Request() request: IRequestWithUser,
-  ) {
-    return this.resourcePacksService.updateResourcePack(
-      id,
-      updateResourcePackDto,
-      request.user,
-    );
   }
 
   @Delete(':id')

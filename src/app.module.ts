@@ -21,6 +21,7 @@ import { SearchModule } from './search/search.module';
 import LogsMiddleware from './utils/middlewares/logs.middleware';
 import { utilities, WinstonModule } from 'nest-winston';
 import { ViewsModule } from './views/views.module';
+import { TransactionsModule } from './transactions/transactions.module';
 import * as winston from 'winston';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -49,9 +50,11 @@ import { FpSearchesModule } from './fp-searches/fp-searches.module';
         JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
         JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.string().required(),
         UNIVERSE_DONATION_PRODUCT_ID: Joi.string().required(),
-        STRIPE_SECRET_KEY: Joi.string(),
-        STRIPE_CURRENCY: Joi.string(),
-        FRONTEND_URL: Joi.string(),
+        STRIPE_SECRET_KEY: Joi.string().required(),
+        STRIPE_WEBHOOK_SECRET: Joi.string().required(),
+        ONBOARD_REFRESH_URL: Joi.string().required(),
+        STRIPE_CURRENCY: Joi.string().required(),
+        FRONTEND_URL: Joi.string().required(),
         PORT: Joi.number(),
         RMQ_URL: Joi.string().required(),
         RMQ_PORT: Joi.number().required(),
@@ -110,6 +113,7 @@ import { FpSearchesModule } from './fp-searches/fp-searches.module';
     MetricsModule,
     SearchModule,
     ViewsModule,
+    TransactionsModule,
     FpSearchesModule,
   ],
   controllers: [WelcomeController],

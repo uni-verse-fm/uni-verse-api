@@ -1,10 +1,8 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
-export const RmqServiceMock = {
+export const AmqpConnectionMock = {
   provide: AmqpConnection,
   useValue: {
-    publish: jest.fn(() => {
-      return null;
-    }),
+    publish: jest.fn(() => undefined),
   },
 };

@@ -4,7 +4,6 @@ import {
   Post,
   Body,
   Request,
-  Patch,
   Param,
   Delete,
   UseGuards,
@@ -17,7 +16,6 @@ import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto, ModelType } from './dto/create-comment.dto';
 import { HotCommentsDto } from './dto/hot-comments.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @ApiTags('comments')
 @Controller('comments')
@@ -65,22 +63,6 @@ export class CommentsController {
       contentId,
       typeOfContent,
     });
-  }
-
-  @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiCookieAuth('Set-Cookie')
-  @UseInterceptors(ValidIdInterceptor)
-  update(
-    @Param('id') id: string,
-    @Body() updateCommentDto: UpdateCommentDto,
-    @Request() request: IRequestWithUser,
-  ) {
-    return this.commentsService.updateComment(
-      id,
-      updateCommentDto,
-      request.user,
-    );
   }
 
   @Delete(':id')

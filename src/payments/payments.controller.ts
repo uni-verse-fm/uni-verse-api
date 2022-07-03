@@ -3,21 +3,32 @@ import {
   Get,
   Post,
   Body,
-  Request,
   UseGuards,
+  Request,
+  Headers,
   Res,
+  Req,
+  BadRequestException,
+  Logger,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Response as ExpressResponse } from 'express';
+import {
+  ApiCookieAuth,
+  ApiExcludeEndpoint,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 import { CheckoutDto } from './dto/checkout.dto';
 import { DonateDto } from './dto/create-donate.dto';
+import RequestWithRawBody from './interfaces/request-with-raw-body.interface';
 import { PaymentsService } from './payments.service';
 
 @ApiTags('payments')
 @Controller('payments')
 export class PaymentsController {
+  private readonly logger: Logger = new Logger(PaymentsController.name);
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Post('/donate')
@@ -27,22 +38,27 @@ export class PaymentsController {
   async donate(
     @Body() donate: DonateDto,
     @Request() request: IRequestWithUser,
-    @Res() response: ExpressResponse,
+    @Res() response: Response,
   ) {
     const donateUrl = await this.paymentsService.donate(
       donate.amount,
-      request.user.donationProductId,
+      donate.donationProductId,
+      request.user.id,
       donate.connectedAccountId,
     );
     return response.json({ donateUrl });
   }
 
-  @Post('/checkout')
+  @Post('/purshase')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Make a purshase' })
-  checkout(@Body() checkout: CheckoutDto) {
-    return this.paymentsService.checkout(
+  checkout(
+    @Body() checkout: CheckoutDto,
+    @Request() request: IRequestWithUser,
+  ) {
+    return this.paymentsService.purshase(
+      request.user.id,
       checkout.priceId,
       checkout.connectedAccountId,
     );
@@ -54,7 +70,7 @@ export class PaymentsController {
   @ApiOperation({ summary: 'Refresh stripe onboarding' })
   async refresh(
     @Request() request: IRequestWithUser,
-    @Res() response: ExpressResponse,
+    @Res() response: Response,
   ) {
     const onboardUrl = await this.paymentsService.refreshOnboardLink(request);
     return response.json({ onboardUrl });
@@ -66,5 +82,24 @@ export class PaymentsController {
   @ApiOperation({ summary: 'Find my account' })
   findMyAccount(@Request() request: IRequestWithUser) {
     return this.paymentsService.findAccount(request.user.stripeAccountId);
+  }
+
+  @Post('/webhook')
+  @ApiExcludeEndpoint()
+  async stripeWebHook(
+    @Headers('stripe-signature') signature: string,
+    @Req() request: RequestWithRawBody,
+    @Res() response: Response,
+  ) {
+    if (!signature) {
+      throw new BadRequestException('Missing stripe-signature header');
+    }
+    const event = await this.paymentsService.constructEventFromPayload(
+      signature,
+      request.rawBody,
+    );
+    return await this.paymentsService
+      .handleWebHook(event)
+      .then(() => response.sendStatus(200));
   }
 }

@@ -6,17 +6,23 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
+import { TransactionType } from '../transactions/interfaces/create-transaction.interface';
+import { TransactionsService } from '../transactions/transactions.service';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 import { User } from '../users/schemas/user.schema';
 import { DonationAmount } from './dto/create-donate.dto';
 
+const DonationAmounts = [1000, 2000, 3000, 5000, 10000];
 @Injectable()
 export class PaymentsService {
   private stripe: Stripe;
   private univerDonationProductId: string;
   private readonly logger: Logger = new Logger(PaymentsService.name);
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private transactionService: TransactionsService,
+  ) {
     this.stripe = new Stripe(configService.get('STRIPE_SECRET_KEY'), {
       apiVersion: '2020-08-27',
     });
@@ -31,7 +37,7 @@ export class PaymentsService {
       const accountLink = await this.stripe.accountLinks.create({
         type: 'account_onboarding',
         account: user.stripeAccountId,
-        refresh_url: `${this.configService.get('REFRESH_URL')}`,
+        refresh_url: `${this.configService.get('ONBOARD_REFRESH_URL')}`,
         return_url: `${this.configService.get('FRONTEND_URL')}`,
       });
       return accountLink.url;
@@ -43,15 +49,15 @@ export class PaymentsService {
   public async refreshOnboardLink(request: IRequestWithUser) {
     this.logger.log(`Refreshing onboarding user`);
     const accountId = request.user?.stripeAccountId;
-    if (!accountId) throw new BadRequestException('Account id is undefined');
+    if (!accountId)
+      throw new BadRequestException(
+        'Account id is undefined you should onboard first',
+      );
     try {
-      const origin = `${request.secure ? 'https://' : 'http://'}${
-        request.headers.host
-      }`;
       const accountLink = await this.stripe.accountLinks.create({
         type: 'account_onboarding',
         account: accountId,
-        refresh_url: `${origin}/payments/refresh`,
+        refresh_url: `${this.configService.get('ONBOARD_REFRESH_URL')}`,
         return_url: `${this.configService.get('FRONTEND_URL')}`,
       });
 
@@ -61,7 +67,11 @@ export class PaymentsService {
     }
   }
 
-  public async checkout(priceId: string, connectedAccountId?: string) {
+  public async checkout(
+    priceId: string,
+    transactionId: string,
+    connectedAccountId?: string,
+  ) {
     try {
       const session = await this.stripe.checkout.sessions.create({
         line_items: [
@@ -73,6 +83,7 @@ export class PaymentsService {
         mode: 'payment',
         success_url: `${this.configService.get('FRONTEND_URL')}/Success`,
         cancel_url: `${this.configService.get('FRONTEND_URL')}`,
+        client_reference_id: transactionId,
         payment_intent_data: connectedAccountId
           ? {
               application_fee_amount: 30,
@@ -144,14 +155,13 @@ export class PaymentsService {
 
   public async createDonations(ownerId: string) {
     this.logger.log(`Creating donations for owner: ${ownerId}`);
-    const donationAmounts = [100, 200, 300, 500];
     return await this.stripe.products
       .create({
         name: `donation`,
       })
       .then(async (response) => {
         await Promise.all(
-          donationAmounts.map((amount: number) =>
+          DonationAmounts.map((amount: number) =>
             this.createPrice(
               `${ownerId}-donation`,
               ownerId,
@@ -225,6 +235,7 @@ export class PaymentsService {
   public async donate(
     donationAmout: DonationAmount,
     productId: string = this.univerDonationProductId,
+    userId: string,
     connectedAccountId?: string,
   ) {
     this.logger.log(`Making donation`);
@@ -241,7 +252,46 @@ export class PaymentsService {
     if (prices.length === 0) {
       throw new Error(`Can not donate did you finish your onboarding ?`);
     }
-    return await this.checkout(prices[0].id, connectedAccountId);
+
+    const transactionId = await this.transactionService.createTransaction({
+      user: userId,
+      product: productId,
+      amount: Number(productPrice[0].amount),
+      type: TransactionType.Purchase,
+      destUser: connectedAccountId,
+    });
+
+    return await this.checkout(prices[0].id, connectedAccountId, transactionId);
+  }
+
+  public async purshase(
+    userId: string,
+    productId: string,
+    connectedAccountId: string,
+  ) {
+    this.logger.log(`Making purshase`);
+    await this.stripe.products.retrieve(productId).catch((error) => {
+      this.logger.error(`Can not donate ${error.code + ' ' + error.message}`);
+      throw new InternalServerErrorException(error.code + ' ' + error.message);
+    });
+    const productPrice = await this.findProductPrices(productId);
+
+    const transactionId = await this.transactionService.createTransaction({
+      user: userId,
+      product: productId,
+      amount: Number(productPrice[0].amount),
+      type: TransactionType.Purchase,
+      destUser: connectedAccountId,
+    });
+
+    if (productPrice.length === 0) {
+      throw new Error(`No price found for this product`);
+    }
+    return await this.checkout(
+      productPrice[0].id,
+      transactionId,
+      connectedAccountId,
+    );
   }
 
   public async findAllPayments(customerId: string) {
@@ -254,5 +304,38 @@ export class PaymentsService {
       `Find one payment ${payementId} for customer ${customerId}`,
     );
     return `This action returns all payments`;
+  }
+
+  public async handleWebHook(event: Stripe.Event) {
+    this.logger.log(`Handeling stripe event ${event.type}`);
+    const session: any = event.data.object;
+
+    switch (event.type) {
+      case 'checkout.session.async_payment_failed':
+        await this.transactionService.removeTransaction(
+          session.client_reference_id,
+        );
+      case 'checkout.session.expired':
+        await this.transactionService.removeTransaction(
+          session.client_reference_id,
+        );
+      case 'checkout.session.completed':
+        await this.transactionService.activateTransaction(
+          session.client_reference_id,
+        );
+      default:
+        this.logger.log(`Unhandled event type ${event.type}`);
+    }
+  }
+
+  public async constructEventFromPayload(signature: string, payload: Buffer) {
+    this.logger.log(`Constructing stripe event with signature ${signature}`);
+    const webhookSecret = this.configService.get('STRIPE_WEBHOOK_SECRET');
+
+    return this.stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      webhookSecret,
+    );
   }
 }
