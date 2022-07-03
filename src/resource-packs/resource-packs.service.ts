@@ -477,7 +477,7 @@ export class ResourcePacksService {
   ) {
     const resourcePack = await this.findResourcePackById(packId);
     await this.checkAccessiblity(
-      AccessType[resourcePack.accessType],
+      resourcePack.accessType,
       userId,
       resourcePack.productId,
       destId,
@@ -508,7 +508,7 @@ export class ResourcePacksService {
   }
 
   async checkAccessiblity(
-    accessType: AccessType,
+    accessType: string,
     userId: string,
     prodId?: string,
     destId?: string,
