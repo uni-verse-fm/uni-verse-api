@@ -83,12 +83,11 @@ export class MinioClientService {
 
   async getFile(fileName: string, bucketName: BucketName): Promise<Readable> {
     this.logger.log(`Getting file ${fileName}`);
-    try {
-      const file = await this.client.getObject(bucketName, fileName);
-      return file;
-    } catch (error) {
-      throw new BadRequestException('An error occured when getting file!');
-    }
+    return await this.client.getObject(bucketName, fileName).catch((error) => {
+      throw new BadRequestException(
+        `An error occured when getting file! due: ${error}`,
+      );
+    });
   }
 
   async getFiles(
@@ -99,6 +98,7 @@ export class MinioClientService {
     const readables = await Promise.all(
       fileNames.map((fileName) => this.getFile(fileName, bucketName)),
     );
+    this.logger.log('Got files');
     const files: ReadableFile[] = fileNames.map((fileName, index) => ({
       fileName,
       readable: readables[index],

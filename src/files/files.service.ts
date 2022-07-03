@@ -48,17 +48,23 @@ export class FilesService {
 
   async getFilesZip(fileNames: string[], bucketName: BucketName) {
     this.logger.log(`Getting files zip`);
-    const files = await this.minioClient.getFiles(fileNames, bucketName);
+    const files = await this.minioClient
+      .getFiles(fileNames, bucketName)
+      .catch(() => {
+        throw new Error("Can't get files");
+      });
 
     const zip = new AdmZip();
-    const chunks = [];
 
     files.forEach(async (readableFile: ReadableFile) => {
+      const chunks = [];
       for await (const chunk of readableFile.readable) {
         chunks.push(chunk);
       }
       zip.addFile(readableFile.fileName, Buffer.concat(chunks));
     });
+
+    this.logger.log('Got files zip');
     return zip.toBuffer();
   }
 }
