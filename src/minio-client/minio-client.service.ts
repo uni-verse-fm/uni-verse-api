@@ -96,13 +96,13 @@ export class MinioClientService {
   ): Promise<ReadableFile[]> {
     this.logger.log(`Getting files`);
     const readables = await Promise.all(
-      fileNames.map((fileName) => this.getFile(fileName, bucketName)),
+      fileNames.map((fileName) => this.getFile(fileName, bucketName).then((readable) => ({
+        fileName,
+        readable,
+      }))),
     );
     this.logger.log('Got files');
-    return fileNames.map((fileName, index) => ({
-      fileName,
-      readable: readables[index],
-    }));
+    return readables;
   }
 
   async delete(objetName: string, bucketName: BucketName) {

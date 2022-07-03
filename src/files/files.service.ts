@@ -54,22 +54,21 @@ export class FilesService {
         throw new Error("Can't get files");
       });
 
-    const zip = new AdmZip();
-
-    files.forEach(async (readableFile: ReadableFile) => {
-      const chunks = [];
-      for await (const chunk of readableFile.readable) {
-        chunks.push(chunk);
-      }
-      zip.addFile(readableFile.fileName, Buffer.concat(chunks));
-    });
-
-    this.logger.log('Got files zip');
-    return await zip
-      .toBufferPromise()
-      .then((buffer) => buffer)
-      .catch((error) => {
-        throw new Error(error);
+    try {
+      const zip = new AdmZip();
+      files.forEach(async (readableFile: ReadableFile) => {
+        const chunks = [];
+        var dataLen = 0;
+        for await (const chunk of readableFile.readable) {
+          chunks.push(chunk);
+          dataLen += chunk.length;
+        }
+        zip.addFile(readableFile.fileName, Buffer.concat(chunks));
       });
+      const buffer = zip.toBuffer();
+      return buffer;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 }
