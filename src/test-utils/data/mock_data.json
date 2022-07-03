@@ -273,6 +273,7 @@
       "author": "000000000000000000000002",
       "resources": [
         {
+          "_id": "000000000000000000000003",
           "title": "resource 3",
           "originalFileName": "resource_3",
           "author": {
