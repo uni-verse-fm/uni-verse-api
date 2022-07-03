@@ -488,10 +488,11 @@ export class ResourcePacksService {
       const resource = resourcePack.resources.filter(
         (resource) => resource._id.toString() === resourceId,
       );
-      return await this.filesService.findFileByName(
+      const file = await this.filesService.findFileByName(
         resource[0].fileName,
         BucketName.Resources,
       );
+      return new StreamableFile(file);
     }
 
     const fileNames = resourcePack.resources.map(

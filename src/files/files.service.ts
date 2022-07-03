@@ -36,7 +36,14 @@ export class FilesService {
 
   async findFileByName(fileName: string, bucketName: BucketName) {
     this.logger.log(`Finding file ${fileName}`);
-    return await this.minioClient.getFile(fileName, bucketName);
+    const file = await this.minioClient.getFile(fileName, bucketName);
+    const chunks = [];
+
+    for await (const chunk of file) {
+      chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
+    return buffer;
   }
 
   async getFilesZip(fileNames: string[], bucketName: BucketName) {

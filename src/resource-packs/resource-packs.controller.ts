@@ -116,6 +116,8 @@ export class ResourcePacksController {
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find resource packs' })
+  @ApiQuery({ name: 'resource', required: false })
+  @ApiQuery({ name: 'destId', required: false })
   async downloadResource(
     @Param('id') packId: string,
     @Query('resource') resourceId: string,
