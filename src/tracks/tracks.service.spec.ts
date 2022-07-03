@@ -67,7 +67,6 @@ describe('TracksService', () => {
         FilesService,
         UsersService,
         MinioServiceMock,
-        RmqServiceMock,
         PaymentServiceMock,
         UserSearchServiceMock,
         TrackSearchServiceMock,
