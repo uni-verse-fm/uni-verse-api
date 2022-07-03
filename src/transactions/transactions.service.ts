@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import {
   BadRequestException,
   Injectable,
@@ -22,7 +24,9 @@ export class TransactionsService {
     private transactionModel: Model<TransactionDocument>,
   ) {}
 
-  async createTransaction(createTransaction: CreateTransaction): Promise<string> {
+  async createTransaction(
+    createTransaction: CreateTransaction,
+  ): Promise<string> {
     this.logger.log(
       `Creating ${createTransaction.type} of ${createTransaction.product}`,
     );
@@ -65,9 +69,11 @@ export class TransactionsService {
       enabled: true,
     };
 
-    const query = destUserId
-      ? { ...shared, destUser: destUserId }
-      : { ...shared, product: productId };
+    const query =
+      type === TransactionType.Purchase
+        ? { ...shared, product: productId }
+        : { ...shared, destUser: destUserId };
+
     return await this.transactionModel.find(query).catch(() => {
       this.logger.error(
         `Can not find trasactions of product with ID "${productId}"`,

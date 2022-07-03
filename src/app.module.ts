@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import * as Joi from '@hapi/joi';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';

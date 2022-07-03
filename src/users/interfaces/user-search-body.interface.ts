@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 interface IUserSearchBody {
   id: string;
   username: string;

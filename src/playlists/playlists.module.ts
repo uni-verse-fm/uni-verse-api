@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { Module } from '@nestjs/common';
 import { PlaylistsService } from './playlists.service';
 import { PlaylistsController } from './playlists.controller';

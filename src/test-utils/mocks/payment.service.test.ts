@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { PaymentsService } from '../../payments/payments.service';
 
 export const PaymentServiceMock = {

@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import IReleaseSearchBody from './release-search-body.interface';
 
 interface IReleaseSearchResult {

@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { ResourcesModule } from './../resources/resources.module';
 import { Module } from '@nestjs/common';
 import { CommentsService } from './comments.service';

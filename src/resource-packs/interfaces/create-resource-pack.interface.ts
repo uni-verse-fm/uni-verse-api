@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import ICreateUser from '../../users/interfaces/create-user.interface';
 import { AccessType } from '../dto/create-resource-pack.dto';
 

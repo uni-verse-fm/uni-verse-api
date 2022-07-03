@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import IPlaylistSearchBody from '../../releases/interfaces/release-search-body.interface';
 
 interface IPlaylistSearchResult {

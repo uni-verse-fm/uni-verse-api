@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import IPacksSearchBody from './packs-search-body.interface';
 
 interface IPacksSearchResult {

@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { PlaylistsService } from '../../playlists/playlists.service';
 import { data2list } from './standard-mock.service.test';
 import * as data from '../data/mock_data.json';

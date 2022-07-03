@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { FilesModule } from './../files/files.module';
 import { PaymentsModule } from './../payments/payments.module';
 import { Module } from '@nestjs/common';

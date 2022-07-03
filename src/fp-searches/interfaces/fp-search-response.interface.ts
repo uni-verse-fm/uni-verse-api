@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { ITrackResponse } from 'src/tracks/interfaces/track-response.interface';
 import { IUserResponse } from 'src/users/interfaces/user-response.interface';
 

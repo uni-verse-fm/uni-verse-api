@@ -1,3 +1,5 @@
+/* Copyright (c) 2022 uni-verse corp */
+
 import { BadRequestException } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 
