@@ -124,14 +124,7 @@ export class ResourcePacksController {
     @Query('resource') resourceId: string,
     @Query('destId') destId: string,
     @Request() request: IRequestWithUser,
-    @Response({ passthrough: true }) res,
   ) {
-    res.set({
-      'Content-Type': 'application/json',
-      'Content-Disposition': `attachment; filename=${
-        resourceId ? 'universe_resource.mp3' : 'universe_pack.zip'
-      }`,
-    });
     return await this.resourcePacksService.downloadResource(
       request.user.id,
       packId,
