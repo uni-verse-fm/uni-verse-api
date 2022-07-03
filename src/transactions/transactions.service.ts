@@ -22,7 +22,7 @@ export class TransactionsService {
     private transactionModel: Model<TransactionDocument>,
   ) {}
 
-  async createTransaction(createTransaction: CreateTransaction) {
+  async createTransaction(createTransaction: CreateTransaction): Promise<string> {
     this.logger.log(
       `Creating ${createTransaction.type} of ${createTransaction.product}`,
     );
@@ -32,13 +32,12 @@ export class TransactionsService {
       enabled: false,
     });
 
-    try {
-      const savedTransaction = await transcation.save();
-      return savedTransaction._id;
-    } catch (err) {
-      this.logger.error(`Can not create transaction due to: ${err}`);
-      throw new BadRequestException(err.message);
-    }
+    return await transcation
+      .save()
+      .then((response) => response._id.toString())
+      .catch(() => {
+        throw new BadRequestException('Can not create transaction');
+      });
   }
 
   async activateTransaction(id: string) {

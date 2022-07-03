@@ -287,11 +287,13 @@ export class PaymentsService {
     if (productPrice.length === 0) {
       throw new Error(`No price found for this product`);
     }
-    return await this.checkout(
+    const checkout = await this.checkout(
       productPrice[0].id,
       transactionId,
       connectedAccountId,
     );
+
+    return checkout;
   }
 
   public async findAllPayments(customerId: string) {
@@ -309,6 +311,7 @@ export class PaymentsService {
   public async handleWebHook(event: Stripe.Event) {
     this.logger.log(`Handeling stripe event ${event.type}`);
     const session: any = event.data.object;
+    this.logger.log("entry " + JSON.stringify(session))
 
     switch (event.type) {
       case 'checkout.session.async_payment_failed':
@@ -320,6 +323,7 @@ export class PaymentsService {
           session.client_reference_id,
         );
       case 'checkout.session.completed':
+        this.logger.log(JSON.stringify(session))
         await this.transactionService.activateTransaction(
           session.client_reference_id,
         );
