@@ -67,8 +67,8 @@ export class TransactionsService {
     };
 
     const query = destUserId
-      ? { ...shared, product: productId }
-      : { ...shared, destUser: destUserId };
+      ? { ...shared, destUser: destUserId }
+      : { ...shared, product: productId };
     return await this.transactionModel.find(query).catch(() => {
       this.logger.error(
         `Can not find trasactions of product with ID "${productId}"`,
