@@ -32,8 +32,7 @@ export class Transaction {
   @Prop()
   enabled: boolean;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  @Type(() => User)
+  @Prop()
   destUser: string;
 }
 

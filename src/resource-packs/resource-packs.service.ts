@@ -502,7 +502,7 @@ export class ResourcePacksService {
     const fileZip = await this.filesService
       .getFilesZip(fileNames, BucketName.Resources)
       .catch((error) => {
-        throw new Error(`Gan't get files zip due to: ${error}`);
+        throw new Error(`Can't get files zip due to: ${error}`);
       });
 
     return new StreamableFile(fileZip);
