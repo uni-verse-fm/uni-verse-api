@@ -501,8 +501,8 @@ export class ResourcePacksService {
 
     const fileZip = await this.filesService
       .getFilesZip(fileNames, BucketName.Resources)
-      .catch(() => {
-        throw new Error('Method not implemented.');
+      .catch((error) => {
+        throw new Error(`Gan't get files zip due to: ${error}`);
       });
 
     return new StreamableFile(fileZip);

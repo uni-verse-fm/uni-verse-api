@@ -99,11 +99,10 @@ export class MinioClientService {
       fileNames.map((fileName) => this.getFile(fileName, bucketName)),
     );
     this.logger.log('Got files');
-    const files: ReadableFile[] = fileNames.map((fileName, index) => ({
+    return fileNames.map((fileName, index) => ({
       fileName,
       readable: readables[index],
     }));
-    return files;
   }
 
   async delete(objetName: string, bucketName: BucketName) {
