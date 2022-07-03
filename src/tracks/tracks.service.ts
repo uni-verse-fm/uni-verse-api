@@ -15,15 +15,10 @@ import { UserDocument } from '../users/schemas/user.schema';
 import { IDeleteTrackResponse } from './interfaces/track-delete-response.interface copy';
 import { BucketName } from '../minio-client/minio-client.service';
 import { isValidId } from '../utils/is-valid-id';
-import { Readable } from 'stream';
 import TracksSearchService from './tracks-search.service';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import * as mongoose from 'mongoose';
 
-type StreamTrackResponse = {
-  fileName: string;
-  file: Readable;
-};
 @Injectable()
 export class TracksService {
   private readonly logger: Logger = new Logger(TracksService.name);
@@ -174,19 +169,6 @@ export class TracksService {
     return await Promise.all(
       tracks.map((track) => this.removeTrack(track._id.toString(), session)),
     );
-  }
-
-  async streamTrack(id: string): Promise<StreamTrackResponse> {
-    const track = await this.findTrackById(id);
-    const file = await this.filesService.findFileByName(
-      track.fileName,
-      BucketName.Tracks,
-    );
-
-    return {
-      fileName: track.title,
-      file: file,
-    };
   }
 
   private buildTrackInfo(track: TrackDocument): ITrackResponse {

@@ -28,7 +28,6 @@ import {
   TransactionSchema,
 } from '../transactions/schemas/transaction.schema';
 
-
 const resource_pack1 = data.create_resource_packs.resource_pack1;
 const resource_pack2 = data.create_resource_packs.resource_pack2;
 const abdou_user = data.create_users.abdou;
@@ -132,7 +131,6 @@ describe('ResourcePacksService', () => {
       buffer: Buffer.from(JSON.parse(JSON.stringify(file.buffer))),
     }));
     it('should return first resource pack infos', async () => {
-
       const resources = data2list(resource_pack1.resources);
 
       const create_resource_pack = {
