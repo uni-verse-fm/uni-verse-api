@@ -5,7 +5,7 @@ import {
   ReadableFile,
 } from '../minio-client/minio-client.service';
 import { SimpleCreateFileDto } from './dto/simple-create-file.dto';
-import AdmZip = require("adm-zip");
+import AdmZip = require('adm-zip');
 
 @Injectable()
 export class FilesService {
@@ -65,6 +65,11 @@ export class FilesService {
     });
 
     this.logger.log('Got files zip');
-    return zip.toBuffer();
+    return await zip
+      .toBufferPromise()
+      .then((buffer) => buffer)
+      .catch((error) => {
+        throw new Error(error);
+      });
   }
 }
