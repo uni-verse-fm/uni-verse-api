@@ -3,6 +3,7 @@ import { Transform, Type } from 'class-transformer';
 import { ObjectId } from 'mongodb';
 import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
+import { Release } from '../../releases/schemas/release.schema';
 import { Track } from '../../tracks/schemas/track.schema';
 
 export type ViewDocument = View & Document;
@@ -15,6 +16,10 @@ export class View {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Track' })
   @Type(() => Track)
   track: Track;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Release' })
+  @Type(() => Track)
+  release: Release;
 }
 
 const ViewSchema = SchemaFactory.createForClass(View);
