@@ -539,7 +539,7 @@ export class ResourcePacksService {
         );
         if (!response)
           throw new Error('You do not have access to this resource');
-        return response;
+        return true;
       default:
         throw new Error(`Unhandled type of access ${accessType}`);
     }
