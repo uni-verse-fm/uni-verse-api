@@ -47,7 +47,8 @@ export class ViewsService {
 
   async findViewsByUserId(userId: string) {
     this.logger.log(`Finding views of user  ${userId}`);
-    const ids = await this.tracksService.findTracksByUserId(userId);
+    const objectIds = await this.tracksService.findTracksByUserId(userId);
+    const ids = objectIds.map((track) => track._id.toString());
     return await this.viewModel.aggregate([
       {
         $match: {
