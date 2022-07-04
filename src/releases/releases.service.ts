@@ -331,6 +331,7 @@ export class ReleasesService {
             },
             tracks: 1,
             author: { $arrayElemAt: ['$author', 0] },
+            createdAt: 1
           },
         },
       ])
@@ -426,6 +427,7 @@ export class ReleasesService {
             },
             tracks: 1,
             author: { $arrayElemAt: ['$author', 0] },
+            createdAt: 1
           },
         },
       ])
