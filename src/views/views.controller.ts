@@ -26,6 +26,12 @@ export class ViewsController {
     return this.viewsService.countViewsByTrackId(id);
   }
 
+  @Get('user/:id')
+  @UseGuards(JwtAuthGuard)
+  hotViewsByUserId(@Param('id') id: string) {
+    return this.viewsService.findViewsByUserId(id);
+  }
+
   @Get('tracks/:limit/:startDate/:endDate')
   hotTracks(@Param() params: HotViewsDto) {
     return this.viewsService.hotTracks(params);

@@ -7,6 +7,7 @@ import { CreateViewDto } from './dto/create-view.dto';
 import { View, ViewDocument } from './schemas/view.schema';
 import { Model } from 'mongoose';
 import { HotViewsDto } from './dto/hots-views.dto';
+import { TracksService } from '../tracks/tracks.service';
 
 @Injectable()
 export class ViewsService {
@@ -15,6 +16,7 @@ export class ViewsService {
   constructor(
     @InjectModel(View.name)
     private viewModel: Model<ViewDocument>,
+    private tracksService: TracksService,
   ) {}
 
   async createView(createViewDto: CreateViewDto) {
@@ -32,28 +34,6 @@ export class ViewsService {
     });
   }
 
-  async findViewsByUserId(userId: string) {
-    this.logger.log(`Finding views of user  ${userId}`);
-    return await this.viewModel
-      .find({ user: userId })
-      .count()
-      .catch(() => {
-        this.logger.error('Error finding views');
-        throw new Error('Error finding view');
-      });
-  }
-
-  async countViewsByUserId(userId: string) {
-    this.logger.log(`Finding views of user  ${userId}`);
-    return await this.viewModel
-      .find({ user: userId })
-      .count()
-      .catch(() => {
-        this.logger.error('Error finding views');
-        throw new Error('Error finding views');
-      });
-  }
-
   async countViewsByTrackId(trackId: string) {
     this.logger.log(`Finding count of views of track ${trackId}`);
     return await this.viewModel
@@ -63,6 +43,105 @@ export class ViewsService {
         this.logger.error('Error counting views');
         throw new Error('Error counting views');
       });
+  }
+
+  async findViewsByUserId(userId: string) {
+    this.logger.log(`Finding views of user  ${userId}`);
+    const ids = await this.tracksService.findTracksByUserId(userId);
+    return await this.viewModel.aggregate([
+      {
+        $match: {
+          track: {
+            $in: ids,
+          },
+        },
+      },
+      { $group: { _id: '$track', views: { $sum: 1 } } },
+      {
+        $lookup: {
+          from: 'tracks',
+          localField: '_id',
+          foreignField: '_id',
+          pipeline: [
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'author',
+                foreignField: '_id',
+                pipeline: [
+                  {
+                    $project: {
+                      id: '$_id',
+                      username: '$username',
+                      email: '$email',
+                      stripeAccountId: '$stripeAccountId',
+                      donationProductId: '$donationProductId',
+                      profilePicture: '$profilePicture',
+                    },
+                  },
+                ],
+                as: 'author',
+              },
+            },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'feats',
+                foreignField: '_id',
+                as: 'feats',
+              },
+            },
+            {
+              $lookup: {
+                from: 'releases',
+                let: { track_id: '$_id' },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: ['$$track_id', '$tracks'],
+                    },
+                  },
+                  {
+                    $project: {
+                      id: '$_id',
+                      title: '$title',
+                      coverName: '$coverName',
+                    },
+                  },
+                ],
+                as: 'release',
+              },
+            },
+            {
+              $project: {
+                id: '$_id',
+                title: '$title',
+                feats: '$feats',
+                fileName: '$fileName',
+                author: { $first: '$author' },
+                release: { $first: '$release' },
+                createdAt: '$createdAt',
+              },
+            },
+          ],
+          as: 'track',
+        },
+      },
+      {
+        $project: {
+          id: '$_id',
+          title: { $first: '$track.title' },
+          author: { $first: '$track.author' },
+          fileName: { $first: '$track.fileName' },
+          feats: { $first: '$track.feats' },
+          release: { $first: '$track.release' },
+          views: { $sum: '$views' },
+          createdAt: { $first: '$track.createdAt' },
+        },
+      },
+      { $sort: { views: -1 } },
+      { $limit: 5 },
+    ]);
   }
 
   async periodCountViewsByTrackId(periodViews: PeriodViewsDto) {

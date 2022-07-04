@@ -120,6 +120,16 @@ export class TracksService {
     return track;
   }
 
+  async findTracksByUserId(id: string): Promise<TrackDocument[]> {
+    this.logger.log(`Finding track by id ${id}`);
+    isValidId(id);
+    return await this.trackModel.find({ user: id }, '_id').catch(() => {
+      throw new BadRequestException(
+        `Tracks for user with ID "${id}" doesn't exist`,
+      );
+    });
+  }
+
   async findTrackByFilename(fileName: string): Promise<TrackDocument> {
     this.logger.log(`Finding track by filename ${fileName}`);
     const track = await this.trackModel.findOne({ fileName });
