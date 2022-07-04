@@ -123,7 +123,7 @@ export class TracksService {
   async findTracksByUserId(id: string): Promise<TrackDocument[]> {
     this.logger.log(`Finding track by id ${id}`);
     isValidId(id);
-    return await this.trackModel.find({ author: id }).select('_id').catch(() => {
+    return await this.trackModel.find({ author: id }).catch(() => {
       throw new BadRequestException(
         `Tracks for user with ID "${id}" doesn't exist`,
       );
