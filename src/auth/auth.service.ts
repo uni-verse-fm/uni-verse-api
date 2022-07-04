@@ -195,7 +195,7 @@ export class AuthService {
       username: user.username,
       email: user.email,
       profilePicture: user.profilePicture,
-      accountId: user.stripeAccountId,
+      stripeAccountId: user.stripeAccountId,
       accessToken,
       refreshToken,
     };
