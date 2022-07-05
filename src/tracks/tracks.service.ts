@@ -92,6 +92,11 @@ export class TracksService {
     }, 2000);
   }
 
+  async plagiateTrack(id: string) {
+    this.logger.log('Plagiate track');
+    return await this.trackModel.updateOne({ _id: id }, { isPlagia: true });
+  }
+
   async findAllTracks() {
     this.logger.log('Finding all tracks');
     return await this.trackModel.find();

@@ -31,6 +31,9 @@ export class Track {
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }])
   @Type(() => User)
   feats: User[];
+
+  @Prop()
+  isPlagia: boolean;
 }
 
 const TrackSchema = SchemaFactory.createForClass(Track);
