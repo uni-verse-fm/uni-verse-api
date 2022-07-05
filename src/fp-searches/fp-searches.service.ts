@@ -1,11 +1,6 @@
 /* Copyright (c) 2022 uni-verse corp */
 
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { FpSearch, FpSearchDocument } from './schemas/fp-search.schema';
 import { Model, Connection } from 'mongoose';

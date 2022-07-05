@@ -10,7 +10,6 @@ import {
   Param,
   Body,
   Get,
-  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
