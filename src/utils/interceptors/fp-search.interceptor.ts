@@ -1,4 +1,3 @@
-import { UnauthorizedException } from '@nestjs/common';
 /* Copyright (c) 2022 uni-verse corp */
 
 import {
@@ -9,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Observable } from 'rxjs';
+import { UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class FpSearchInterceptor implements NestInterceptor {
