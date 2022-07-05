@@ -7,6 +7,7 @@ export interface ITrackResponse {
   id: ObjectId;
   title: string;
   fileName: string;
+  isPlagia: boolean;
   author: IUserResponse;
   feats: IUserResponse[];
 }

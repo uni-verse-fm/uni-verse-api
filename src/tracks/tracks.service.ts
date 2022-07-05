@@ -194,6 +194,7 @@ export class TracksService {
       id: track._id,
       title: track.title,
       fileName: track.fileName,
+      isPlagia: track.isPlagia,
       feats: track.feats.map((feat) => ({
         id: feat._id.toString(),
         username: feat.username,
@@ -298,6 +299,7 @@ export class TracksService {
             username: 1,
             email: 1,
           },
+          isPlagia: 1,
           views: { $size: '$viewsDocs' },
           release: { $arrayElemAt: ['$release', 0] },
           author: { $arrayElemAt: ['$author', 0] },
