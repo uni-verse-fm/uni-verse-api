@@ -103,6 +103,17 @@ export class PlaylistsService {
     this.logger.log(`Updating playlist ${id}`);
     isValidId(id);
     const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
+    const response = await this.findPlaylistById(id).then((playlist) =>
+      playlist.tracks.filter(
+        (track) => track._id.toString() !== updatePlaylistDto.trackId,
+      ),
+    );
+    if (response.length === 0) {
+      return {
+        id: playlist._id.toString(),
+        msg: 'Track already in playlist',
+      };
+    }
     const trackToUpdate =
       updatePlaylistDto.trackId &&
       (await this.tracksService.findTrackById(updatePlaylistDto.trackId));
