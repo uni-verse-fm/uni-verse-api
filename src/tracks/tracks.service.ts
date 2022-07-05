@@ -65,6 +65,7 @@ export class TracksService {
     this.tracksSearchService.insertIndex(createdTrack);
 
     this.NotifyFpWorker(result);
+    this.NotifyPlagiaWorker(createdTrack._id, result);
 
     return this.buildTrackInfo(createdTrack);
   }
@@ -87,6 +88,19 @@ export class TracksService {
         'universe.fp.in.routing.key',
         {
           track_url,
+        },
+      );
+    }, 2000);
+  }
+
+  private NotifyPlagiaWorker(id: string, track_url: string) {
+    setTimeout(() => {
+      this.amqpConnection.publish(
+        'uni-verse-plagia-in',
+        'universe.plagia.in.routing.key',
+        {
+          track_url,
+          id,
         },
       );
     }, 2000);
