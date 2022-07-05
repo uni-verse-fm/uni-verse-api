@@ -31,7 +31,7 @@ export class TracksController {
     return [];
   }
 
-  @Patch(':id')
+  @Patch('/plagia/:id')
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'INTERNAL: updates a fingerprint search.' })
   @UseInterceptors(FpSearchInterceptor, ValidIdInterceptor)
