@@ -4,7 +4,6 @@ import {
   Controller,
   Get,
   Query,
-  Logger,
   Patch,
   UseInterceptors,
   Param,
