@@ -103,12 +103,15 @@ export class PlaylistsService {
     this.logger.log(`Updating playlist ${id}`);
     isValidId(id);
     const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
-    const response = await this.findPlaylistById(id).then((playlist) =>
+    const duplicates = await this.findPlaylistById(id).then((playlist) =>
       playlist.tracks.filter(
-        (track) => track._id.toString() !== updatePlaylistDto.trackId,
+        (track) => track._id.toString() === updatePlaylistDto.trackId,
       ),
     );
-    if (response.length === 0) {
+    if (
+      updatePlaylistDto.action === PlaylistUpdateTaskAction.Add &&
+      duplicates.length > 0
+    ) {
       return {
         id: playlist._id.toString(),
         msg: 'Track already in playlist',
@@ -164,7 +167,7 @@ export class PlaylistsService {
           (track) => track._id.toString() !== trackToUpdate._id.toString(),
         );
       default:
-        throw new BadRequestException('Action not found.');
+        throw new NotFoundException('Action not found.');
     }
   }
 
