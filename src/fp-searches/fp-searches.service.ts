@@ -104,7 +104,10 @@ export class FpSearchesService {
   async findSearchById(id: string): Promise<FpSearchDocument> {
     this.logger.log(`Finding search by id "${id}"`);
     isValidId(id);
-    const search = await this.fpSearchModel.findById(id);
+    const search = await this.fpSearchModel
+      .findById(id)
+      .populate('foundTrack')
+      .populate('author');
 
     if (!search) {
       throw new NotFoundException(`Search with ID "${id}" not found.`);
