@@ -261,7 +261,8 @@ export class ReleasesService {
         {
           $lookup: {
             from: 'tracks',
-            let: { tracks: '$feats' },
+            localField: 'tracks',
+            foreignField: '_id',
             pipeline: [
               {
                 $lookup: {
