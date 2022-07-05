@@ -8,4 +8,5 @@ export interface IFpSearchResponse {
   foundTrack?: ITrackResponse;
   takenTime?: number;
   filename: string;
+  id: string;
 }

@@ -123,6 +123,7 @@ export class FpSearchesService {
     return {
       filename: fpSearch.filename,
       takenTime: fpSearch.takenTime,
+      id: fpSearch._id.toString(),
       foundTrack: fpSearch.foundTrack
         ? {
             id: fpSearch.foundTrack._id,
