@@ -358,6 +358,8 @@ export class ReleasesService {
         {
           $lookup: {
             from: 'tracks',
+            localField: 'tracks',
+            foreignField: '_id',
             pipeline: [
               {
                 $lookup: {
