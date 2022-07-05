@@ -1,0 +1,1 @@
+pandoc README.md -o README_API.pdf --toc -V papersize:a4 -F mermaid-filter
