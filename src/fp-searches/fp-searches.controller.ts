@@ -9,6 +9,8 @@ import {
   Patch,
   Param,
   Body,
+  Get,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -30,6 +32,13 @@ export class FpSearchesController {
   constructor(private readonly fpSearchService: FpSearchesService) {}
 
   private readonly logger = new Logger(FpSearchesController.name);
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Find one search by id' })
+  @UseInterceptors(ValidIdInterceptor)
+  findOne(@Param('id') id: string) {
+    return this.fpSearchService.findSearchById(id);
+  }
 
   @Post()
   @ApiCookieAuth()

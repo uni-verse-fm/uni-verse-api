@@ -1,6 +1,11 @@
 /* Copyright (c) 2022 uni-verse corp */
 
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { FpSearch, FpSearchDocument } from './schemas/fp-search.schema';
 import { Model, Connection } from 'mongoose';
@@ -101,11 +106,24 @@ export class FpSearchesService {
     );
   }
 
+  async findSearchById(id: string): Promise<FpSearchDocument> {
+    this.logger.log(`Finding search by id "${id}"`);
+    isValidId(id);
+    const search = await this.fpSearchModel.findById(id);
+
+    if (!search) {
+      throw new NotFoundException(`Search with ID "${id}" not found.`);
+    }
+
+    return search;
+  }
+
   private buildSearchInfo(fpSearch: FpSearch): IFpSearchResponse {
     this.logger.log(`Building search infos`);
     return {
       filename: fpSearch.filename,
       takenTime: fpSearch.takenTime,
+      id: fpSearch._id.toString(),
       foundTrack: fpSearch.foundTrack
         ? {
             id: fpSearch.foundTrack._id,

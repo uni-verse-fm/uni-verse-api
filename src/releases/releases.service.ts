@@ -165,7 +165,7 @@ export class ReleasesService {
       .populate('feats')
       .populate('author');
     if (!release) {
-      throw new BadRequestException(`Release with ID "${id}" not found.`);
+      throw new NotFoundException(`Release with ID "${id}" not found.`);
     }
     return release;
   }
