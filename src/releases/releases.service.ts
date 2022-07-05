@@ -162,6 +162,7 @@ export class ReleasesService {
           path: 'author',
         },
       })
+      .populate('feats')
       .populate('author');
     if (!release) {
       throw new BadRequestException(`Release with ID "${id}" not found.`);
