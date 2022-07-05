@@ -65,6 +65,7 @@ export class TracksService {
     this.tracksSearchService.insertIndex(createdTrack);
 
     this.NotifyFpWorker(result);
+    this.NotifyPlagiaWorker(createdTrack._id, result);
 
     return this.buildTrackInfo(createdTrack);
   }
@@ -90,6 +91,24 @@ export class TracksService {
         },
       );
     }, 2000);
+  }
+
+  private NotifyPlagiaWorker(id: string, track_url: string) {
+    setTimeout(() => {
+      this.amqpConnection.publish(
+        'uni-verse-plagia-in',
+        'universe.plagia.in.routing.key',
+        {
+          track_url,
+          id,
+        },
+      );
+    }, 2000);
+  }
+
+  async plagiateTrack(id: string) {
+    this.logger.log('Plagiate track');
+    return await this.trackModel.updateOne({ _id: id }, { isPlagia: true });
   }
 
   async findAllTracks() {
@@ -189,6 +208,7 @@ export class TracksService {
       id: track._id,
       title: track.title,
       fileName: track.fileName,
+      isPlagia: track.isPlagia,
       feats: track.feats.map((feat) => ({
         id: feat._id.toString(),
         username: feat.username,
@@ -293,6 +313,7 @@ export class TracksService {
             username: 1,
             email: 1,
           },
+          isPlagia: 1,
           views: { $size: '$viewsDocs' },
           release: { $arrayElemAt: ['$release', 0] },
           author: { $arrayElemAt: ['$author', 0] },

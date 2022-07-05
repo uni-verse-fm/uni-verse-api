@@ -214,6 +214,7 @@ export class CommentsService {
                 title: '$title',
                 feats: '$feats',
                 fileName: '$fileName',
+                isPlagia: '$isPlagia',
                 author: { $first: '$author' },
                 release: { $first: '$release' },
                 createdAt: '$createdAt',
