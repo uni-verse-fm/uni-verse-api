@@ -1,7 +1,7 @@
 /* Copyright (c) 2022 uni-verse corp */
 
 import { FilesModule } from './../files/files.module';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TracksService } from './tracks.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Track, TrackSchema } from './schemas/track.schema';
@@ -21,7 +21,7 @@ import { FeatRequestsModule } from './../feat-requests/feat-requests.module';
     ]),
     UsersModule,
     SearchModule,
-    FeatRequestsModule,
+    forwardRef(() => FeatRequestsModule),
     FilesModule,
     RMQModule,
   ],

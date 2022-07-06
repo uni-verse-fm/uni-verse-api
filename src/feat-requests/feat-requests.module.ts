@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { FeatRequestsService } from './feat-requests.service';
 import { FeatRequestsController } from './feat-requests.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -10,7 +10,7 @@ import { TracksModule } from '../tracks/tracks.module';
     MongooseModule.forFeature([
       { name: FeatRequest.name, schema: FeatRequestSchema },
     ]),
-    TracksModule,
+    forwardRef(() => TracksModule),
   ],
   controllers: [FeatRequestsController],
   providers: [FeatRequestsService],
