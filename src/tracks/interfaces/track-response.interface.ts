@@ -8,6 +8,7 @@ export interface ITrackResponse {
   title: string;
   fileName: string;
   isPlagia: boolean;
+  isFeatsWaiting: boolean;
   author: IUserResponse;
   feats: IUserResponse[];
 }

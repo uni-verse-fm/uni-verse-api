@@ -29,6 +29,7 @@ import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.servic
 import { PlaylistsSearchServiceMock } from '../test-utils/mocks/playlists-search.service.test';
 import { PlaylistsServiceMock } from '../test-utils/mocks/playlists.service.test';
 import { AmqpConnectionMock } from '../test-utils/mocks/rabbit.connection.test';
+import { FeatRequestsServiceMock } from '../test-utils/mocks/feat-requests.service.test';
 
 const playlists = data2list(data.playlists);
 
@@ -72,6 +73,7 @@ describe('PlaylistsController', () => {
         UserSearchServiceMock,
         TrackSearchServiceMock,
         PlaylistsSearchServiceMock,
+        FeatRequestsServiceMock,
       ],
     })
       .overrideGuard(JwtAuthGuard)

@@ -34,6 +34,9 @@ export class Track {
 
   @Prop()
   isPlagia: boolean;
+
+  @Prop()
+  isFeatsWaiting: boolean;
 }
 
 const TrackSchema = SchemaFactory.createForClass(Track);

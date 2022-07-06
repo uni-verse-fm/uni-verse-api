@@ -19,6 +19,7 @@ import { MinioServiceMock } from '../test-utils/mocks/minio.service.test';
 import { PaymentServiceMock } from '../test-utils/mocks/payment.service.test';
 import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
 import { AmqpConnectionMock } from '../test-utils/mocks/rabbit.connection.test';
+import { FeatRequestsServiceMock } from '../test-utils/mocks/feat-requests.service.test';
 
 const users = data.users;
 const tracks = data.tracks;
@@ -73,6 +74,7 @@ describe('TracksService', () => {
         UserSearchServiceMock,
         TrackSearchServiceMock,
         AmqpConnectionMock,
+        FeatRequestsServiceMock,
       ],
     }).compile();
 

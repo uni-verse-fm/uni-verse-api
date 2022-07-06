@@ -31,6 +31,7 @@ import * as fs from 'fs';
 import ecsFormat = require('@elastic/ecs-winston-format');
 import DailyRotateFile = require('winston-daily-rotate-file');
 import { FpSearchesModule } from './fp-searches/fp-searches.module';
+import { FeatRequestsModule } from './feat-requests/feat-requests.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -116,6 +117,7 @@ import { FpSearchesModule } from './fp-searches/fp-searches.module';
     ViewsModule,
     TransactionsModule,
     FpSearchesModule,
+    FeatRequestsModule,
   ],
   controllers: [WelcomeController],
   providers: [],

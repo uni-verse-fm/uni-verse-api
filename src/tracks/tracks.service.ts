@@ -2,6 +2,8 @@
 
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -20,6 +22,7 @@ import { isValidId } from '../utils/is-valid-id';
 import TracksSearchService from './tracks-search.service';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import * as mongoose from 'mongoose';
+import { FeatRequestsService } from '../feat-requests/feat-requests.service';
 
 @Injectable()
 export class TracksService {
@@ -32,6 +35,8 @@ export class TracksService {
     private usersService: UsersService,
     private tracksSearchService: TracksSearchService,
     private amqpConnection: AmqpConnection,
+    @Inject(forwardRef(() => FeatRequestsService))
+    private featRequestService: FeatRequestsService,
   ) {}
 
   async createTrack(
@@ -57,9 +62,20 @@ export class TracksService {
       ...createTrackDto,
       feats,
       fileName: result,
+      isFeatsWaiting: feats.length > 0 ? true : false,
     };
 
     const newTrack = new this.trackModel(createTrack);
+
+    await Promise.all(
+      feats.map((feat) => {
+        this.featRequestService.createFeatRequest({
+          user: createTrackDto.author.id,
+          dest: feat._id,
+          track: newTrack._id,
+        });
+      }),
+    );
 
     const createdTrack = await newTrack.save({ session });
     this.tracksSearchService.insertIndex(createdTrack);
@@ -109,6 +125,15 @@ export class TracksService {
   async plagiateTrack(id: string) {
     this.logger.log('Plagiate track');
     return await this.trackModel.updateOne({ _id: id }, { isPlagia: true });
+  }
+
+  async acceptFeatRequest(id: string) {
+    this.logger.log('Accepting feat request');
+    return await this.trackModel
+      .updateOne({ _id: id }, { isFeatsWaiting: false })
+      .catch(() => {
+        throw new BadRequestException("Can't accept feat request");
+      });
   }
 
   async findAllTracks() {
@@ -209,6 +234,7 @@ export class TracksService {
       title: track.title,
       fileName: track.fileName,
       isPlagia: track.isPlagia,
+      isFeatsWaiting: track.isFeatsWaiting,
       feats: track.feats.map((feat) => ({
         id: feat._id.toString(),
         username: feat.username,
@@ -314,6 +340,7 @@ export class TracksService {
             email: 1,
           },
           isPlagia: 1,
+          isFeatsWaiting: 1,
           views: { $size: '$viewsDocs' },
           release: { $arrayElemAt: ['$release', 0] },
           author: { $arrayElemAt: ['$author', 0] },

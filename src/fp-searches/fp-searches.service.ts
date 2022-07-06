@@ -128,6 +128,7 @@ export class FpSearchesService {
             title: fpSearch.foundTrack.title,
             fileName: fpSearch.foundTrack.fileName,
             isPlagia: fpSearch.foundTrack.isPlagia,
+            isFeatsWaiting: fpSearch.foundTrack.isFeatsWaiting,
             feats: fpSearch.foundTrack.feats.map((feat) => ({
               id: feat._id.toString(),
               username: feat.username,
