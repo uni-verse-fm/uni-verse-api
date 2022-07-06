@@ -155,6 +155,7 @@ export class ReleasesService {
     isValidId(id);
     const release = await this.releaseModel
       .findById(id)
+      .populate('feats')
       .populate('tracks')
       .populate({
         path: 'tracks',
@@ -162,7 +163,6 @@ export class ReleasesService {
           path: 'author',
         },
       })
-      .populate('feats')
       .populate('author');
     if (!release) {
       throw new NotFoundException(`Release with ID "${id}" not found.`);
