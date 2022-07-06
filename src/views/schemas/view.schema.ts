@@ -18,10 +18,6 @@ export class View {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Track' })
   @Type(() => Track)
   track: Track;
-
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Release' })
-  @Type(() => Track)
-  release: Release;
 }
 
 const ViewSchema = SchemaFactory.createForClass(View);

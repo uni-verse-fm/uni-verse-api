@@ -9,9 +9,5 @@ export class CreateViewDto {
 
   @IsMongoId()
   @IsOptional()
-  release: string;
-
-  @IsMongoId()
-  @IsOptional()
   user?: string;
 }
