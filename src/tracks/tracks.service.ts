@@ -62,6 +62,7 @@ export class TracksService {
       ...createTrackDto,
       feats,
       fileName: result,
+      isFeatsWaiting: feats.length > 0 ? true : false,
     };
 
     const newTrack = new this.trackModel(createTrack);
