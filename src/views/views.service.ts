@@ -24,7 +24,6 @@ export class ViewsService {
 
     const newView = new this.viewModel({
       track: createViewDto.track,
-      release: createViewDto.release,
       user: createViewDto.user,
     });
 
