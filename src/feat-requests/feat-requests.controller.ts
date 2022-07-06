@@ -28,7 +28,7 @@ export class FeatRequestsController {
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find received feat request' })
-  findRecievedRequestId(@Request() request: IRequestWithUser) {
+  findReceivedRequestId(@Request() request: IRequestWithUser) {
     return this.featRequestsService.findUserReceivedFeatRequest(
       request.user.id,
     );

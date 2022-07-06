@@ -46,27 +46,35 @@ export class FeatRequestsService {
   async findUserReceivedFeatRequest(destId: string) {
     this.logger.log(`Finding user ${destId} feat requests`);
 
-    return await this.featRequestModel.find({ dest: destId }).catch(() => {
-      this.logger.error(
-        `Can not find recieved feat requests of user with ID "${destId}"`,
-      );
-      throw new NotFoundException(
-        `Can not find recieved feat requests of user with ID "${destId}"`,
-      );
-    });
+    return await this.featRequestModel
+      .find({ dest: destId })
+      .populate('user')
+      .populate('track')
+      .catch(() => {
+        this.logger.error(
+          `Can not find recieved feat requests of user with ID "${destId}"`,
+        );
+        throw new NotFoundException(
+          `Can not find recieved feat requests of user with ID "${destId}"`,
+        );
+      });
   }
 
   async findUserSentFeatRequests(userId: string) {
     this.logger.log(`Finding user ${userId} feat requests`);
 
-    return await this.featRequestModel.find({ user: userId }).catch(() => {
-      this.logger.error(
-        `Can not find sent feat requests of user with ID "${userId}"`,
-      );
-      throw new NotFoundException(
-        `Can not find sent feat requests of user with ID "${userId}"`,
-      );
-    });
+    return await this.featRequestModel
+      .find({ user: userId })
+      .populate('dest')
+      .populate('track')
+      .catch(() => {
+        this.logger.error(
+          `Can not find sent feat requests of user with ID "${userId}"`,
+        );
+        throw new NotFoundException(
+          `Can not find sent feat requests of user with ID "${userId}"`,
+        );
+      });
   }
 
   async findFeatRequestById(id: string): Promise<FeatRequestDocument> {
