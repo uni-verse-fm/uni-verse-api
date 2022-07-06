@@ -22,6 +22,7 @@ import { FileMimeType } from '../files/dto/simple-create-file.dto';
 import { ReleasesSearchServiceMock } from '../test-utils/mocks/releases-search.service.test';
 import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
 import { AmqpConnectionMock } from '../test-utils/mocks/rabbit.connection.test';
+import { FeatRequestsServiceMock } from '../test-utils/mocks/feat-requests.service.test';
 
 const release = data.releases.black_album;
 
@@ -76,6 +77,7 @@ describe('ReleasesService', () => {
         ReleasesSearchServiceMock,
         TrackSearchServiceMock,
         AmqpConnectionMock,
+        FeatRequestsServiceMock,
       ],
     }).compile();
 

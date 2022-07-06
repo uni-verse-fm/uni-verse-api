@@ -23,6 +23,7 @@ import { ITrackResponse } from '../tracks/interfaces/track-response.interface';
 import { PlaylistsSearchServiceMock } from '../test-utils/mocks/playlists-search.service.test';
 import { TrackSearchServiceMock } from '../test-utils/mocks/tracks-search.service.test';
 import { AmqpConnectionMock } from '../test-utils/mocks/rabbit.connection.test';
+import { FeatRequestsServiceMock } from '../test-utils/mocks/feat-requests.service.test';
 
 const abdou = data.users.abdou;
 const jayz = data.users.jayz;
@@ -74,6 +75,7 @@ describe('PlaylistsService', () => {
         PlaylistsSearchServiceMock,
         TrackSearchServiceMock,
         AmqpConnectionMock,
+        FeatRequestsServiceMock,
       ],
     }).compile();
 

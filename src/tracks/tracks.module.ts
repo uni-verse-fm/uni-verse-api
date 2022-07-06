@@ -11,6 +11,7 @@ import UsersModule from '../users/users.module';
 import TracksSearchService from './tracks-search.service';
 import { SearchModule } from '../search/search.module';
 import { RMQModule } from 'src/rmq-client/rmq-client.module';
+import { FeatRequestsModule } from './../feat-requests/feat-requests.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RMQModule } from 'src/rmq-client/rmq-client.module';
     ]),
     UsersModule,
     SearchModule,
+    FeatRequestsModule,
     FilesModule,
     RMQModule,
   ],
