@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   labels:
     io.kompose.service: uni-verse-api
-    app:  uni-verse-api
+    app: uni-verse-api
   name: uni-verse-api-logs
 spec:
   accessModes:
