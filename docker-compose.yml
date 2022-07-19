@@ -61,11 +61,11 @@ services:
     container_name: 'rabbitmq'
     hostname: rabbitmq
     ports:
-        - 5672:5672
-        - 15672:15672
+      - 5672:5672
+      - 15672:15672
     volumes:
-        - rabbitmq-data:/var/lib/rabbitmq
-        - rabbitmq-log:/var/log/rabbitmq
+      - rabbitmq-data:/var/lib/rabbitmq
+      - rabbitmq-log:/var/log/rabbitmq
 
   # prometheus:
   #   image: prom/prometheus:latest
@@ -135,30 +135,30 @@ services:
   #   env_file:
   #     - docker.env
 
-  search-worker:
-    container_name: uni_verse_search_worker
-    image: registry.qtmsheep.com/vagahbond/uni-verse/worker:latest
-    volumes:
-      - ../uni-verse-worker:/usr/src/app
-      - olaf-data:/root/.olaf/db
-    restart: unless-stopped
-    environment:
-      - TASK=search
-    env_file:
-      - docker.env
+  # search-worker:
+  #    container_name: uni_verse_search_worker
+  #    image: registry.qtmsheep.com/vagahbond/uni-verse/worker:latest
+  #   volumes:
+   #      - ../uni-verse-worker:/usr/src/app
+      #   - olaf-data:/root/.olaf/db
+      # restart: unless-stopped
+    #   environment:
+    #     - TASK=search
+   #    env_file:
+   #      - docker.env
 
-  register-worker:
-    container_name: uni_verse_register_worker
-    image: registry.qtmsheep.com/vagahbond/uni-verse/worker:latest
-    volumes:
-      - ../uni-verse-worker:/usr/src/app
-      - olaf-data:/root/.olaf/db
+   #  register-worker:
+    #   container_name: uni_verse_register_worker
+    #   image: registry.qtmsheep.com/vagahbond/uni-verse/worker:latest
+     #  volumes:
+     #    - ../uni-verse-worker:/usr/src/app
+      #   - olaf-data:/root/.olaf/db
 
-    restart: unless-stopped
-    environment:
-      - TASK=register
-    env_file:
-      - docker.env
+     #  restart: unless-stopped
+     #  environment:
+     #    - TASK=register
+     #  env_file:
+     #    - docker.env
 
 volumes:
   mongodb-data:

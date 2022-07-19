@@ -6,5 +6,5 @@ spec:
   selector:
     app: uni-verse-api
   ports:
-  - port: 3222
-    targetPort: 3000
+    - port: 3222
+      targetPort: 3000

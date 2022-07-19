@@ -14,22 +14,22 @@ spec:
       imagePullSecrets:
         - name: regcred
       containers:
-      - name: uni-verse-api
-        image: registry.qtmsheep.com/vagahbond/uni-verse/api
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "250m"
-        ports:
-        - containerPort: 3000
-        envFrom:
-          - configMapRef:
-              name: uni-verse-conf
-        volumeMounts:
-        - mountPath: /usr/src/app/logs
-          name: uni-verse-api-logs
+        - name: uni-verse-api
+          image: registry.qtmsheep.com/vagahbond/uni-verse/api
+          resources:
+            limits:
+              memory: '128Mi'
+              cpu: '250m'
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: uni-verse-conf
+          volumeMounts:
+            - mountPath: /usr/src/app/logs
+              name: uni-verse-api-logs
 
       volumes:
-      - name: uni-verse-api-logs
-        persistentVolumeClaim:
-          claimName:  uni-verse-api-logs
+        - name: uni-verse-api-logs
+          persistentVolumeClaim:
+            claimName: uni-verse-api-logs

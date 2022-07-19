@@ -32,4 +32,3 @@ jobs:
             ${{ secrets.DOCKER_REGISTRY }}/vagahbond/uni-verse/api:${{ steps.tag_name.outputs.TAG_NAME }}
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-
