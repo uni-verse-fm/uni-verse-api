@@ -32,6 +32,7 @@ import ecsFormat = require('@elastic/ecs-winston-format');
 import DailyRotateFile = require('winston-daily-rotate-file');
 import { FpSearchesModule } from './fp-searches/fp-searches.module';
 import { FeatRequestsModule } from './feat-requests/feat-requests.module';
+import { MessagesModule } from './messages/messages.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -118,6 +119,7 @@ import { FeatRequestsModule } from './feat-requests/feat-requests.module';
     TransactionsModule,
     FpSearchesModule,
     FeatRequestsModule,
+    MessagesModule,
   ],
   controllers: [WelcomeController],
   providers: [],
