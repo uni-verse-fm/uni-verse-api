@@ -3,8 +3,6 @@ import {
   IsString,
   MinLength,
   MaxLength,
-  IsBoolean,
-  IsEnum,
   IsMongoId,
 } from 'class-validator';
 

@@ -4,18 +4,13 @@ import {
   Post,
   Body,
   Request,
-  Patch,
   Param,
-  UseInterceptors,
-  Delete,
   UseGuards,
 } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiTags, ApiCookieAuth, ApiOperation } from '@nestjs/swagger';
-import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
 import { IRequestWithUser } from '../users/interfaces/request-with-user.interface';
 
 @ApiTags('messages')

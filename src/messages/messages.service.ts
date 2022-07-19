@@ -1,11 +1,8 @@
 import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
 import * as mongoose from 'mongoose';
 
 import {
   BadRequestException,
-  forwardRef,
-  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -44,7 +41,7 @@ export class MessagesService {
       });
   }
   async findUserContacts(userId: string) {
-    this.logger.log(`Finding user ${userId} friends`);
+    this.logger.log(`Finding ${userId} contacts`);
     const contacts = await this.messageModel.aggregate([
       {
         $match: {
@@ -87,7 +84,7 @@ export class MessagesService {
   }
 
   async findContactMessages(userId: string, friendId: string) {
-    this.logger.log(`Finding user ${userId} messages`);
+    this.logger.log(`Finding  ${userId} and ${friendId}  messages`);
 
     return await this.messageModel
       .find({
@@ -100,8 +97,12 @@ export class MessagesService {
       .populate('dest')
       .sort({ createdAt: -1 })
       .catch(() => {
-        this.logger.error(`Can not find  "${userId}"`);
-        throw new NotFoundException(`Can not find  "${userId}"`);
+        this.logger.error(
+          `Can not find messages "${userId}" with "${friendId}"`,
+        );
+        throw new NotFoundException(
+          `Can not find messages "${userId} with "${friendId}"`,
+        );
       });
   }
 }
