@@ -101,7 +101,7 @@ export class MessagesService {
           `Can not find messages "${userId}" with "${friendId}"`,
         );
         throw new NotFoundException(
-          `Can not find messages "${userId} with "${friendId}"`,
+          `Can not find messagess "${userId} with "${friendId}"`,
         );
       });
   }
