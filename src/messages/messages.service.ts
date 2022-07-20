@@ -51,7 +51,7 @@ export class MessagesService {
           ],
         },
       },
-      { $group: { _id: '$dest' } },
+      { $group: { _id: '$user' } },
       {
         $lookup: {
           from: 'users',
