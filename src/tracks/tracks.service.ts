@@ -37,7 +37,7 @@ export class TracksService {
     private amqpConnection: AmqpConnection,
     @Inject(forwardRef(() => FeatRequestsService))
     private featRequestService: FeatRequestsService,
-  ) {}
+  ) { }
 
   async createTrack(
     createTrackDto: CreateTrackDto,
@@ -71,8 +71,8 @@ export class TracksService {
       feats.map((feat) => {
         this.featRequestService.createFeatRequest({
           user: createTrackDto.author.id,
-          dest: feat._id,
-          track: newTrack._id,
+          dest: feat._id.toString(),
+          track: newTrack._id.toString(),
         });
       }),
     );
@@ -81,7 +81,7 @@ export class TracksService {
     this.tracksSearchService.insertIndex(createdTrack);
 
     this.NotifyFpWorker(result);
-    this.NotifyPlagiaWorker(createdTrack._id, result);
+    this.NotifyPlagiaWorker(createdTrack._id.toString(), result);
 
     return this.buildTrackInfo(createdTrack);
   }
@@ -206,7 +206,7 @@ export class TracksService {
       this.logger.error(`Track ${id} not found`);
       throw new NotFoundException('Somthing wrong with the server');
     }
-    await track.remove(session);
+    await track.deleteOne(session);
     await this.filesService.removeFile(track.fileName, BucketName.Tracks);
     this.tracksSearchService.deleteIndex(id);
     return {

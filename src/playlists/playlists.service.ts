@@ -29,7 +29,7 @@ export class PlaylistsService {
     private playlistModel: Model<PlaylistDocument>,
     private tracksService: TracksService,
     private playlistsSearchService: PlaylistsSearchService,
-  ) {}
+  ) { }
 
   async createPlaylist(
     createPlaylistDto: CreatePlaylistDto,
@@ -177,7 +177,7 @@ export class PlaylistsService {
     const playlist = await this.isUserTheOwnerOfPlaylist(id, owner);
 
     try {
-      await playlist.remove();
+      await playlist.deleteOne();
     } catch (error) {
       this.logger.error(`Can not remove playlist ${id} due to: ${error}`);
       throw new Error("Can't delete playlist");
@@ -207,7 +207,7 @@ export class PlaylistsService {
     return playlist;
   }
 
-  private async isPlaylistUnique(title: string) {
+  /* private async isPlaylistUnique(title: string): Promise<void> {
     this.logger.log(`Checking if playlist ${title} is unique`);
     let playlist: PlaylistDocument;
     try {
@@ -218,7 +218,7 @@ export class PlaylistsService {
     if (playlist?.title === title) {
       throw new BadRequestException('Playlist must be unique.');
     }
-  }
+  } */
 
   async playlistsByUserId(userId: string) {
     return await this.playlistModel

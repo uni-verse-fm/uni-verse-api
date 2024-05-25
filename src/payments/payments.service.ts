@@ -26,7 +26,7 @@ export class PaymentsService {
     private transactionService: TransactionsService,
   ) {
     this.stripe = new Stripe(configService.get('STRIPE_SECRET_KEY'), {
-      apiVersion: '2020-08-27',
+      apiVersion: '2024-04-10',
     });
     this.univerDonationProductId = configService.get(
       'UNIVERSE_DONATION_PRODUCT_ID',
@@ -88,11 +88,11 @@ export class PaymentsService {
         client_reference_id: transactionId,
         payment_intent_data: connectedAccountId
           ? {
-              application_fee_amount: 30,
-              transfer_data: {
-                destination: connectedAccountId,
-              },
-            }
+            application_fee_amount: 30,
+            transfer_data: {
+              destination: connectedAccountId,
+            },
+          }
           : undefined,
       });
 
@@ -133,13 +133,13 @@ export class PaymentsService {
     const productData = productId
       ? { product: productId }
       : {
-          product_data: {
-            name,
-            metadata: {
-              ownerId,
-            },
+        product_data: {
+          name,
+          metadata: {
+            ownerId,
           },
-        };
+        },
+      };
     return await this.stripe.prices
       .create({
         unit_amount: amount,
@@ -303,7 +303,7 @@ export class PaymentsService {
     return 'This action adds a new payement';
   }
 
-  public async findOnePayementById(customerId, payementId) {
+  public async findOnePayementById(customerId: string, payementId: string) {
     this.logger.log(
       `Find one payment ${payementId} for customer ${customerId}`,
     );

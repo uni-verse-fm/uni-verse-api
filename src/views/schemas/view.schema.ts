@@ -5,7 +5,7 @@ import { Transform, Type } from 'class-transformer';
 import { ObjectId } from 'mongodb';
 import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
-import { Release } from '../../releases/schemas/release.schema';
+// import { Release } from '../../releases/schemas/release.schema';
 import { Track } from '../../tracks/schemas/track.schema';
 
 export type ViewDocument = View & Document;

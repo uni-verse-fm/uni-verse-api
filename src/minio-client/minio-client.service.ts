@@ -64,21 +64,16 @@ export class MinioClientService {
       throw new BadRequestException('Error uploading file mimetype undefined');
     }
 
-    this.client.putObject(
-      bucketName,
-      fileName,
-      file.buffer,
-      file.size,
-      metaData,
-      (err: any) => {
+    this.client
+      .putObject(bucketName, fileName, file.buffer, file.size, metaData)
+      .catch((err: any) => {
         if (err) {
           this.logger.error(
             `Can not upload file ${file.originalFileName} due to ${err}`,
           );
           throw new BadRequestException('Error uploading file', err);
         }
-      },
-    );
+      });
 
     return fileName;
   }

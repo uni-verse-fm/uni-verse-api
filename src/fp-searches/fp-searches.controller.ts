@@ -18,7 +18,6 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Logger } from 'mongodb';
 import { SimpleCreateFileDto } from 'src/files/dto/simple-create-file.dto';
 import { IRequestWithUser } from 'src/users/interfaces/request-with-user.interface';
 import { ValidIdInterceptor } from 'src/utils/interceptors/valid-id.interceptor';
@@ -28,9 +27,9 @@ import { FpSearchesService } from './fp-searches.service';
 @ApiTags('fp-searches')
 @Controller('fp-searches')
 export class FpSearchesController {
-  constructor(private readonly fpSearchService: FpSearchesService) {}
+  constructor(private readonly fpSearchService: FpSearchesService) { }
 
-  private readonly logger = new Logger(FpSearchesController.name);
+  //  private readonly logger = new Logger(FpSearchesController.name);
 
   @Get(':id')
   @ApiOperation({ summary: 'Find one search by id' })

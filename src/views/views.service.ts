@@ -17,7 +17,7 @@ export class ViewsService {
     @InjectModel(View.name)
     private viewModel: Model<ViewDocument>,
     private tracksService: TracksService,
-  ) {}
+  ) { }
 
   async createView(createViewDto: CreateViewDto) {
     this.logger.log(`Creating view for track ${createViewDto.track}`);
@@ -37,7 +37,7 @@ export class ViewsService {
     this.logger.log(`Finding count of views of track ${trackId}`);
     return await this.viewModel
       .find({ track: trackId })
-      .count()
+      .countDocuments()
       .catch(() => {
         this.logger.error('Error counting views');
         throw new Error('Error counting views');
@@ -150,8 +150,7 @@ export class ViewsService {
 
   async periodCountViewsByTrackId(periodViews: PeriodViewsDto) {
     this.logger.log(
-      `Finding count of views of track ${periodViews.trackId} between ${
-        periodViews.startDate.toISOString().split('T')[0]
+      `Finding count of views of track ${periodViews.trackId} between ${periodViews.startDate.toISOString().split('T')[0]
       } and ${periodViews.endDate.toISOString().split('T')[0]}`,
     );
 
@@ -166,7 +165,7 @@ export class ViewsService {
           $lt: periodViews.endDate,
         },
       })
-      .count()
+      .countDocuments()
       .catch(() => {
         this.logger.error('Error counting views');
         throw new Error('Error counting views');

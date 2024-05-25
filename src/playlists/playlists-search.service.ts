@@ -8,19 +8,18 @@ import { PlaylistDocument } from './schemas/playlist.schema';
 
 @Injectable()
 export default class PlaylistsSearchService
-  implements ISearchService<PlaylistDocument>
-{
+  implements ISearchService<PlaylistDocument> {
   index = 'playlist';
   private readonly logger: Logger = new Logger(PlaylistsSearchService.name);
 
-  constructor(private readonly elasticsearchService: ElasticsearchService) {}
+  constructor(private readonly elasticsearchService: ElasticsearchService) { }
 
   async insertIndex(playlist: PlaylistDocument): Promise<any> {
     this.logger.log(`Inserting user ID "${playlist._id}"`);
     return await this.elasticsearchService.index<IPlaylistSearchBody>({
       index: this.index,
       body: {
-        id: playlist._id,
+        id: playlist._id.toString(),
         title: playlist.title,
       },
     });
@@ -61,7 +60,7 @@ export default class PlaylistsSearchService
     this.logger.log(`Searching "${playlist._id}"`);
 
     const newBody: IPlaylistSearchBody = {
-      id: playlist._id,
+      id: playlist._id.toString(),
       title: playlist.title,
     };
 
@@ -77,7 +76,7 @@ export default class PlaylistsSearchService
       body: {
         query: {
           match: {
-            id: playlist._id,
+            id: playlist._id.toString(),
           },
         },
         script: script,

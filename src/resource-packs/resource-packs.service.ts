@@ -27,7 +27,6 @@ import { buildSimpleFile } from '../utils/buildSimpleFile';
 import { BucketName } from '../minio-client/minio-client.service';
 import { FilesService } from '../files/files.service';
 import { PaymentsService } from '../payments/payments.service';
-import * as mongoose from 'mongoose';
 import PacksSearchService from './packs-search.service';
 import { TransactionsService } from '../transactions/transactions.service';
 
@@ -45,7 +44,7 @@ export class ResourcePacksService {
     private stripeService: PaymentsService,
     private packsSearchService: PacksSearchService,
     private transactionService: TransactionsService,
-  ) {}
+  ) { }
 
   async createResourcePack(
     files: SimpleCreateFileDto[],
@@ -70,7 +69,7 @@ export class ResourcePacksService {
 
     let productId: string | undefined;
     try {
-      let resourcePack;
+      let resourcePack: ResourcePackDocument;
 
       const createResponse = await session
         .withTransaction(async () => {
@@ -96,7 +95,7 @@ export class ResourcePacksService {
 
           const price = await this.stripeService.createPrice(
             createResourcePack.title,
-            author._id,
+            author._id.toString(),
             createResourcePack.amount,
           );
 
@@ -110,9 +109,8 @@ export class ResourcePacksService {
             productId: price.product.toString(),
             coverName,
           };
-          resourcePack = await this.resourcePackModel.create(
-            createdResourcePack,
-          );
+          resourcePack =
+            await this.resourcePackModel.create(createdResourcePack);
           await this.packsSearchService.insertIndex(resourcePack);
         })
         .then(() => this.buildResourcePackInfo(resourcePack));
@@ -236,7 +234,7 @@ export class ResourcePacksService {
             BucketName.Images,
           );
 
-          await resourcePack.remove();
+          await resourcePack.deleteOne();
         })
         .then(() => ({
           id: resourcePack._id.toString(),
@@ -328,7 +326,7 @@ export class ResourcePacksService {
     return await this.resourcePackModel
       .aggregate([
         {
-          $match: { author: new mongoose.Types.ObjectId(userId) },
+          $match: { author: userId },
         },
         {
           $lookup: {
@@ -396,7 +394,7 @@ export class ResourcePacksService {
 
   async searchPacks(search: string) {
     const results = await this.packsSearchService.searchIndex(search);
-    const ids = results.map((result) => new mongoose.Types.ObjectId(result.id));
+    const ids = results.map((result) => result.id);
     if (!ids.length) {
       return [];
     }

@@ -8,19 +8,18 @@ import IPacksSearchBody from './interfaces/packs-search-body.interface';
 
 @Injectable()
 export default class PacksSearchService
-  implements ISearchService<ResourcePackDocument>
-{
+  implements ISearchService<ResourcePackDocument> {
   index = 'resource-packs';
   private readonly logger: Logger = new Logger(PacksSearchService.name);
 
-  constructor(private readonly elasticsearchService: ElasticsearchService) {}
+  constructor(private readonly elasticsearchService: ElasticsearchService) { }
 
   async insertIndex(resourcePack: ResourcePackDocument): Promise<any> {
     this.logger.log(`Inserting user ID "${resourcePack._id}"`);
     return await this.elasticsearchService.index<IPacksSearchBody>({
       index: this.index,
       body: {
-        id: resourcePack._id,
+        id: resourcePack._id.toString(),
         title: resourcePack.title,
       },
     });
@@ -60,7 +59,7 @@ export default class PacksSearchService
     this.logger.log(`Searching "${resourcePack._id}"`);
 
     const newBody: IPacksSearchBody = {
-      id: resourcePack._id,
+      id: resourcePack._id.toString(),
       title: resourcePack.title,
     };
 
@@ -76,7 +75,7 @@ export default class PacksSearchService
       body: {
         query: {
           match: {
-            id: resourcePack._id,
+            id: resourcePack._id.toString(),
           },
         },
         script: script,

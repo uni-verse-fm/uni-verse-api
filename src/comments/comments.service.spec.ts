@@ -181,7 +181,7 @@ describe('CommentsService', () => {
         },
         user,
       );
-      commentId = comment._id;
+      commentId = comment._id.toString();
       expect(comment._id).toBeDefined();
       expect(comment.content).toBe(commentOneResult.content);
       expect(comment.isPositive).toBe(commentOneResult.isPositive);
