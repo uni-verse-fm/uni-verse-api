@@ -28,7 +28,7 @@ export class CommentsService {
     private commentModel: Model<CommentDocument>,
     private tracksService: TracksService,
     private resourcesService: ResourcesService,
-  ) {}
+  ) { }
 
   async createComment(createCommentDto: CreateCommentDto, owner: UserDocument) {
     this.logger.log(`Creating comment for ${createCommentDto.typeOfContent}`);
@@ -101,7 +101,7 @@ export class CommentsService {
     this.logger.log(`Removing comment by id: ${id}`);
     const comment = await this.isUserTheOwnerOfComment(id, owner);
 
-    await comment.remove();
+    await comment.deleteOne();
     return {
       msg: `Comment ${comment._id.toString()} deleted`,
     };

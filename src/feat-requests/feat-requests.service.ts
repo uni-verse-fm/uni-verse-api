@@ -24,7 +24,7 @@ export class FeatRequestsService {
     private featRequestModel: Model<FeatRequestDocument>,
     @Inject(forwardRef(() => TracksService))
     private tracksService: TracksService,
-  ) {}
+  ) { }
 
   async createFeatRequest(
     createFeatRequestDto: CreateFeatRequestDto,
@@ -158,7 +158,7 @@ export class FeatRequestsService {
     this.logger.log(`Removing feat request ${id}`);
     if (id) {
       const featRequest = await this.featRequestModel.findById(id);
-      await featRequest.remove().catch(() => {
+      await featRequest.deleteOne().catch(() => {
         throw new BadRequestException(`Can't remove feat request ${id}`);
       });
       return featRequest._id;

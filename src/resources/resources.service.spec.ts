@@ -143,7 +143,7 @@ describe('ResourcesService', () => {
   describe('When ask one resource by id', () => {
     it('should return one resource', async () => {
       const result = await resourcesService.findResourceById(
-        first_resource._id,
+        first_resource._id.toString(),
       );
       expect(result).toStrictEqual(first_resource);
     });
@@ -157,7 +157,9 @@ describe('ResourcesService', () => {
         msg: 'Resource deleted',
       };
 
-      const result = await resourcesService.removeResource(first_resource._id);
+      const result = await resourcesService.removeResource(
+        first_resource._id.toString(),
+      );
       expect(result).toStrictEqual(expected);
     });
   });

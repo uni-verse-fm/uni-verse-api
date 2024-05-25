@@ -36,7 +36,7 @@ export class ReleasesService {
     private connection: Connection,
     private filesService: FilesService,
     private releasesSearchService: ReleasesSearchService,
-  ) {}
+  ) { }
 
   async createRelease(
     files: SimpleCreateFileDto[],
@@ -50,15 +50,15 @@ export class ReleasesService {
 
     const feats: UserDocument[] = createRelease.feats
       ? await this.usersService.findManyUsersByIds(
-          createRelease.feats.map((feat) => feat.id),
-        )
+        createRelease.feats.map((feat) => feat.id),
+      )
       : [];
 
     const orderedTracks = this.orderedTracks(files, createRelease);
 
     const session = await this.connection.startSession();
     try {
-      let release;
+      let release: ReleaseDocument;
       const createResponse = await session
         .withTransaction(async () => {
           const tracks: ITrackResponse[] =
@@ -194,7 +194,7 @@ export class ReleasesService {
             release.coverName,
             BucketName.Images,
           );
-          await release.remove();
+          await release.deleteOne();
         })
         .then(() => ({
           id: release._id.toString(),
@@ -346,7 +346,7 @@ export class ReleasesService {
 
   async searchRelease(search: string) {
     const results = await this.releasesSearchService.searchIndex(search);
-    const ids = results.map((result) => new mongoose.Types.ObjectId(result.id));
+    const ids = results.map((result) => result.id);
     if (!ids.length) {
       return [];
     }

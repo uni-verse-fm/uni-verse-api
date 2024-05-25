@@ -24,7 +24,7 @@ export class ResourcesService {
     @InjectModel(Resource.name)
     private resourceModel: Model<ResourceDocument>,
     private filesService: FilesService,
-  ) {}
+  ) { }
 
   async createResource(
     createResourceDto: CreateResourceDto,
@@ -38,9 +38,9 @@ export class ResourcesService {
 
     const previewFileName: string = createResourceDto.previewFile
       ? await this.filesService.createFile(
-          createResourceDto.previewFile,
-          BucketName.Previews,
-        )
+        createResourceDto.previewFile,
+        BucketName.Previews,
+      )
       : null;
 
     const createResource = {
@@ -101,7 +101,7 @@ export class ResourcesService {
       this.logger.error(`Resource ${id} not found`);
       throw new NotFoundException('Somthing wrong with the server');
     }
-    await resource.remove(session);
+    await resource.deleteOne(session);
     await this.filesService.removeFile(resource.fileName, BucketName.Resources);
     return {
       id: resource._id,

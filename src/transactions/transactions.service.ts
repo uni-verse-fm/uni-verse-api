@@ -22,7 +22,7 @@ export class TransactionsService {
   constructor(
     @InjectModel(Transaction.name)
     private transactionModel: Model<TransactionDocument>,
-  ) {}
+  ) { }
 
   async createTransaction(
     createTransaction: CreateTransaction,
@@ -141,7 +141,7 @@ export class TransactionsService {
     this.logger.log(`Removing transaction ${id}`);
     if (id) {
       const transaction = await this.transactionModel.findById(id);
-      await transaction.remove().catch(() => {
+      await transaction.deleteOne().catch(() => {
         throw new BadRequestException(`Can't remove transaction ${id}`);
       });
       return transaction._id;

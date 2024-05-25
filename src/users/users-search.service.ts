@@ -8,19 +8,18 @@ import { User, UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export default class UsersSearchService
-  implements ISearchService<UserDocument>
-{
+  implements ISearchService<UserDocument> {
   index = 'user';
   private readonly logger: Logger = new Logger(UsersSearchService.name);
 
-  constructor(private readonly elasticsearchService: ElasticsearchService) {}
+  constructor(private readonly elasticsearchService: ElasticsearchService) { }
 
   async insertIndex(user: User | UserDocument) {
     this.logger.log(`Inserting user ID "${user._id}"`);
     return await this.elasticsearchService.index<IUserSearchBody>({
       index: this.index,
       body: {
-        id: user._id,
+        id: user._id.toString(),
         username: user.username,
         email: user.email,
       },
@@ -62,7 +61,7 @@ export default class UsersSearchService
     this.logger.log(`Searching "${user._id}"`);
 
     const newBody: IUserSearchBody = {
-      id: user._id,
+      id: user._id.toString(),
       username: user.username,
       email: user.email,
     };
@@ -79,7 +78,7 @@ export default class UsersSearchService
       body: {
         query: {
           match: {
-            id: user._id,
+            id: user._id.toString(),
           },
         },
         script: script,

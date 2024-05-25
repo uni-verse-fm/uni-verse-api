@@ -8,19 +8,18 @@ import { TrackDocument } from './schemas/track.schema';
 
 @Injectable()
 export default class TracksSearchService
-  implements ISearchService<TrackDocument>
-{
+  implements ISearchService<TrackDocument> {
   index = 'track';
   private readonly logger: Logger = new Logger(TracksSearchService.name);
 
-  constructor(private readonly elasticsearchService: ElasticsearchService) {}
+  constructor(private readonly elasticsearchService: ElasticsearchService) { }
 
   async insertIndex(track: TrackDocument): Promise<any> {
     this.logger.log(`Inserting user ID "${track._id}"`);
     return await this.elasticsearchService.index<ITrackSearchBody>({
       index: this.index,
       body: {
-        id: track._id,
+        id: track._id.toString(),
         title: track.title,
       },
     });
@@ -60,7 +59,7 @@ export default class TracksSearchService
     this.logger.log(`Searching "${track._id}"`);
 
     const newBody: ITrackSearchBody = {
-      id: track._id,
+      id: track._id.toString(),
       title: track.title,
     };
 
@@ -76,7 +75,7 @@ export default class TracksSearchService
       body: {
         query: {
           match: {
-            id: track._id,
+            id: track._id.toString(),
           },
         },
         script: script,

@@ -141,14 +141,14 @@ describe('PlaylistsService', () => {
 
     it('should return the first playlist', async () => {
       const playlist = await playlistService.createPlaylist(my_playlist1, user);
-      playlist1_id = playlist._id;
+      playlist1_id = playlist._id.toString();
       expect(playlist._id).toBeDefined();
       expect(playlist.title).toBe(my_playlist1.title);
     });
 
     it('should return the second playlist', async () => {
       const playlist = await playlistService.createPlaylist(my_playlist2, user);
-      playlist2_id = playlist._id;
+      playlist2_id = playlist._id.toString();
       expect(playlist._id).toBeDefined();
       expect(playlist.title).toBe(my_playlist2.title);
     });

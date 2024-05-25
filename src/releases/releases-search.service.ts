@@ -8,19 +8,18 @@ import { ReleaseDocument } from './schemas/release.schema';
 
 @Injectable()
 export default class ReleasesSearchService
-  implements ISearchService<ReleaseDocument>
-{
+  implements ISearchService<ReleaseDocument> {
   index = 'release';
   private readonly logger: Logger = new Logger(ReleasesSearchService.name);
 
-  constructor(private readonly elasticsearchService: ElasticsearchService) {}
+  constructor(private readonly elasticsearchService: ElasticsearchService) { }
 
   async insertIndex(release: ReleaseDocument): Promise<any> {
     this.logger.log(`Inserting user ID "${release._id}"`);
     return await this.elasticsearchService.index<IReleaseSearchBody>({
       index: this.index,
       body: {
-        id: release._id,
+        id: release._id.toString(),
         title: release.title,
       },
     });
@@ -62,7 +61,7 @@ export default class ReleasesSearchService
     this.logger.log(`Searching "${release._id}"`);
 
     const newBody: IReleaseSearchBody = {
-      id: release._id,
+      id: release._id.toString(),
       title: release.title,
     };
 
@@ -78,7 +77,7 @@ export default class ReleasesSearchService
       body: {
         query: {
           match: {
-            id: release._id,
+            id: release._id.toString(),
           },
         },
         script: script,

@@ -1,6 +1,6 @@
 /* Copyright (c) 2022 uni-verse corp */
 
-import * as Joi from '@hapi/joi';
+import * as Joi from 'joi';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -28,7 +28,7 @@ import * as winston from 'winston';
 import * as path from 'path';
 import * as fs from 'fs';
 
-import ecsFormat = require('@elastic/ecs-winston-format');
+import { ecsFormat } from '@elastic/ecs-winston-format';
 import DailyRotateFile = require('winston-daily-rotate-file');
 import { FpSearchesModule } from './fp-searches/fp-searches.module';
 import { FeatRequestsModule } from './feat-requests/feat-requests.module';

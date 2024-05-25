@@ -71,11 +71,13 @@ export class UsersService {
     this.logger.log(`Removing user ${id}`);
     isValidId(id);
     const user = await this.userModel.findById(id);
+
     if (!user) {
       this.logger.error(`User ${id} not found`);
-      throw new NotFoundException('Somthing wrong with the server');
+      throw new NotFoundException(`User ${id} not found`);
     }
-    await user.remove();
+
+    await user.deleteOne();
     this.usersSearchService.deleteIndex(id);
     return {
       email: user.email,
@@ -90,11 +92,13 @@ export class UsersService {
 
     const accountId =
       userAccountId || (await this.stripeService.createAccount());
-    const donationProductId = await this.stripeService.createDonations(id);
-    await this.updateUserStripeAccountId(id, accountId);
-    await this.updateUserDonationProductId(id, donationProductId);
+    const donationProductId = await this.stripeService.createDonations(
+      id.toString(),
+    );
+    await this.updateUserStripeAccountId(id.toString(), accountId);
+    await this.updateUserDonationProductId(id.toString(), donationProductId);
 
-    const user = await this.findById(id);
+    const user = await this.findById(id.toString());
     return this.stripeService.onboard(user);
   }
 

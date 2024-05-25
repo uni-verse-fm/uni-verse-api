@@ -258,9 +258,8 @@ describe('ResourcePacksService', () => {
       const description = 'my resource pack 1';
       const title = 'resource pack 1';
 
-      const result = await resourcePacksService.findResourcePackById(
-        resourcePackId,
-      );
+      const result =
+        await resourcePacksService.findResourcePackById(resourcePackId);
 
       expect(result.title).toBe(title);
       expect(result.description).toBe(description);

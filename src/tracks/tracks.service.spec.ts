@@ -164,7 +164,7 @@ describe('TracksService', () => {
         tracks.change_clothes.title,
       );
 
-      const result = await tracksService.findTrackById(track._id);
+      const result = await tracksService.findTrackById(track._id.toString());
       expect(result).toStrictEqual(track);
     });
   });
@@ -196,7 +196,7 @@ describe('TracksService', () => {
         msg: 'Track deleted',
       };
 
-      const result = await tracksService.removeTrack(track._id);
+      const result = await tracksService.removeTrack(track._id.toString());
       expect(result).toStrictEqual(expected);
     });
   });
