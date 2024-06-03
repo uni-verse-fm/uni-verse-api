@@ -1,13 +1,19 @@
 # Api Uni-verse
 
-Uni-verse est une plateforme de streaming audio conçue spécifiquement pour les producteurs de musique.
-Elle consiste en un site web, une application smartphone, et une API.
+Uni-verse is a soundcloud-like platform that allows users to post their music, and collaborating while being protected by an anti-plagiarism system based on audio fingerprinting.
 
-Ce projet est l'api de Uni-verse.
+This project is Uni-verse's API and is powered by NestJS and Typescript.
 
-Cette API est l'element central de l'infrastructure de Uni-Verse. En effet, toutes les données transitent par cet element.
+Uni-verse's API is its central component, being a gateway to every other micro-services in Uni-Verse's architecture.
+It interacts with :
 
-Actuellement, l'API est en ligne à l'[addresse suivante](https://uni-verse.api.vagahbond.com), et sa documentation Swagger à l'[addresse suivante](https://uni-verse.api.vagahbond.com/docs)
+- Stripe
+- Minio
+- Elastic Search
+- RabbitMQ
+- MongoDB
+
+This API is meant to be hosted at [this address](https://uni-verse.api.vagahbond.com), and its auto-generated OpenAPI compliant documentation is [available here](https://uni-verse.api.vagahbond.com/docs).
 
 ## Structure des données:
 
@@ -17,57 +23,66 @@ Actuellement, l'API est en ligne à l'[addresse suivante](https://uni-verse.api.
 
 ### User
 
-Représente un utilisateur de la plateforme. Tous les utilisateurs sont considérés comme des producteurs et sont suceptibles de publier des musiques et des ressources. Il est toutefois necessaire de faire l'onboarding Stripe afin de rendre disponible des ressources payantes.
+Every user is considered an artist before they post, to encourage creation and participation in the platform.
+Before a user can publish paid resource packs, they need to get the Stripe onboarding done so that they can get paid.
 
 ### Release
 
-Une release est une liste de tracks qui vont ensemble. Il peut s'agir d'un EP, d'un album, d'un LP, voire même d'un single. Toute track est publiée dans une release, qui doit avoir une couverture.
+A release is a list of tracks that are release together. it can be an EP, an Album, an LP, or a Single. Any released track has to be included in a release, There can be no stray track.
+A release has a cover art.
 
 ### Track
 
-Une track est une musique, une chanson. L'entité `track` a pour premier but de pointer vers un fichier que l'on peut lire.
+A track is a song, or.. well.. a track. This entity allows retrieving the audio file for reading purpose. There are one or several Track per Release.
 
 ### Comment
 
-Dans Uni-verse, il est possible de mettre un "like" ou un "dislike" mais il doit être justifié. Un pouce en l'air ou vers le bas doit être accompagné d'un commentaire.
+Uni-verse's like/dislike system has the particularity to require a description justifying it.
+The idea behind this is to encourage constructive criticism.
 
 ### ResourcePack
 
-Un pack de ressources est un package qui contient plusieurs ressources. Ces ressources sont soit des samples (court fichier son que l'on ajoute à sa musique), soit des presets que l'on peut charger dans l'editeur de musique.
+Uni-verse allows sharing resource packs, containing samples and VST presets.
+This way, creators can exchange stems to inspire each other.
+Creating a resource pack can be very demanding and that's why uni-verse allows people to sell their resource packs on the platform.
 
 ### Resource
 
-Une ressource est une partie d'un ressource pack. Il s'agit d'un fichier, que ce soit un fichier son ou un fichier de réglage de plugin de logiciel audio.
+A resource is an element of a resource pack. It ultimately is a file, whether it be a sample or a preset.
+It can be previewable or not, which allows having a peek at resource packs before buying them.
 
 ### FpSearch
 
-Une recherche par fingerprint est une recherche qui a été effectuée par un utilisateur dans la base de uni-verse. On en garde la trace afin de pouvoir faire des statistiques sur le taux de reussite dnas le futur.
+A fingerprint search is any search that has been done by a user in uni-verse's database. Keeping this allows making statistics. This could be implemented via Kafka in the future, for further efficiency.
 
 ### Featuring
 
-Un utilisateur peut être relié a une track par le biais de l'entité "featuring". Cela indique qu'il a travaillé sur cette track avec son auteur.
+A user can be linked to a track via this `featuring` entity. This allows making sure that credits are rightfully given: it allows linking a track with everyone that has worked on it.
 
 ### Playlist
 
-Il est possible de créer des playlists, qui contiennent une liste de tracks.
+Users can create playlists, which point to different tracks. The usual playlist feature.
 
 ### Transaction
 
-Une transaction représente un achat de resourcepack, ou un don fait par un utilisateur à un autre utilisateur.
+Transations means money transaction. It can be whether the purchasing of a resource, or a donation from a user to another (that has stripe onboarding done).
 
-## Stack technique
+## About the tech
 
 ### Typescript
 
-Pour l'API de uni-verse, nous avons choisi d'utiliser NodeJS avec Typescript pour la maintenabilité.
+The whole project is coded in typescript and ran in NodeJS, for the versatility and ease of development (let's not forget this is a POC and not a commercial product)
 
 ### NestJS
 
-L'API pour nest est basé sur [NestJS](https://docs.nestjs.com/). Sa structure prédéfinie et sa flexibilité dans la créaction de services et de middlewares permet de gagner du temps dans le développement, et d'avoir rapidement un API prêt pour la production.
+This Nest was the framework of choice for a few different reasons:
+
+- The architecture is well defined and future-proof, which is important for such a big project.
+- It allows a fait amount of scalability for the app, with extensive documentation on how to actually scale.
 
 ### Swagger
 
-La documentation de l'API est générée à l'aide de [Swagger](https://swagger.io/docs/). Swagger permet une automatisation rapide et pratique de la documentation, sans sacrifier la qualité puisqu'il permet de faire enormement de choses, comme rendrela documentation interactive.
+Thanks to [Swagger](https://swagger.io/docs/), we could auto-generate a documentation for this web API and save a good amount of time while being compliant to OpenAPI specifications. That documentation also has the advantage to be interactive.
 
 ![](doc/assets/swagger.png)
 
