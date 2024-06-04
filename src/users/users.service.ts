@@ -17,7 +17,7 @@ import { isValidId } from '../utils/is-valid-id';
 import UsersSearchService from './users-search.service';
 import { IUpdateResponse } from './interfaces/update-response.interface';
 import { IRequestWithUser } from './interfaces/request-with-user.interface';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { CreateUserWithGoogleDto } from './dto/create-google-user.dto';
 import { Provider } from '../auth/auth.service';
 import * as mongoose from 'mongoose';
@@ -35,7 +35,7 @@ export class UsersService {
     private stripeService: PaymentsService,
     private filesService: FilesService,
     private usersSearchService: UsersSearchService,
-  ) {}
+  ) { }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserDocument> {
     this.logger.log('Creating user');
