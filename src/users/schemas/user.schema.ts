@@ -1,6 +1,6 @@
 /* Copyright (c) 2022 uni-verse corp */
 
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId, Document } from 'mongoose';
 import { Transform } from 'class-transformer';
