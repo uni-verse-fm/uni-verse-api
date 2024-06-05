@@ -28,7 +28,7 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.DOCKER_REGISTRY }}/vagahbond/uni-verse/api
-            ${{ secrets.DOCKER_REGISTRY }}/vagahbond/uni-verse/api:${{ steps.tag_name.outputs.TAG_NAME }}
+            ${{ secrets.DOCKER_REGISTRY }}/uni-verse/api
+            ${{ secrets.DOCKER_REGISTRY }}/uni-verse/api:${{ steps.tag_name.outputs.TAG_NAME }}
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
