@@ -88,88 +88,60 @@ Thanks to [Swagger](https://swagger.io/docs/), we could auto-generate a document
 
 ### Mongoose
 
-L'API de Uni-verse repose sur une base de données MongoDB et communique avec via l'ORM [Mongoose](https://mongoosejs.com/).
+Uni-verse relies on Mongo DB with [Mongoose](https://mongoosejs.com/) ORM for persistence. Although it might not perform as well as a relational database for most usecases, it allowed us to get a POC working faster.
 
 ### Docker
 
-Ce produit est distribué par le biais d'une image [docker](https://www.docker.com/), construite dans une pipeline Github-Actions et publiée dans un registre privé docker.
-L'image docker permet de repliquer l'environnement dont Uni-verse a besoin en une seule commande, et de l'utiliser plus facilement sur le cloud.
+Uni-verse's architecture is complex and has numerous components. To get a development environment working easily, we rely on [docker](https://www.docker.com/) with docker-compose. This also alows setting up the production pretty easily using docker swarm, in case of a pre-production environment, or a demo for instance.
+
+Using docker, it's trivial to deploy images for this API on registers via CI and then pull them when needed.
 
 ### ESLint et Prettier
 
-Afin d'enforcer les conventions de codage, [Eslint](https://eslint.org/) et [Prettier](https://prettier.io/) ont été mis en place et intégré dans GitHub-Actions.
+This API is made to be a demonstration of good software craftmanship. In this endeavour, we made use of [Eslint](https://eslint.org/) and [Prettier](https://prettier.io/) to check and enforce good practices across the codebase.
+
+Lint and formatting checks are performed on any PR before they can be merged to the main branch.
 
 ### Kubernetes
 
-Des deploiements, services, volumes claims et une configmap dans ce répo permettent de déployer facilement cette infrastructure en production dans Kubernetes.
+For real production. Docker swarm might not be enough. If something load balanced and scalable is needed, kubernetes is a well-known solution.
+
+This is why we made kubernetes deployments for this application, that create every pods needed to run Uni-Verse flawlessly, pulling it from our CI/CD generated docker registry images.
 
 ### Github Actions
 
-Github-Actions est utilisé pour plusieur aspects du projet:
+As mentioned before, CI/CD plays an inportant role in this project. This is where Github Actions shines.
+We leverage GH Actions on different aspects of the project:
 
-1. Faire respecter les conventions de code en faisant tourner prettier et eslint sur chaque PR
-2. Faire tourner les tests sur chaque PR et chaque nouveau commit dans `main`
-3. Construire l'image docker et la publeir dans le registre privé à chaque release créée sur Github.
+1. Enforce best practices via Prettier and ESLint checking on each PR (no one can push to `master`)
+2. Run unit and integration tests on each PR
+3. Build and push the Docker images to our registries.
 
 ### Winston + Filebeat
 
-Les logs de l'API sont écrites en continue dans un fichier, partagé sous forme de volume avec une instance FileBeat qui récupère les logs et les envoit à Kibana sous un format spécifiques, afin qu'elles soient accessibles depuis un dashboard.
+This APi's logs are written in a file that's shared with Kibana using Filebeat so that they can be thoroughly analyzed if ever needed.
+This allows having a dashboard with a good overview on what's going on in the app.
 
-## Contribuer
+## Contributing
 
-### Environnement de développement
+### Setting up the environment
 
-Afin de developper localement, un docker-compose a été mis en place et permet de simuler toute l'architectuer du projet, avec ses differents composants.
+Although docker-compose simplifies the reproduction of this app's environment, it does not do everything for you.
+Some environment variables are needed by the app so that the production version does not spill out all of our precious secrets!
 
-Pour développer sur ce projet, il faut remplir `docker.env` avec les variables suivantes :
+Our development environment for this API and the frontend is available in [another repo](https://github.com/uni-verse-fm/uni-verse-dev).
 
-```
-ME_CONFIG_MONGODB_SERVER=mongodb
-ME_CONFIG_MONGODB_ADMINUSERNAME=root
-ME_CONFIG_MONGODB_ADMINPASSWORD=pass
-ME_CONFIG_BASICAUTH_USERNAME=root
-ME_CONFIG_BASICAUTH_PASSWORD=pass
-MONGO_INITDB_ROOT_USERNAME=root
-MONGO_INITDB_ROOT_PASSWORD=pass
-MONGO_INITDB_DATABASE=db
-MONGO_HOSTNAME=mongodb
-MONGO_USERNAME=root
-MONGO_PASSWORD=pass
-MONGO_PORT=27017
-MONGO_DATABASE=uniVerse
-PORT=3000
-JWT_ACCESS_TOKEN_SECRET=uniVerseJwtSecret
-JWT_ACCESS_TOKEN_EXPIRATION_TIME=60s
-JWT_REFRESH_TOKEN_SECRET= uniVerseJwtSecret
-JWT_REFRESH_TOKEN_EXPIRATION_TIME= 24h
-MINIO_ROOT=miniokey
-MINIO_ROOT_USER=root
-MINIO_ROOT_PASSWORD=miniosecret
-MINIO_ENDPOINT=minio
-MINIO_PORT=9000
-FRONTEND_URL=http://localhost:3005
-GF_SECURITY_ADMIN_USER=admin
-GF_SECURITY_ADMIN_PASSWORD=pass
-ELASTIC_USERNAME=elastic
-ELASTIC_PASSWORD=admin
-ELASTICSEARCH_NODE=http://elasticsearch:9200
-RMQ_URL=rabbitmq
-RMQ_PORT=5672
-IN_QUEUE_NAME=uni-verse-fp-in
-INTERNAL_API_HOST=dev
-INTERNAL_API_PORT=3000
-RMQ_URL=rabbitmq
-RMQ_PORT=5672
-RMQ_USER=guest
-RMQ_PASSWORD=guest
-ONBOARD_REFRESH_URL=https://uni-verse.api.vagahbond.com/payments/refresh
-STRIPE_WEBHOOK_SECRET=
+In this repository, you can find a `docker-compose.yml` and a `docker.env` file.
+
+How to use all that is simple :
+
+```bash
+# Clone the repository with submodules (this one and the frontend)
+git clone --recurse-submodules git@github.com:uni-verse-fm/uni-verse-dev.git
+
+docker compose up
 
 ```
-
-L'API refusera de démarrer s'il remarque qu'il lui manque des variables.
-
-Une fois les variables en place, il suffit de lancer la stack avec `docker-compose up`.
 
 ## Architecture
 
@@ -177,47 +149,48 @@ Une fois les variables en place, il suffit de lancer la stack avec `docker-compo
 
 ### Api
 
-Element central de l'architecture, l'API est au centre de tous les échanges de données.
+As a central element of the architecture, API acts as a gateway to our different services, that frontends access.
 
 ### MongoDB
 
-Base de donnée utilisée par l'API afin de sauvegarder ses modèles. La base de donnée document, dans le cas de uni-verse, offre des avantages en terme d'implementation.
+MongoDB persists the most basic stuff: Users, buisness entities...
+MongoDB's flexibility allowed us to get this POC running in no time.
 
 ### RabbitMQ
 
-RabbitMQ est utilisé dans cette stack en tant que queue d'instructions, dans un style emetteur-consommateur: l'API emmet des messages qui sont consommés par les FP-workers, qui eux memes font appel à l'API quand ils ont fini.
+Audio fingerprinting is a costly operation that takes time. This is why, for scalability reasons it's good to have it made by independent workers. RabbitMQ allows having a queue of tasks that summons worker to process audio samples and output their generated fingerprints, for them to be indexed for further comparison.
 
 ### FP Worker
 
-Les FP workers sont des pods contenant un code simple qui sont executés dans le but de générer l'empreinte d'un fichier audio, ou d'effectuer une recherche par empreinte. Une fois le resultat d'une recherche obtenue, une requete est faite pour mettre à jour l'etat de la recherche dans la base.
+FingerPrinting workers are atomic entities that only exist to process audio and turn it into fingerprints. Those fingerprints are then sent to the database.
 
 ### Minio
 
-Minio sert à stocker tous les fichiers, qu'il s'agisse d'images, de fichiers sons, ou autres.
+Storing files is a tricky tasks, especially at scale. This is why we use an object storage to store pictures, resources, and tracks. Minio has the advantage of being open source and fully self hosted.
 
 ### Elastic Search
 
-Elastick search permet, grâce à des indexes, de faire des recherches rapides et optimisées de contenu.
+ES allows us to implement an efficient, fast, and robust search system. The user can search for other users, tracks, releases, resources, or resource packs.
 
 ### Kibana
 
-Kibana permet d'avoir une interface en lien direct avec Elastic search, et avec Filebeat. De cette façon on peut consulter les index créés par l'API, ainsi que les logs récoltés par Filebeat.
+Leveraging ES and filebeat, we can have indexed logs from the API, and search them efficiently whenever needed, this allows for great alanytics of the application, we can know exactly how it runs and what happened when it doesn not run properly.
 
 ### Filebeat
 
-Filebeat permet de reecupérer des logs dans un fichier, et de les envoyer automatiquement à Kibana.
+Filebeat retrieves logfiles and sends them to Kibana.
 
 ### Android app
 
-L'applicaiton android se connecte à l'API et à Minio, et permet aux utilisateurs d'écouter la musique disponible sur la plateforme.
+For a music streaming platform, an Android app is an absolute must. Track retrieving via samples can also be done through that android app. It uses the same API endpoints as the frontend.
 
 ### Frontend
 
-Le frontend permet de mettre en ligne et consulter les tracks et ressources.
+The frontend is made using Svelte and SSR for an optimal SEO, allowing artists to get more visibility.
 
-### Séquences importantes
+### Complex interactions
 
-#### Upload d'une release:
+#### Release upload:
 
 ```mermaid
 sequenceDiagram
@@ -231,7 +204,7 @@ sequenceDiagram
 
 ```
 
-#### Recherche par fingerprint audio:
+#### Audio lookup via fingerprinting:
 
 ```mermaid
 sequenceDiagram
@@ -247,52 +220,18 @@ sequenceDiagram
 
 ```
 
-### Conventions de codage
-
-Les conventions de codage poussées par Prettier et ESLint sont basées sur les configurations recommendées directement par l'écosystème NodeJS. On peut les consulter [dans la documentation de eslint typescript](https://typescript-eslint.io/docs/linting/configs).
-
-Les règles prncipales à retenir sont que les variables doivent être en lowerCamelCase, ainsi que les fonctions. Eslint veille aussi aux imports et variables non utilisees.
-
-Si les conventions de codage ne sont pas respectées, une PR ne peut pas être mergée, car elle ne passera pas les tests de l'intégration continue.
-
 ## Production
 
-### Api
+Here are the different kubernetes config files available for the production:
 
-Pour l'API, ce répos fournis un volume (pour les logs), une configmap, un déploiement et un service.
-
-### MongoDB
-
-Pour MongoDB, ce répos fournit un volume, un déploiement et un service.
-
-### RabbitMQ
-
-RabbitMQ est disponible sous forme de Helm chart, s'installant sans configuration.
-
-### FP Worker
-
-Les workers uni-verse sont fournsi sous forme de volume, service et déploiement dans [leur répos](https://github.com/uni-verse-fm/uni-verse-worker).
-
-### ES
-
-Elastic Search est disponible sous forme de Helm Chart permettant l'installation d'un cluster scalable assez rapidement.
-
-### Filebeat
-
-Filebeat fonctionne grâce à un daemonset qui maintient un pod en vie. Ce pod partage son volume avec l'API, afin de récupérer ses logs
-
-### Kibana
-
-Kibana est disponible sous forme de Helm Chart, assez facile à configurer à l'aide d'options.
-
-### Prometheus + Grafana
-
-Prometheus et grafana sont tous deux disponibles sous forme de Helm chart, ce qui permet une isntallation rapide de ceux-ci.
-
-### Minio
-
-Minio aussi est disponible sous forme de Helm chart. Il est préférable de l'utiliser car il s'agit d'une installation complexe et scallable sur plusieur serveurs en fonction de la demande.
-
-### Frontend
-
-Le frontend contient des fichiers permettant de le mettre en production dans [son répos](https://github.com/uni-verse-fm/uni-verse-frontend).
+| Service                                                                             |                               Files |
+| :---------------------------------------------------------------------------------- | ----------------------------------: |
+| [Api](https://github.com/uni-verse-fm/uni-verse-api/tree/main/kubernetes/api)       | Configmap, Deployment, Service, PVC |
+| [MongoDB](https://github.com/uni-verse-fm/uni-verse-api/tree/main/kubernetes/api)   |            Deployment, PVC, Service |
+| RabbitMQ                                                                            |                          Helm Chart |
+| [FP workers](https://github.com/uni-verse-fm/uni-verse-worker)                      |            PVC, Service, Deployment |
+| Elastic search                                                                      |                          Helm Chart |
+| FileBeat                                                                            |                           Daemonset |
+| Kibana                                                                              |                          Helm Chart |
+| MinIO                                                                               |                          Helm Chart |
+| (Frontend)[https://github.com/uni-verse-fm/uni-verse-frontend/tree/main/kubernetes] |                 Deployment, Service |
