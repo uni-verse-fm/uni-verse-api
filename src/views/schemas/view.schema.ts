@@ -2,7 +2,7 @@
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Transform, Type } from 'class-transformer';
-import { ObjectId } from 'mongodb';
+import { ObjectId } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
 // import { Release } from '../../releases/schemas/release.schema';

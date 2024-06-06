@@ -1,6 +1,6 @@
 /* Copyright (c) 2022 uni-verse corp */
 
-import { ObjectId } from 'mongodb';
+import { ObjectId } from 'mongoose';
 
 export interface IDeleteTrackResponse {
   id: ObjectId;
