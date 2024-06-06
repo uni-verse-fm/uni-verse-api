@@ -1,10 +1,10 @@
 /* Copyright (c) 2022 uni-verse corp */
 
 import { BadRequestException } from '@nestjs/common';
-import { ObjectId } from 'mongodb';
+import { isValidObjectId } from 'mongoose';
 
 export const isValidId = (id: string): void => {
-  if (!ObjectId.isValid(id)) throw new NonValidIdException();
+  if (!isValidObjectId(id)) throw new NonValidIdException();
 };
 
 export class NonValidIdException extends BadRequestException {
