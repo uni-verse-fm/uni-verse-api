@@ -40,6 +40,12 @@ export class MinioClientService {
   }
 
   public async upload(file: SimpleCreateFileDto, bucketName: BucketName) {
+    if (!(await this.minioClient.bucketExists(bucketName))) {
+      this.logger.log(
+        `Bucket ${bucketName} did not exist. Creating bucket ${bucketName}`,
+      );
+      await this.minioClient.makeBucket(bucketName);
+    }
     this.logger.log(`Uploading file ${file.originalFileName}`);
     const timestamp = Date.now().toString();
     const hashedFileName = crypto
