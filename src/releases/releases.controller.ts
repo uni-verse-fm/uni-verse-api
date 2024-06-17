@@ -32,7 +32,6 @@ import { ApiMultiFileWithMetadata } from '../utils/swagger/multiple-file.decorat
 import { CreateReleaseWraperDto } from './dto/create-release-wraper.dto';
 import { CreateReleaseDto } from './dto/create-release.dto';
 import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
-import { ValidationError } from 'class-validator';
 
 @ApiTags('releases')
 @Controller('releases')
