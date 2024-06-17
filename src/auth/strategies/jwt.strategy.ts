@@ -22,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         (request: Request) => {
           return (
             request?.cookies?.Authentication ||
-            request?.headers?.authorization.split(' ')[1]
+            request?.headers?.authorization?.split(' ')[1]
           );
         },
       ]),

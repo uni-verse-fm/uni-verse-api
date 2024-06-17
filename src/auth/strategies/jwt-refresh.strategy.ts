@@ -24,7 +24,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
         (request: Request) => {
           return (
             request?.cookies?.Refresh ||
-            request?.headers.authorization.split(' ')[1]
+            request?.headers.authorization?.split(' ')[1]
           );
         },
       ]),
@@ -37,7 +37,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
     this.logger.log(`Validating user ${payload.userId}`);
 
     const refreshToken = request?.headers?.authorization
-      ? request?.headers?.authorization.split(' ')[1]
+      ? request?.headers?.authorization?.split(' ')[1]
       : request.cookies?.Refresh;
 
     return this.userService.getUserIfRefreshTokenMatches(
