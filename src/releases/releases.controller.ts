@@ -13,6 +13,7 @@ import {
   UseGuards,
   UseInterceptors,
   Logger,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -31,11 +32,12 @@ import { ApiMultiFileWithMetadata } from '../utils/swagger/multiple-file.decorat
 import { CreateReleaseWraperDto } from './dto/create-release-wraper.dto';
 import { CreateReleaseDto } from './dto/create-release.dto';
 import { ValidIdInterceptor } from '../utils/interceptors/valid-id.interceptor';
+import { ValidationError } from 'class-validator';
 
 @ApiTags('releases')
 @Controller('releases')
 export class ReleasesController {
-  constructor(private readonly releasesService: ReleasesService) {}
+  constructor(private readonly releasesService: ReleasesService) { }
 
   private readonly logger = new Logger(ReleasesController.name);
 
@@ -58,6 +60,14 @@ export class ReleasesController {
     @Body() body: CreateReleaseWraperDto,
     @Request() request: IRequestWithUser,
   ) {
+    if (!files.tracks || !body.data.tracks) {
+      throw new BadRequestException('A release cannot have 0 tracks!');
+    }
+
+    if (body.data.tracks.length > files.tracks.length) {
+      throw new BadRequestException('Some tracks files are missing!');
+    }
+
     const simpleCreateFiles: SimpleCreateFileDto[] = files.tracks.map(
       (file) => ({
         originalFileName: file.originalname,
@@ -69,11 +79,11 @@ export class ReleasesController {
 
     const simpleCreateImage: SimpleCreateFileDto | undefined = files.cover
       ? {
-          originalFileName: files.cover[0].originalname,
-          buffer: files.cover[0].buffer,
-          size: files.cover[0].size,
-          mimetype: files.cover[0].mimetype,
-        }
+        originalFileName: files.cover[0].originalname,
+        buffer: files.cover[0].buffer,
+        size: files.cover[0].size,
+        mimetype: files.cover[0].mimetype,
+      }
       : undefined;
 
     return this.releasesService.createRelease(
