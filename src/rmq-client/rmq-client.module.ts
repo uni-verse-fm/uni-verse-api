@@ -8,6 +8,10 @@ import { Module } from '@nestjs/common';
     RabbitMQModule.forRoot(RabbitMQModule, {
       exchanges: [
         {
+          name: 'uni-verse-plagia-in',
+          type: 'direct',
+        },
+        {
           name: 'uni-verse-fp-in',
           type: 'direct',
         },
@@ -17,9 +21,9 @@ import { Module } from '@nestjs/common';
         },
       ],
       uri: `amqp://${process.env.RMQ_USER}:${process.env.RMQ_PASSWORD}@${process.env.RMQ_URL}:${process.env.RMQ_PORT}`,
-      connectionInitOptions: { wait: false },
+      connectionInitOptions: { wait: false,  },
     }),
   ],
   exports: [RabbitMQModule],
 })
-export class RMQModule {}
+export class RMQModule { }
