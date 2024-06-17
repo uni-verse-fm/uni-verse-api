@@ -21,7 +21,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
           return (
-            request?.cookies?.Authentication || request?.headers?.authorization
+            request?.cookies?.Authentication ||
+            request?.headers?.authorization?.split(' ')[1]
           );
         },
       ]),
