@@ -94,7 +94,6 @@ export class ReleasesController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find all releases or one release by title' })
   @ApiQuery({ name: 'title', required: false })
@@ -103,7 +102,6 @@ export class ReleasesController {
   }
 
   @Get('user/:id')
-  @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find releases by user id' })
   @UseInterceptors(ValidIdInterceptor)
@@ -120,7 +118,6 @@ export class ReleasesController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find one release by id' })
   @UseInterceptors(ValidIdInterceptor)
@@ -129,7 +126,7 @@ export class ReleasesController {
   }
 
   @Post('/convert')
-  @ApiOperation({ summary: 'Convert obejct to string' })
+  @ApiOperation({ summary: 'Convert object to string' })
   @ApiCookieAuth('Set-Cookie')
   convertRelease(@Body() body: CreateReleaseDto) {
     return JSON.stringify(body).replace(/ /g, '');
