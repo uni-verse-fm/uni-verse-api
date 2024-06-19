@@ -73,7 +73,9 @@ export class CommentsService {
     return comment;
   }
 
-  async findResourceComments(resourceInfo: FindResourceCommentDto) {
+  async findResourceComments(
+    resourceInfo: FindResourceCommentDto,
+  ): Promise<CommentDocument[]> {
     this.logger.log(`Finding comment of resource: ${resourceInfo.contentId}`);
     isValidId(resourceInfo.contentId);
 
