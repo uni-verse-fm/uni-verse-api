@@ -45,6 +45,23 @@ export class MinioClientService {
         `Bucket ${bucketName} did not exist. Creating bucket ${bucketName}`,
       );
       await this.minioClient.makeBucket(bucketName);
+      await this.minioClient.setBucketPolicy(
+        bucketName,
+        JSON.stringify({
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: 's3:GetObject',
+              Resource: `arn:aws:s3:::${bucketName}/*`,
+              Sid: 'AllowAnyoneToSeeThoseImages',
+              Principal: {
+                AWS: ['*'],
+              },
+            },
+          ],
+        }),
+      );
     }
     this.logger.log(`Uploading file ${file.originalFileName}`);
     const timestamp = Date.now().toString();
