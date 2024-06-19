@@ -27,7 +27,7 @@ export class Comment {
   @Prop({ type: mongoose.Schema.Types.ObjectId, refPath: 'modelType' })
   modelId: ObjectId;
 
-  @Prop({ type: String, enum: ['Track', 'Resource'] })
+  @Prop({ type: String, enum: ['track', 'resource'] })
   modelType: string;
 }
 
