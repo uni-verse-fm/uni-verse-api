@@ -147,7 +147,7 @@ export class ReleasesService {
 
   async findAllReleases(): Promise<ReleaseDocument[]> {
     this.logger.log(`Finding all releases`);
-    return await this.releaseModel.find();
+    return await this.releaseModel.find().populate('author');
   }
 
   async findReleaseById(id: string): Promise<ReleaseDocument> {
