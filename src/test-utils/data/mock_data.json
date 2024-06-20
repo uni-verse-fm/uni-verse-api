@@ -312,7 +312,7 @@
       "content": "cool track",
       "contentId": "000000000000000000000000",
       "isPositive": true,
-      "modelType": "Track",
+      "modelType": "track",
       "owner": {
         "email": "96abdou96@gmail.com",
         "username": "al/ghom"
@@ -323,7 +323,7 @@
       "content": "bad track",
       "contentId": "000000000000000000000001",
       "isPositive": false,
-      "modelType": "Track",
+      "modelType": "track",
       "owner": {
         "email": "96abdou96@gmail.com",
         "username": "al/ghom"
@@ -334,7 +334,7 @@
       "content": "cool resource",
       "contentId": "000000000000000000000001",
       "isPositive": true,
-      "modelType": "Resource",
+      "modelType": "resource",
       "owner": {
         "email": "96abdou96@gmail.com",
         "username": "al/ghom"
@@ -894,19 +894,19 @@
       "contentId": "000000000000000000000000",
       "isPositive": true,
       "content": "cool track",
-      "typeOfContent": "Track"
+      "typeOfContent": "track"
     },
     "comment_2": {
       "contentId": "000000000000000000000001",
       "isPositive": false,
       "content": "bad track",
-      "typeOfContent": "Track"
+      "typeOfContent": "track"
     },
     "comment_3": {
       "contentId": "000000000000000000000002",
       "isPositive": true,
       "content": "cool resource",
-      "typeOfContent": "Resource"
+      "typeOfContent": "resource"
     }
   }
 }
