@@ -131,7 +131,7 @@ export class CommentsService {
       case ModelType.Resource:
         return await this.resourcesService.findResourceById(contentId);
       default:
-        throw new BadRequestException('The type of content is not valid.');
+        throw new BadRequestException(`The type of content ${typeOfContent} is not valid.`);
     }
   }
 

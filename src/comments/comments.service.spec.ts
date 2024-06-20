@@ -177,7 +177,9 @@ describe('CommentsService', () => {
         {
           ...commentOneComment,
           contentId: encore.id.toString(),
-          typeOfContent: ModelType[commentOneComment.typeOfContent],
+          typeOfContent: commentOneComment.typeOfContent == 'track' ?
+            ModelType.Track :
+            ModelType.Resource,
         },
         user,
       );
@@ -195,7 +197,9 @@ describe('CommentsService', () => {
         {
           ...commentTwoComment,
           contentId: threat.id.toString(),
-          typeOfContent: ModelType[commentTwoComment.typeOfContent],
+          typeOfContent: commentTwoComment.typeOfContent == 'track' ?
+            ModelType.Track :
+            ModelType.Resource,
         },
         user,
       );
@@ -212,7 +216,9 @@ describe('CommentsService', () => {
         {
           ...commentThreeComment,
           contentId: resourceOne._id.toString(),
-          typeOfContent: ModelType[commentThreeComment.typeOfContent],
+          typeOfContent: commentThreeComment.typeOfContent == 'track' ?
+            ModelType.Track :
+            ModelType.Resource,
         },
         user,
       );
