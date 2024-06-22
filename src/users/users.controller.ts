@@ -35,7 +35,6 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiQuery({ name: 'username', required: false })
   @ApiOperation({ summary: 'Find all users or one user by username' })
@@ -82,7 +81,6 @@ export class UsersController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
   @ApiOperation({ summary: 'Find one user by id' })
   @UseInterceptors(ValidIdInterceptor)
@@ -102,8 +100,7 @@ export class UsersController {
   @Post('upload')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('Set-Cookie')
-  @ApiOperation({ summary: 'Delete a user' })
-  @ApiCookieAuth('Set-Cookie')
+  @ApiOperation({ summary: 'Upload a profile picture' })
   @UseInterceptors(FileInterceptor('file'))
   uploadProfilePicture(
     @UploadedFile() file: Express.Multer.File,
